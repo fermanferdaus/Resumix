@@ -6,30 +6,30 @@ dotenv.config();
  * Aturan: Semua environment variables harus diakses melalui config ini.
  */
 export const appConfig = {
-  port: parseInt(process.env.PORT, 10),
-  nodeEnv: process.env.NODE_ENV,
-  isProduction: process.env.NODE_ENV === "production",
-  appUrl: process.env.APP_URL,
-  clientUrl: process.env.CLIENT_URL,
+  port: parseInt(process.env.PORT, 10) || 3000,
+  nodeEnv: process.env.NODE_ENV || "development",
+  isProduction: (process.env.NODE_ENV || "development") === "production",
+  appUrl: process.env.APP_URL || "http://localhost:3000",
+  clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
 
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET,
-    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-    refreshCookieMaxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+    accessSecret: process.env.JWT_ACCESS_SECRET, // Sensitif: Tanpa fallback
+    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
+    refreshSecret: process.env.JWT_REFRESH_SECRET, // Sensitif: Tanpa fallback
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+    refreshCookieMaxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
   },
 
   cors: {
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",").map((url) => url.trim())
-      : [],
+      : ["http://localhost:5173"],
     credentials: true,
   },
 
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Sensitif: Tanpa fallback
   },
 
   otp: {
@@ -37,12 +37,12 @@ export const appConfig = {
   },
 
   mail: {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT, 10),
+    host: process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io",
+    port: parseInt(process.env.SMTP_PORT, 10) || 2525,
     secure: process.env.SMTP_SECURE === "true",
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-    fromAddress: process.env.MAIL_FROM_ADDRESS,
-    fromName: process.env.MAIL_FROM_NAME,
+    user: process.env.SMTP_USER, // Sensitif: Tanpa fallback
+    pass: process.env.SMTP_PASS, // Sensitif: Tanpa fallback
+    fromAddress: process.env.MAIL_FROM_ADDRESS || "noreply@resumix.app",
+    fromName: process.env.MAIL_FROM_NAME || "Resumix ATS CV Builder",
   },
 };
