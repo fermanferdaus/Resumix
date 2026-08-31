@@ -19,9 +19,27 @@ async function request(path, options = {}) {
   return { status: response.status, data: json, headers: response.headers, duration };
 }
 
+async function waitForServer(maxAttempts = 20, delayMs = 300) {
+  for (let i = 1; i <= maxAttempts; i++) {
+    try {
+      const res = await fetch(`${BASE_URL}/health`);
+      if (res.ok) {
+        return;
+      }
+    } catch {
+      // Server not ready yet
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+  throw new Error(`Server failed to respond at ${BASE_URL}/health within ${maxAttempts * delayMs}ms`);
+}
+
 async function runSuite() {
   console.log(`[API INTEGRATION SUITE] Target: ${BASE_URL}`);
   console.log("--------------------------------------------------------------------------------");
+
+  // Ensure server is up and accepting connections
+  await waitForServer();
 
   let passed = 0;
   let total = 0;

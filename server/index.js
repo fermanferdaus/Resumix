@@ -43,10 +43,8 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Start Server
-if (process.env.NODE_ENV !== "test") {
-  app.listen(appConfig.port, () => {
-    console.log(`🚀 Resumix Backend Server running on port ${appConfig.port} [${appConfig.nodeEnv}]`);
-  });
-}
+app.listen(appConfig.port, () => {
+  console.log(`[SERVER RUNNING] Port ${appConfig.port} [${appConfig.nodeEnv}]`);
+});
 
 export default app;

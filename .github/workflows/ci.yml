@@ -35,11 +35,11 @@ jobs:
       JWT_ACCESS_EXPIRES_IN: 15m
       JWT_REFRESH_SECRET: test_jwt_refresh_secret_key_1234567890_min_32_characters
       JWT_REFRESH_EXPIRES_IN: 7d
-      MAIL_HOST: localhost
-      MAIL_PORT: 2525
-      MAIL_SECURE: false
-      MAIL_USER: test_mail_user
-      MAIL_PASS: test_mail_password
+      SMTP_HOST: localhost
+      SMTP_PORT: 2525
+      SMTP_SECURE: false
+      SMTP_USER: test_mail_user
+      SMTP_PASS: test_mail_password
       MAIL_FROM_NAME: Resumix Test
       MAIL_FROM_ADDRESS: no-reply@resumix.test
       GOOGLE_CLIENT_ID: mock-google-client-id.apps.googleusercontent.com
