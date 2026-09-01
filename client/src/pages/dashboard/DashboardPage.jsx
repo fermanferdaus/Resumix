@@ -482,6 +482,12 @@ export const DashboardPage = () => {
                     <li className="flex items-start gap-2">
                       <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
                       <span>
+                        <strong className="text-[#0f172a]">Tata Letak 1 Kolom:</strong> Susun konten lurus ke bawah. Jangan bagi halaman menjadi dua kolom agar urutan pembacaan teks tidak saling bertabrakan.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
+                      <span>
                         <strong className="text-[#0f172a]">Kronologi Terbalik:</strong> Tulis riwayat pengalaman kerja dan riwayat pendidikan mulai dari posisi paling baru hingga paling lama.
                       </span>
                     </li>
@@ -509,7 +515,7 @@ export const DashboardPage = () => {
             </div>
 
             {/* Section Bawah Full-Width: Panduan, Dukungan, & Masukan */}
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Card 1: Tips ATS Pro */}
               <div className="bg-[#fef2f2] border border-[#fecaca] p-5 flex flex-col justify-between rounded-none">
                 <div>
