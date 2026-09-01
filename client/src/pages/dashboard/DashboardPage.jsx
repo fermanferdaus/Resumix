@@ -10,7 +10,7 @@ import { ResumeCard } from "../../components/dashboard/ResumeCard.jsx";
 import { DashboardSkeleton } from "../../components/dashboard/DashboardSkeleton.jsx";
 import { CreateResumeModal } from "../../components/dashboard/CreateResumeModal.jsx";
 import { RenameResumeModal } from "../../components/dashboard/RenameResumeModal.jsx";
-import { DeleteConfirmModal } from "../../components/dashboard/DeleteConfirmModal.jsx";
+import { DeleteConfirmModal } from "../../components/common/DeleteConfirmModal.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
 import { resumeApi } from "../../api/resumeApi.js";
 import { appConfig } from "../../config/appConfig.js";
@@ -590,10 +590,22 @@ export const DashboardPage = () => {
       />
 
       <DeleteConfirmModal
-        isOpen={!!deleteTarget}
-        resume={deleteTarget}
+        isOpen={Boolean(deleteTarget)}
+        title="Hapus Resume Ini?"
+        description={
+          deleteTarget ? (
+            <span>
+              Anda akan menghapus resume{" "}
+              <strong className="text-[#1a1b22]">"{deleteTarget.title}"</strong> secara
+              permanen. Tindakan ini tidak dapat dibatalkan.
+            </span>
+          ) : (
+            "Apakah Anda yakin ingin menghapus resume ini secara permanen?"
+          )
+        }
+        confirmText="Ya, Hapus Resume"
         onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDeleteResume}
+        onConfirm={() => deleteTarget && handleDeleteResume(deleteTarget.id)}
         isLoading={deleteResumeMutation.isPending}
       />
     </div>

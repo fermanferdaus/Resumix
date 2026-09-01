@@ -1,8 +1,24 @@
 import { Button } from "../ui/button.jsx";
 import { AlertTriangle, X } from "lucide-react";
 
-export const DeleteConfirmModal = ({ isOpen, resume, onClose, onConfirm, isLoading }) => {
-  if (!isOpen || !resume) return null;
+export const DeleteConfirmModal = ({
+  isOpen,
+  title = "Konfirmasi Hapus",
+  description = "Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.",
+  confirmText = "Ya, Hapus",
+  cancelText = "Batal",
+  isLoading = false,
+  onClose,
+  onConfirm,
+}) => {
+  if (!isOpen) return null;
+
+  const handleConfirm = async () => {
+    if (onConfirm) {
+      await onConfirm();
+    }
+    onClose?.();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -10,7 +26,9 @@ export const DeleteConfirmModal = ({ isOpen, resume, onClose, onConfirm, isLoadi
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#5d5e61] hover:text-[#1a1b22] p-1 cursor-pointer"
+          disabled={isLoading}
+          className="absolute top-4 right-4 text-[#5d5e61] hover:text-[#1a1b22] p-1 cursor-pointer transition-colors disabled:opacity-50"
+          title="Tutup"
         >
           <X className="w-5 h-5" />
         </button>
@@ -21,11 +39,15 @@ export const DeleteConfirmModal = ({ isOpen, resume, onClose, onConfirm, isLoadi
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#0f172a] tracking-tight">
-              Hapus Resume Ini?
+              {title}
             </h2>
-            <p className="text-xs text-[#5d5e61] mt-1 leading-relaxed">
-              Anda akan menghapus resume <strong className="text-[#1a1b22]">"{resume.title}"</strong> secara permanen. Tindakan ini tidak dapat dibatalkan.
-            </p>
+            <div className="text-xs text-[#5d5e61] mt-1.5 leading-relaxed">
+              {typeof description === "string" ? (
+                <p>{description}</p>
+              ) : (
+                description
+              )}
+            </div>
           </div>
         </div>
 
@@ -37,16 +59,16 @@ export const DeleteConfirmModal = ({ isOpen, resume, onClose, onConfirm, isLoadi
             disabled={isLoading}
             className="rounded-none"
           >
-            Batal
+            {cancelText}
           </Button>
           <Button
             type="button"
             variant="primary"
-            onClick={() => onConfirm(resume.id)}
+            onClick={handleConfirm}
             isLoading={isLoading}
-            className="bg-[#ba1a1a] hover:bg-[#93000a] active:bg-[#680004] text-white rounded-none"
+            className="bg-[#ba1a1a] hover:bg-[#93000a] active:bg-[#680004] text-white rounded-none cursor-pointer"
           >
-            Ya, Hapus Resume
+            {confirmText}
           </Button>
         </div>
       </div>

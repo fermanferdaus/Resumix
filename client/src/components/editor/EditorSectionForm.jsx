@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "../ui/input.jsx";
 import { Label } from "../ui/label.jsx";
 import { Button } from "../ui/button.jsx";
@@ -5,6 +6,7 @@ import { MonthYearPicker } from "../ui/MonthYearPicker.jsx";
 import { YearPicker } from "../ui/YearPicker.jsx";
 import { SECTIONS, DEFAULT_SECTION_TITLES } from "../../constants/editorSections.js";
 import { Plus, Trash2, ArrowLeft, ArrowRight, X } from "lucide-react";
+import { DeleteConfirmModal } from "../common/DeleteConfirmModal.jsx";
 
 export const EditorSectionForm = ({
   activeSection,
@@ -13,6 +15,8 @@ export const EditorSectionForm = ({
   onChange,
   onClose,
 }) => {
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   const currentSectionIndex = SECTIONS.findIndex((s) => s.id === activeSection);
   const currentSection = SECTIONS[currentSectionIndex] || SECTIONS[0];
 
@@ -330,6 +334,103 @@ export const EditorSectionForm = ({
     });
   };
 
+  // Confirmation triggers to prevent accidental deletion
+  const confirmDeleteLink = (index) => {
+    setDeleteTarget({
+      title: "Hapus Tautan Profil?",
+      description: "Apakah Anda yakin ingin menghapus tautan profil ini dari header resume Anda?",
+      onConfirm: () => handleDeleteLink(index),
+    });
+  };
+
+  const confirmDeleteEducation = (index) => {
+    const edu = data.educations?.[index];
+    const name = edu?.degree || edu?.institution;
+    setDeleteTarget({
+      title: "Hapus Riwayat Pendidikan?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus pendidikan "${name}" dari daftar riwayat pendidikan?`
+        : "Apakah Anda yakin ingin menghapus data pendidikan ini dari resume Anda?",
+      onConfirm: () => handleDeleteEducation(index),
+    });
+  };
+
+  const confirmDeleteEduBullet = (eduIndex, bulletIndex) => {
+    setDeleteTarget({
+      title: "Hapus Poin Uraian Pendidikan?",
+      description: "Apakah Anda yakin ingin menghapus poin deskripsi / prestasi akademik ini?",
+      onConfirm: () => handleDeleteEduBullet(eduIndex, bulletIndex),
+    });
+  };
+
+  const confirmDeleteExperience = (index) => {
+    const exp = data.experiences?.[index];
+    const name = [exp?.role, exp?.company].filter(Boolean).join(" - ");
+    setDeleteTarget({
+      title: "Hapus Riwayat Pengalaman Kerja?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus pengalaman kerja "${name}" dari resume Anda?`
+        : "Apakah Anda yakin ingin menghapus data pengalaman kerja ini?",
+      onConfirm: () => handleDeleteExperience(index),
+    });
+  };
+
+  const confirmDeleteBullet = (expIndex, bulletIndex) => {
+    setDeleteTarget({
+      title: "Hapus Poin Uraian Pekerjaan?",
+      description: "Apakah Anda yakin ingin menghapus poin tanggung jawab / pencapaian pekerjaan ini?",
+      onConfirm: () => handleDeleteBullet(expIndex, bulletIndex),
+    });
+  };
+
+  const confirmDeleteOrganization = (index) => {
+    const org = data.organizations?.[index];
+    const name = [org?.role, org?.name].filter(Boolean).join(" - ");
+    setDeleteTarget({
+      title: "Hapus Riwayat Pengalaman Organisasi?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus organisasi "${name}" dari daftar riwayat organisasi?`
+        : "Apakah Anda yakin ingin menghapus data pengalaman organisasi ini?",
+      onConfirm: () => handleDeleteOrganization(index),
+    });
+  };
+
+  const confirmDeleteCertification = (index) => {
+    const cert = data.certifications?.[index];
+    const name = typeof cert === "object" && cert !== null ? cert.name : cert;
+    setDeleteTarget({
+      title: "Hapus Sertifikat / Prestasi?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus sertifikat "${name}" dari daftar penghargaan?`
+        : "Apakah Anda yakin ingin menghapus data sertifikat / prestasi ini?",
+      onConfirm: () => handleDeleteCertification(index),
+    });
+  };
+
+  const confirmDeleteHardSkill = (index) => {
+    const skill = data.skills?.hardSkills?.[index];
+    const name = skill?.category || (Array.isArray(skill?.items) ? skill.items.join(", ") : skill?.items);
+    setDeleteTarget({
+      title: "Hapus Kategori Keahlian?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus kelompok keahlian "${name}"?`
+        : "Apakah Anda yakin ingin menghapus entri keahlian teknis ini?",
+      onConfirm: () => handleDeleteHardSkill(index),
+    });
+  };
+
+  const confirmDeleteSoftSkill = (index) => {
+    const skill = data.skills?.softSkills?.[index];
+    const name = typeof skill === "string" ? skill : skill?.name;
+    setDeleteTarget({
+      title: "Hapus Soft Skill?",
+      description: name
+        ? `Apakah Anda yakin ingin menghapus keahlian "${name}"?`
+        : "Apakah Anda yakin ingin menghapus entri soft skill ini?",
+      onConfirm: () => handleDeleteSoftSkill(index),
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Section Header */}
@@ -468,7 +569,7 @@ export const EditorSectionForm = ({
                 {getHeaderLinks().length > 1 && (
                   <button
                     type="button"
-                    onClick={() => handleDeleteLink(lIdx)}
+                    onClick={() => confirmDeleteLink(lIdx)}
                     className="text-[#5d5e61] hover:text-[#ba1a1a] p-2 cursor-pointer transition-colors"
                     title="Hapus tautan"
                   >
@@ -499,11 +600,11 @@ export const EditorSectionForm = ({
             <Label htmlFor="summary-text">Ringkasan</Label>
             <textarea
               id="summary-text"
-              rows={6}
+              rows={5}
               placeholder="Tuliskan ringkasan pengalaman profesional, keahlian utama, dan pencapaian Anda secara terstruktur..."
               value={data.summary || ""}
               onChange={(e) => handleSummaryChange(e.target.value)}
-              className="w-full bg-[#f8fafc] border border-[#e2e8f0] text-xs text-[#0f172a] p-3 rounded-none outline-none focus:border-[#af101a] focus:bg-white transition-colors resize-y leading-relaxed font-sans"
+              className="w-full bg-white border border-[#e2e8f0] text-xs text-[#0f172a] p-3 rounded-none outline-none focus:border-[#af101a] transition-colors leading-relaxed"
             />
           </div>
         </div>
@@ -523,7 +624,7 @@ export const EditorSectionForm = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleDeleteEducation(idx)}
+                  onClick={() => confirmDeleteEducation(idx)}
                   className="text-[#ba1a1a] hover:text-[#93000a] text-xs flex items-center gap-1 font-semibold cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -639,7 +740,7 @@ export const EditorSectionForm = ({
                     />
                     <button
                       type="button"
-                      onClick={() => handleDeleteEduBullet(idx, bIdx)}
+                      onClick={() => confirmDeleteEduBullet(idx, bIdx)}
                       className="text-[#5d5e61] hover:text-[#ba1a1a] p-1.5 mt-1 cursor-pointer"
                       title="Hapus poin"
                     >
@@ -689,7 +790,7 @@ export const EditorSectionForm = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleDeleteExperience(idx)}
+                  onClick={() => confirmDeleteExperience(idx)}
                   className="text-[#ba1a1a] hover:text-[#93000a] text-xs flex items-center gap-1 font-semibold cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -794,7 +895,7 @@ export const EditorSectionForm = ({
                     />
                     <button
                       type="button"
-                      onClick={() => handleDeleteBullet(idx, bIdx)}
+                      onClick={() => confirmDeleteBullet(idx, bIdx)}
                       className="text-[#5d5e61] hover:text-[#ba1a1a] p-1.5 mt-1 cursor-pointer"
                       title="Hapus poin"
                     >
@@ -844,7 +945,7 @@ export const EditorSectionForm = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleDeleteOrganization(idx)}
+                  onClick={() => confirmDeleteOrganization(idx)}
                   className="text-[#ba1a1a] hover:text-[#93000a] text-xs flex items-center gap-1 font-semibold cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -980,7 +1081,7 @@ export const EditorSectionForm = ({
                   </span>
                   <button
                     type="button"
-                    onClick={() => handleDeleteCertification(idx)}
+                    onClick={() => confirmDeleteCertification(idx)}
                     className="text-[#ba1a1a] hover:text-[#93000a] text-xs flex items-center gap-1 font-semibold cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -1065,7 +1166,7 @@ export const EditorSectionForm = ({
                   </span>
                   <button
                     type="button"
-                    onClick={() => handleDeleteHardSkill(idx)}
+                    onClick={() => confirmDeleteHardSkill(idx)}
                     className="text-[#ba1a1a] hover:text-[#93000a] text-xs flex items-center gap-1 font-semibold cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -1134,7 +1235,7 @@ export const EditorSectionForm = ({
                 />
                 <button
                   type="button"
-                  onClick={() => handleDeleteSoftSkill(idx)}
+                  onClick={() => confirmDeleteSoftSkill(idx)}
                   className="text-[#5d5e61] hover:text-[#ba1a1a] p-1.5 cursor-pointer"
                   title="Hapus soft skill"
                 >
@@ -1187,6 +1288,20 @@ export const EditorSectionForm = ({
           <ArrowRight className="w-3.5 h-3.5" />
         </Button>
       </div>
+
+      {/* Modal Konfirmasi Hapus Universal */}
+      <DeleteConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        title={deleteTarget?.title}
+        description={deleteTarget?.description}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (typeof deleteTarget?.onConfirm === "function") {
+            deleteTarget.onConfirm();
+          }
+          setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 };
