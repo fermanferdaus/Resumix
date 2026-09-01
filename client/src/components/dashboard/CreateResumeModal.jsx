@@ -50,7 +50,7 @@ export const CreateResumeModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
             Buat CV ATS Baru
           </h2>
           <p className="text-xs text-[#5d5e61] mt-1 leading-relaxed">
-            Berikan nama dan target posisi untuk resume baru Anda. Format akan otomatis disesuaikan dengan standar ATS.
+            Berikan nama dan posisi untuk resume baru Anda. Format akan otomatis disesuaikan dengan standar ATS.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export const CreateResumeModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
           </div>
 
           <div>
-            <Label htmlFor="resume-target-role">Posisi / Pekerjaan Target (Opsional)</Label>
+            <Label htmlFor="resume-target-role">Posisi / Pekerjaan (Opsional)</Label>
             <Input
               id="resume-target-role"
               type="text"

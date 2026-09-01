@@ -1,28 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
+import { calculateAtsProgress, getAtsChecklist } from "../lib/resumeScore.js";
 
 describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
   describe("Kalkulasi Skor Kelengkapan Resume (Progress Bar)", () => {
-    const calculateProgress = (formData) => {
-      let score = 0;
-      const h = formData.header || {};
-      if (h.fullName?.trim()) score += 10;
-      if (h.targetRole?.trim()) score += 10;
-      if (h.email?.trim()) score += 5;
-      if (h.phone?.trim()) score += 5;
-      if (h.location?.trim()) score += 5;
-      if (formData.summary?.trim()) score += 15;
-      if (formData.educations?.length > 0) score += 15;
-      if (formData.experiences?.length > 0) score += 20;
-      if (formData.organizations?.length > 0) score += 5;
-      if (formData.certifications?.length > 0) score += 5;
-      if (
-        formData.skills?.hardSkills?.length > 0 ||
-        formData.skills?.softSkills?.length > 0
-      )
-        score += 10;
-      return Math.min(100, score);
-    };
 
     it("harus menghasilkan 100% untuk data resume yang terisi penuh", () => {
       const fullResume = {
@@ -44,7 +25,9 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
         },
       };
 
-      assert.strictEqual(calculateProgress(fullResume), 100);
+      assert.strictEqual(calculateAtsProgress(fullResume), 100);
+      const checklist = getAtsChecklist(fullResume);
+      assert.strictEqual(checklist.every((item) => item.passed), true);
     });
 
     it("harus menghitung proporsional jika hanya header terisi", () => {
@@ -56,7 +39,10 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
         },
       };
       // fullName(10) + targetRole(10) + email(5) = 25
-      assert.strictEqual(calculateProgress(partialResume), 25);
+      assert.strictEqual(calculateAtsProgress(partialResume), 25);
+      const checklist = getAtsChecklist(partialResume);
+      assert.strictEqual(checklist.find((c) => c.id === "header")?.passed, true);
+      assert.strictEqual(checklist.find((c) => c.id === "experience")?.passed, false);
     });
   });
 

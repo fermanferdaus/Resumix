@@ -3,7 +3,7 @@ import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
 import { Label } from "../ui/label.jsx";
 import { Alert } from "../ui/alert.jsx";
-import { X, Edit2 } from "lucide-react";
+import { X } from "lucide-react";
 
 const RenameResumeForm = ({ resume, onClose, onSubmit, isLoading }) => {
   const [title, setTitle] = useState(resume?.title || "");
@@ -38,10 +38,6 @@ const RenameResumeForm = ({ resume, onClose, onSubmit, isLoading }) => {
 
         {/* Modal Header */}
         <div className="mb-6">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#f8fafc] border border-[#e2e8f0] text-[11px] font-mono-code uppercase font-semibold text-[#1a1b22] mb-2 rounded-none">
-            <Edit2 className="w-3.5 h-3.5 text-[#af101a]" />
-            <span>&lt;Ubah Judul Resume /&gt;</span>
-          </div>
           <h2 className="text-xl font-bold text-[#0f172a] tracking-tight">
             Ubah Informasi Resume
           </h2>
@@ -68,7 +64,7 @@ const RenameResumeForm = ({ resume, onClose, onSubmit, isLoading }) => {
           </div>
 
           <div>
-            <Label htmlFor="rename-target-role">Posisi / Pekerjaan Target</Label>
+            <Label htmlFor="rename-target-role">Posisi / Pekerjaan</Label>
             <Input
               id="rename-target-role"
               type="text"

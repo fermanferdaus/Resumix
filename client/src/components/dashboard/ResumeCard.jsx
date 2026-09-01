@@ -1,8 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button.jsx";
-import { MoreVertical, Edit, Copy, Trash2, FileText, Download } from "lucide-react";
+import { MoreVertical, Edit, Copy, Trash2, FileText, Download, Loader2 } from "lucide-react";
 
-export const ResumeCard = ({ resume, onEdit, onRename, onDuplicate, onDelete }) => {
+export const ResumeCard = ({
+  resume,
+  onEdit,
+  onRename,
+  onDuplicate,
+  onDelete,
+  onDownload,
+  isDownloading = false,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -44,7 +52,7 @@ export const ResumeCard = ({ resume, onEdit, onRename, onDuplicate, onDelete }) 
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-[#5d5e61] hover:text-[#1a1b22] p-1 cursor-pointer transition-colors"
+              className="text-[#5d5e61] hover:text-[#1a1c1e] p-1 cursor-pointer transition-colors"
               title="Opsi resume"
             >
               <MoreVertical className="w-4 h-4" />
@@ -62,6 +70,19 @@ export const ResumeCard = ({ resume, onEdit, onRename, onDuplicate, onDelete }) 
                 >
                   <Edit className="w-3.5 h-3.5 text-[#5d5e61]" />
                   <span>Ubah Judul</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    if (onDownload) onDownload(resume);
+                  }}
+                  disabled={isDownloading}
+                  className="w-full px-3 py-2 text-left text-xs text-[#1a1b22] hover:bg-[#f8fafc] flex items-center gap-2 cursor-pointer font-medium disabled:opacity-50"
+                >
+                  <Download className="w-3.5 h-3.5 text-[#5d5e61]" />
+                  <span>Unduh PDF</span>
                 </button>
 
                 <button
@@ -120,11 +141,18 @@ export const ResumeCard = ({ resume, onEdit, onRename, onDuplicate, onDelete }) 
         <Button
           variant="subtle"
           size="icon"
-          className="h-9 w-9 text-[#5d5e61] hover:text-[#af101a] rounded-none flex items-center justify-center"
-          title="Unduh PDF (Fitur Ekspor PDF)"
-          onClick={() => onEdit(resume)}
+          className="h-9 w-9 text-[#5d5e61] hover:text-[#af101a] rounded-none flex items-center justify-center cursor-pointer"
+          title="Unduh PDF Langsung"
+          disabled={isDownloading}
+          onClick={() => {
+            if (onDownload) onDownload(resume);
+          }}
         >
-          <Download className="w-4 h-4" />
+          {isDownloading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-[#af101a]" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
         </Button>
       </div>
     </div>

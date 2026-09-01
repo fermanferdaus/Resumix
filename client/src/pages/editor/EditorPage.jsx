@@ -11,6 +11,7 @@ import { EditorSubheader } from "../../components/editor/EditorSubheader.jsx";
 import { EditorSidebar } from "../../components/editor/EditorSidebar.jsx";
 import { EditorSectionForm } from "../../components/editor/EditorSectionForm.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
+import { calculateAtsProgress } from "../../lib/resumeScore.js";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/button.jsx";
 
@@ -196,24 +197,7 @@ export const EditorPage = () => {
 
   // Calculate Completeness Progress (0 - 100%)
   const progress = useMemo(() => {
-    let score = 0;
-    const h = formData.header || {};
-    if (h.fullName?.trim()) score += 10;
-    if (h.targetRole?.trim()) score += 10;
-    if (h.email?.trim()) score += 5;
-    if (h.phone?.trim()) score += 5;
-    if (h.location?.trim()) score += 5;
-    if (formData.summary?.trim()) score += 15;
-    if (formData.educations?.length > 0) score += 15;
-    if (formData.experiences?.length > 0) score += 20;
-    if (formData.organizations?.length > 0) score += 5;
-    if (formData.certifications?.length > 0) score += 5;
-    if (
-      formData.skills?.hardSkills?.length > 0 ||
-      formData.skills?.softSkills?.length > 0
-    )
-      score += 10;
-    return Math.min(100, score);
+    return calculateAtsProgress(formData);
   }, [formData]);
 
   const handlePrint = () => {

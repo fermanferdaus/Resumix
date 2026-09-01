@@ -11,6 +11,12 @@ import { DashboardSkeleton } from "../../components/dashboard/DashboardSkeleton.
 import { CreateResumeModal } from "../../components/dashboard/CreateResumeModal.jsx";
 import { RenameResumeModal } from "../../components/dashboard/RenameResumeModal.jsx";
 import { DeleteConfirmModal } from "../../components/dashboard/DeleteConfirmModal.jsx";
+import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
+import { resumeApi } from "../../api/resumeApi.js";
+import {
+  calculateAtsProgress,
+  getAtsChecklist,
+} from "../../lib/resumeScore.js";
 import {
   useResumesQuery,
   useCreateResumeMutation,
@@ -22,6 +28,7 @@ import {
   Plus,
   Search,
   CheckCircle2,
+  Circle,
   Lightbulb,
   FileText,
   Clock,
@@ -38,6 +45,8 @@ export const DashboardPage = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [printingResumeData, setPrintingResumeData] = useState(null);
 
   // Queries & Mutations
   const { data: resumesData, isLoading: isResumesLoading } = useResumesQuery({
@@ -64,6 +73,29 @@ export const DashboardPage = () => {
 
   const isInitialLoading = isResumesLoading && !resumesData;
   const resumes = resumesData?.data || [];
+  const latestResume = resumes[0] || null;
+  const latestResumeScore = latestResume
+    ? calculateAtsProgress(latestResume.data)
+    : 0;
+  const latestChecklist = latestResume
+    ? getAtsChecklist(latestResume.data)
+    : [
+        {
+          id: "header",
+          label: "Struktur Heading & Kontak Terstandarisasi",
+          passed: false,
+        },
+        {
+          id: "experience",
+          label: "Kronologi Riwayat Pengalaman Kerja",
+          passed: false,
+        },
+        {
+          id: "education-skills",
+          label: "Latar Belakang Pendidikan & Keahlian",
+          passed: false,
+        },
+      ];
 
   // Handlers
   const handleCreateResume = async (formData) => {
@@ -126,8 +158,47 @@ export const DashboardPage = () => {
     navigate(`/editor/${resume.id}`);
   };
 
+  const handleDownloadResume = async (resume) => {
+    setErrorMessage("");
+    try {
+      setDownloadingId(resume.id);
+      const res = await resumeApi.getResume(resume.id);
+      const fullResume = res.data;
+
+      const name =
+        fullResume.data?.header?.fullName?.trim() ||
+        user?.fullName?.trim() ||
+        "Pengguna";
+      const role =
+        fullResume.data?.header?.targetRole?.trim() ||
+        fullResume.targetRole?.trim() ||
+        "Resume";
+      const pdfFilename = `Resumix-${name}-${role}`;
+
+      setPrintingResumeData(fullResume);
+
+      // Render dan jalankan dialog cetak browser
+      setTimeout(() => {
+        const originalTitle = document.title;
+        document.title = pdfFilename;
+        window.print();
+        setTimeout(() => {
+          document.title = originalTitle;
+          setPrintingResumeData(null);
+          setDownloadingId(null);
+        }, 1000);
+      }, 200);
+    } catch (error) {
+      console.error("Gagal mengunduh resume", error);
+      setErrorMessage("Gagal mengunduh resume. Silakan coba lagi.");
+      setDownloadingId(null);
+      setPrintingResumeData(null);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none pt-16">
+    <>
+      <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none pt-16 print:hidden">
       <div>
         <Navbar />
 
@@ -212,6 +283,8 @@ export const DashboardPage = () => {
                         onRename={(r) => setRenameTarget(r)}
                         onDuplicate={handleDuplicateResume}
                         onDelete={(r) => setDeleteTarget(r)}
+                        onDownload={handleDownloadResume}
+                        isDownloading={downloadingId === resume.id}
                       />
                     ))}
                   </div>
@@ -229,40 +302,65 @@ export const DashboardPage = () => {
 
               {/* Right Panel / Sidebar (Inspired by Stitch) */}
               <aside className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-6">
-                {/* 1. Profile Strength / ATS Score Widget */}
+                {/* 1. Profile Strength / ATS Score Widget (Resume Terbaru) */}
                 <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none">
-                  <div className="flex justify-between items-end">
-                    <h3 className="text-sm font-bold text-[#0f172a] uppercase font-mono-code">
-                      Kekuatan Resume ATS
-                    </h3>
-                    <span className="text-xs font-mono-code font-bold text-[#af101a]">
-                      100%
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#0f172a] uppercase font-mono-code">
+                        Kekuatan Resume ATS
+                      </h3>
+                      {latestResume ? (
+                        <p className="text-[11px] text-[#5d5e61] truncate max-w-[190px] mt-0.5 font-medium" title={latestResume.title}>
+                          {latestResume.title}
+                        </p>
+                      ) : (
+                        <p className="text-[11px] text-[#5d5e61] mt-0.5">
+                          Belum ada resume
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs font-mono-code font-bold text-[#af101a] flex-shrink-0">
+                      {latestResumeScore}%
                     </span>
                   </div>
 
                   {/* Flat Progress Bar */}
                   <div className="w-full bg-[#f1f5f9] h-2 rounded-none overflow-hidden">
-                    <div className="bg-[#af101a] h-full w-full rounded-none" />
+                    <div
+                      className="bg-[#af101a] h-full transition-all duration-300 rounded-none"
+                      style={{ width: `${latestResumeScore}%` }}
+                    />
                   </div>
 
-                  <p className="text-xs text-[#5d5e61] mt-1 leading-relaxed">
-                    Struktur data resume Anda telah memenuhi kaidah algoritma parser ATS.
+                  <p className="text-xs text-[#5d5e61] leading-relaxed">
+                    {!latestResume
+                      ? "Buat CV pertama Anda untuk mulai mengukur tingkat kesiapan dan kekuatan ATS."
+                      : latestResumeScore >= 80
+                      ? "Struktur data resume terbaru Anda telah memenuhi kaidah algoritma parser ATS."
+                      : latestResumeScore >= 50
+                      ? "Resume terbaru Anda cukup baik. Lengkapi bagian yang tersisa agar skor optimal."
+                      : "Resume terbaru Anda masih dalam tahap awal. Lengkapi data untuk skor ATS maksimal."}
                   </p>
 
-                  {/* Checklist Poin ATS */}
-                  <ul className="flex flex-col gap-2 mt-2 pt-3 border-t border-[#f1f5f9] text-xs">
-                    <li className="flex items-center gap-2 text-[#1a1b22]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
-                      <span>Struktur Heading Terstandarisasi</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-[#1a1b22]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
-                      <span>Kronologi Pengalaman Kerja Terstruktur</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-[#1a1b22]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
-                      <span>Format Tipografi Bebas Simbol Non-Standar</span>
-                    </li>
+                  {/* Checklist Poin ATS Dinamis */}
+                  <ul className="flex flex-col gap-2 mt-1 pt-3 border-t border-[#f1f5f9] text-xs">
+                    {latestChecklist.map((item) => (
+                      <li
+                        key={item.id}
+                        className={`flex items-center gap-2 ${
+                          item.passed ? "text-[#1a1b22]" : "text-[#5d5e61]"
+                        }`}
+                      >
+                        {item.passed ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5 text-[#94a3b8] flex-shrink-0" />
+                        )}
+                        <span className={item.passed ? "font-medium" : ""}>
+                          {item.label}
+                        </span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
@@ -350,5 +448,13 @@ export const DashboardPage = () => {
         isLoading={deleteResumeMutation.isPending}
       />
     </div>
+
+    {/* Hidden Container for Direct PDF Export from Dashboard */}
+    {printingResumeData && (
+      <div className="hidden print:block print:p-0 print:m-0 print:w-full print:bg-white">
+        <ResumeA4Preview data={printingResumeData.data} />
+      </div>
+    )}
+  </>
   );
 };
