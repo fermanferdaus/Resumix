@@ -1,5 +1,16 @@
 import { Button } from "../ui/button.jsx";
-import { Check, Loader2, AlertCircle, Printer, ZoomIn, ZoomOut, RotateCcw, Edit3 } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  AlertCircle,
+  Printer,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Edit3,
+  PanelLeftClose,
+  PanelLeft,
+} from "lucide-react";
 
 export const EditorSubheader = ({
   title,
@@ -8,11 +19,32 @@ export const EditorSubheader = ({
   zoom,
   onZoomChange,
   onPrint,
+  isSidebarOpen = true,
+  onToggleSidebar,
+  progress = 0,
 }) => {
   return (
     <div className="w-full bg-white border-b border-[#e2e8f0] px-4 sm:px-6 py-2 flex items-center justify-between gap-3 rounded-none print:hidden h-12 flex-shrink-0">
-      {/* Left: Back Link & Title */}
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      {/* Left: View Panel Toggle & Title */}
+      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+        {/* Toggle Sidebar Button */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className={`p-1.5 border rounded-none transition-colors cursor-pointer flex items-center justify-center ${
+            isSidebarOpen
+              ? "bg-[#f8fafc] border-[#e2e8f0] text-[#af101a] hover:bg-[#f1f5f9]"
+              : "bg-white border-[#e2e8f0] text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+          }`}
+          title={isSidebarOpen ? "Sembunyikan Navigasi" : "Tampilkan Navigasi"}
+        >
+          {isSidebarOpen ? (
+            <PanelLeftClose className="w-4 h-4" />
+          ) : (
+            <PanelLeft className="w-4 h-4" />
+          )}
+        </button>
+
         {/* Title Editor */}
         <div className="flex items-center gap-1.5 flex-1 max-w-sm min-w-0">
           <Edit3 className="w-3.5 h-3.5 text-[#5d5e61] flex-shrink-0" />
@@ -27,10 +59,26 @@ export const EditorSubheader = ({
         </div>
       </div>
 
-      {/* Right: Zoom & Print PDF Controls */}
+      {/* Right: Kesiapan ATS, Zoom & Print PDF Controls */}
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        {/* Kesiapan ATS Progress Box */}
+        <div className="flex items-center gap-2 px-2.5 py-1 bg-[#f8fafc] border border-[#e2e8f0] rounded-none">
+          <span className="text-[10px] sm:text-[11px] font-mono-code font-bold uppercase text-[#0f172a] whitespace-nowrap">
+            Progres
+          </span>
+          <div className="w-14 sm:w-20 bg-[#e2e8f0] h-1.5 rounded-none overflow-hidden">
+            <div
+              className="bg-[#af101a] h-full transition-all duration-300 rounded-none"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-[11px] sm:text-xs font-mono-code font-bold text-[#af101a]">
+            {progress}%
+          </span>
+        </div>
+
         {/* Autosave Status */}
-        <div className="hidden md:flex items-center gap-1.5 text-[11px] font-mono-code flex-shrink-0">
+        <div className="hidden xl:flex items-center gap-1.5 text-[11px] font-mono-code flex-shrink-0">
           {saveStatus === "saving" && (
             <span className="text-[#5d5e61] flex items-center gap-1">
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#af101a]" />

@@ -4,13 +4,14 @@ import { Button } from "../ui/button.jsx";
 import { MonthYearPicker } from "../ui/MonthYearPicker.jsx";
 import { YearPicker } from "../ui/YearPicker.jsx";
 import { SECTIONS, DEFAULT_SECTION_TITLES } from "../../constants/editorSections.js";
-import { Plus, Trash2, ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { Plus, Trash2, ArrowLeft, ArrowRight, Sparkles, X } from "lucide-react";
 
 export const EditorSectionForm = ({
   activeSection,
   onSelectSection,
   data,
   onChange,
+  onClose,
 }) => {
   const currentSectionIndex = SECTIONS.findIndex((s) => s.id === activeSection);
   const currentSection = SECTIONS[currentSectionIndex] || SECTIONS[0];
@@ -342,6 +343,17 @@ export const EditorSectionForm = ({
             {currentSection.label}
           </h2>
         </div>
+
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f1f5f9] border border-transparent hover:border-[#e2e8f0] transition-colors cursor-pointer rounded-none"
+            title="Sembunyikan Form Editor"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Section Title Editor for ATS Output */}

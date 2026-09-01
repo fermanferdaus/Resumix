@@ -45,6 +45,8 @@ export const EditorPage = () => {
   const [debouncedPreviewData, setDebouncedPreviewData] = useState(formData);
   const [saveStatus, setSaveStatus] = useState("saved"); // "saved" | "saving" | "error"
   const [zoom, setZoom] = useState(100);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(true);
 
   const previewRef = useRef(null);
   const isInitialLoadedRef = useRef(false);
@@ -272,27 +274,42 @@ export const EditorPage = () => {
           zoom={zoom}
           onZoomChange={setZoom}
           onPrint={handlePrint}
+          isSidebarOpen={isSidebarOpen}
+          onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+          progress={progress}
         />
 
         {/* Main 3-Column Workspace */}
         <main className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden print:overflow-visible print:block print:p-0 print:m-0">
-          {/* 1. Left Sidebar: Section Navigation */}
-          <EditorSidebar
-            activeSection={activeSection}
-            onSelectSection={setActiveSection}
-            formData={formData}
-            progress={progress}
-          />
-
-          {/* 2. Center Column: Focused Section Form Editor (Scrollable) */}
-          <div className="w-full lg:w-96 xl:w-[480px] bg-[#fbf8ff] border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
-            <EditorSectionForm
+          {/* 1. Left Sidebar: Section Navigation (Collapsible) */}
+          {isSidebarOpen && (
+            <EditorSidebar
               activeSection={activeSection}
-              onSelectSection={setActiveSection}
-              data={formData}
-              onChange={handleFormChange}
+              onSelectSection={(secId) => {
+                if (activeSection === secId && isFormOpen) {
+                  setIsFormOpen(false);
+                } else {
+                  setActiveSection(secId);
+                  setIsFormOpen(true);
+                }
+              }}
+              formData={formData}
+              isFormOpen={isFormOpen}
             />
-          </div>
+          )}
+
+          {/* 2. Center Column: Focused Section Form Editor (Collapsible & Scrollable) */}
+          {isFormOpen && (
+            <div className="w-full lg:w-96 xl:w-[480px] bg-[#fbf8ff] border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
+              <EditorSectionForm
+                activeSection={activeSection}
+                onSelectSection={setActiveSection}
+                data={formData}
+                onChange={handleFormChange}
+                onClose={() => setIsFormOpen(false)}
+              />
+            </div>
+          )}
 
           {/* 3. Right Column: Live A4 Preview (Scrollable) */}
           <div className="flex-1 bg-[#525659]/10 p-4 sm:p-8 overflow-y-auto h-full flex justify-center items-start print:p-0 print:m-0 print:w-auto print:h-auto print:bg-white print:overflow-visible print:block">
