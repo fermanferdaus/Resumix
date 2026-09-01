@@ -76,6 +76,77 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
     });
   });
 
+  describe("Pengurutan Bagian Resume (Drag and Drop Reordering)", () => {
+    const DEFAULT_BODY_SECTION_ORDER = [
+      "summary",
+      "educations",
+      "experiences",
+      "organizations",
+      "certifications",
+      "skills",
+    ];
+
+    const normalizeOrder = (savedOrder) => {
+      if (!Array.isArray(savedOrder) || savedOrder.length === 0) {
+        return [...DEFAULT_BODY_SECTION_ORDER];
+      }
+      const validSaved = savedOrder.filter((id) =>
+        DEFAULT_BODY_SECTION_ORDER.includes(id)
+      );
+      DEFAULT_BODY_SECTION_ORDER.forEach((id) => {
+        if (!validSaved.includes(id)) {
+          validSaved.push(id);
+        }
+      });
+      return validSaved;
+    };
+
+    it("harus mengembalikan urutan default jika sectionOrder kosong atau null", () => {
+      assert.deepStrictEqual(normalizeOrder(null), DEFAULT_BODY_SECTION_ORDER);
+      assert.deepStrictEqual(normalizeOrder([]), DEFAULT_BODY_SECTION_ORDER);
+    });
+
+    it("harus mendukung perpindahan posisi pengalaman kerja di atas pendidikan", () => {
+      const customOrder = [
+        "experiences",
+        "educations",
+        "skills",
+        "summary",
+        "organizations",
+        "certifications",
+      ];
+      const result = normalizeOrder(customOrder);
+      assert.strictEqual(result[0], "experiences");
+      assert.strictEqual(result[1], "educations");
+      assert.strictEqual(result.length, 6);
+    });
+
+    it("harus menyisipkan section yang hilang jika data tersimpan parsial", () => {
+      const partialOrder = ["experiences", "educations"];
+      const result = normalizeOrder(partialOrder);
+      assert.strictEqual(result[0], "experiences");
+      assert.strictEqual(result[1], "educations");
+      assert.strictEqual(result.length, 6);
+      assert.strictEqual(result.includes("skills"), true);
+      assert.strictEqual(result.includes("summary"), true);
+    });
+
+    it("harus mendukung perpindahan urutan array item (misal pengalaman 2 ke posisi 1)", () => {
+      const experiences = [
+        { id: "exp1", role: "Junior Dev" },
+        { id: "exp2", role: "Mid Dev" },
+        { id: "exp3", role: "Senior Dev" },
+      ];
+      const reordered = [...experiences];
+      const [moved] = reordered.splice(2, 1);
+      reordered.splice(0, 0, moved);
+
+      assert.strictEqual(reordered[0].id, "exp3");
+      assert.strictEqual(reordered[1].id, "exp1");
+      assert.strictEqual(reordered[2].id, "exp2");
+    });
+  });
+
   describe("Pemeriksaan Batas Kuota 5 CV Akun", () => {
     it("harus menandai kuota penuh ketika jumlah resume mencapai 5", () => {
       const fiveResumes = [

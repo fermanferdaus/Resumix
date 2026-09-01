@@ -12,6 +12,7 @@ import { EditorSidebar } from "../../components/editor/EditorSidebar.jsx";
 import { EditorSectionForm } from "../../components/editor/EditorSectionForm.jsx";
 import { EditorSkeleton } from "../../components/editor/EditorSkeleton.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
+import { normalizeSectionOrder } from "../../constants/editorSections.js";
 import { calculateAtsProgress } from "../../lib/resumeScore.js";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/button.jsx";
@@ -41,6 +42,8 @@ export const EditorPage = () => {
     organizations: [],
     certifications: [],
     skills: { hardSkills: [], softSkills: [] },
+    sectionOrder: normalizeSectionOrder([]),
+    sectionTitles: {},
   });
 
   // Debounced preview state
@@ -111,6 +114,8 @@ export const EditorPage = () => {
             ? rawData.skills.softSkills
             : [],
         },
+        sectionOrder: normalizeSectionOrder(rawData.sectionOrder),
+        sectionTitles: rawData.sectionTitles || {},
       };
 
       setFormData(initialData);
@@ -179,6 +184,21 @@ export const EditorPage = () => {
   const handleFormChange = (newFormData) => {
     setFormData(newFormData);
     triggerPreviewUpdate(newFormData);
+    triggerAutoSave(
+      title,
+      newFormData.header?.targetRole || targetRole,
+      newFormData
+    );
+  };
+
+  // Section Reorder Handler (Drag & Drop)
+  const handleReorderSections = (newSectionOrder) => {
+    const newFormData = {
+      ...formData,
+      sectionOrder: newSectionOrder,
+    };
+    setFormData(newFormData);
+    setDebouncedPreviewData(newFormData);
     triggerAutoSave(
       title,
       newFormData.header?.targetRole || targetRole,
@@ -283,6 +303,7 @@ export const EditorPage = () => {
               }}
               formData={formData}
               isFormOpen={isFormOpen}
+              onReorderSections={handleReorderSections}
             />
           )}
 
