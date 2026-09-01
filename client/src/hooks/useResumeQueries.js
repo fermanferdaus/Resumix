@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { resumeApi } from "../api/resumeApi.js";
 
 export const RESUME_QUERY_KEY = ["resumes"];
@@ -7,6 +7,7 @@ export const useResumesQuery = (params = {}) => {
   return useQuery({
     queryKey: [...RESUME_QUERY_KEY, params],
     queryFn: () => resumeApi.getResumes(params),
+    placeholderData: keepPreviousData,
     staleTime: 0,
     refetchOnMount: "always",
   });

@@ -7,7 +7,7 @@ export const Footer = ({ className = "" }) => {
         {/* Brand & Version */}
         <div className="flex items-center gap-2 font-semibold text-[#1a1b22]">
           <img src="/logo.png" alt="Resumix" className="h-5 w-auto object-contain rounded-none" />
-          <span>Resumix ATS Platform</span>
+          <span>CV ATS Builder</span>
         </div>
 
         {/* Copyright */}

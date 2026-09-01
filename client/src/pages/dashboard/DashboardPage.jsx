@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar.jsx";
 import { Footer } from "../../components/layout/Footer.jsx";
@@ -32,14 +32,54 @@ import {
   Lightbulb,
   FileText,
   Clock,
+  Loader2,
+  X,
 } from "lucide-react";
+
+const formatActivityTime = (dateString) => {
+  if (!dateString) return "Baru saja";
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return "Baru saja";
+    if (diffMins < 60) return `${diffMins} menit lalu`;
+    if (diffHours < 24) return `${diffHours} jam lalu`;
+    if (diffDays === 1) return "Kemarin";
+    if (diffDays < 7) return `${diffDays} hari lalu`;
+
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return "Baru saja";
+  }
+};
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { user, setUser } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [notice, setNotice] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Debounce search input (350ms delay)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -49,8 +89,12 @@ export const DashboardPage = () => {
   const [printingResumeData, setPrintingResumeData] = useState(null);
 
   // Queries & Mutations
-  const { data: resumesData, isLoading: isResumesLoading } = useResumesQuery({
-    search: searchTerm || undefined,
+  const {
+    data: resumesData,
+    isLoading: isResumesLoading,
+    isFetching: isResumesFetching,
+  } = useResumesQuery({
+    search: debouncedSearch || undefined,
   });
   const createResumeMutation = useCreateResumeMutation();
   const updateResumeMutation = useUpdateResumeMutation();
@@ -72,7 +116,7 @@ export const DashboardPage = () => {
   }, [setUser]);
 
   const isInitialLoading = isResumesLoading && !resumesData;
-  const resumes = resumesData?.data || [];
+  const resumes = useMemo(() => resumesData?.data || [], [resumesData]);
   const latestResume = resumes[0] || null;
   const latestResumeScore = latestResume
     ? calculateAtsProgress(latestResume.data)
@@ -96,6 +140,43 @@ export const DashboardPage = () => {
           passed: false,
         },
       ];
+
+  // Membangun riwayat aktivitas nyata yang dilakukan akun & resume
+  const activities = useMemo(() => {
+    const list = [];
+
+    // 1. Aktivitas resume (hingga 2 resume terbaru)
+    if (resumes && resumes.length > 0) {
+      resumes.slice(0, 2).forEach((r) => {
+        const isNew =
+          Math.abs(new Date(r.updatedAt) - new Date(r.createdAt)) < 60000;
+        list.push({
+          id: `resume-${r.id}`,
+          icon: FileText,
+          iconBg: "bg-[#fef2f2] border-[#fecaca] text-[#af101a]",
+          title: isNew ? `Membuat "${r.title}"` : `Memperbarui "${r.title}"`,
+          time: formatActivityTime(r.updatedAt),
+          detail: r.targetRole ? `<${r.targetRole} />` : null,
+        });
+      });
+    }
+
+    // 2. Aktivitas akun terverifikasi / terdaftar
+    if (user) {
+      list.push({
+        id: "account-verified",
+        icon: CheckCircle2,
+        iconBg: "bg-[#f0fdf4] border-[#bbf7d0] text-[#15803d]",
+        title: user.isVerified
+          ? "Autentikasi Akun Terverifikasi"
+          : "Akun Terdaftar",
+        time: formatActivityTime(user.createdAt),
+        detail: user.email,
+      });
+    }
+
+    return list;
+  }, [resumes, user]);
 
   // Handlers
   const handleCreateResume = async (formData) => {
@@ -217,7 +298,7 @@ export const DashboardPage = () => {
                     <span className="text-[#af101a]">{user?.fullName || "Pengguna"}</span>
                   </h1>
                   <p className="text-sm text-[#5d5e61] mt-1 leading-relaxed">
-                    Kelola profil resume profesional Anda dan persiapkan diri untuk meraih peluang karir impian.
+                    Kelola resume profesional Anda dan persiapkan diri untuk meraih peluang karir impian.
                   </p>
                 </header>
 
@@ -247,54 +328,86 @@ export const DashboardPage = () => {
                     </div>
 
                     {/* Search Bar */}
-                    <div className="w-full sm:w-64 relative">
-                      <Search className="w-4 h-4 text-[#5d5e61] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <div className="w-full sm:w-72 relative">
+                      <Search className="w-4 h-4 text-[#5d5e61] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       <Input
                         type="text"
-                        placeholder="Cari resume..."
+                        placeholder="Cari nama atau posisi resume..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 py-1.5 text-xs rounded-none"
+                        className="pl-9 pr-9 py-1.5 text-xs rounded-none"
                       />
+                      {/* Indikator status pencarian / tombol hapus */}
+                      {(isResumesFetching || searchTerm !== debouncedSearch) ? (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[#af101a]" />
+                        </div>
+                      ) : searchTerm ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSearchTerm("");
+                            setDebouncedSearch("");
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5d5e61] hover:text-[#0f172a] p-0.5 cursor-pointer transition-colors"
+                          title="Hapus kata kunci pencarian"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      ) : null}
                     </div>
-                  </div>
-
-                  {/* Grid Resume Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {/* 1. Tombol Card 'Buat CV Baru' */}
-                    <div
-                      onClick={() => setIsCreateOpen(true)}
-                      className="bg-white border border-dashed border-[#e2e8f0] hover:border-[#af101a] hover:bg-[#fef2f2]/20 transition-colors flex flex-col items-center justify-center p-6 min-h-[220px] cursor-pointer group rounded-none"
-                    >
-                      <div className="w-12 h-12 rounded-none border border-[#e2e8f0] group-hover:border-[#af101a] group-hover:bg-white bg-[#f8fafc] flex items-center justify-center mb-3 text-[#5d5e61] group-hover:text-[#af101a] transition-colors">
-                        <Plus className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-mono-code uppercase font-semibold text-[#1a1b22] group-hover:text-[#af101a] tracking-wider transition-colors">
-                        + Buat CV Baru
-                      </span>
-                    </div>
-
-                    {/* 2. Daftar Kartu Resume */}
-                    {resumes.map((resume) => (
-                      <ResumeCard
-                        key={resume.id}
-                        resume={resume}
-                        onEdit={handleEditResume}
-                        onRename={(r) => setRenameTarget(r)}
-                        onDuplicate={handleDuplicateResume}
-                        onDelete={(r) => setDeleteTarget(r)}
-                        onDownload={handleDownloadResume}
-                        isDownloading={downloadingId === resume.id}
-                      />
-                    ))}
                   </div>
 
                   {/* Empty State jika pencarian tidak menemukan hasil */}
-                  {resumes.length === 0 && searchTerm && (
-                    <div className="bg-white border border-[#e2e8f0] p-8 text-center rounded-none">
+                  {resumes.length === 0 && debouncedSearch ? (
+                    <div className="bg-white border border-[#e2e8f0] p-10 text-center rounded-none space-y-3">
                       <p className="text-xs text-[#5d5e61]">
-                        Tidak ditemukan resume dengan kata kunci "<strong>{searchTerm}</strong>".
+                        Tidak ditemukan resume dengan kata kunci "<strong>{debouncedSearch}</strong>".
                       </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchTerm("");
+                          setDebouncedSearch("");
+                        }}
+                        className="text-xs text-[#af101a] font-semibold hover:underline cursor-pointer"
+                      >
+                        Reset Kata Kunci Pencarian
+                      </button>
+                    </div>
+                  ) : (
+                    /* Grid Resume Cards */
+                    <div
+                      className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 transition-opacity duration-200 ${
+                        isResumesFetching ? "opacity-60" : "opacity-100"
+                      }`}
+                    >
+                      {/* 1. Tombol Card 'Buat CV Baru' */}
+                      <div
+                        onClick={() => setIsCreateOpen(true)}
+                        className="bg-white border border-dashed border-[#e2e8f0] hover:border-[#af101a] hover:bg-[#fef2f2]/20 transition-colors flex flex-col items-center justify-center p-6 min-h-[220px] cursor-pointer group rounded-none"
+                      >
+                        <div className="w-12 h-12 rounded-none border border-[#e2e8f0] group-hover:border-[#af101a] group-hover:bg-white bg-[#f8fafc] flex items-center justify-center mb-3 text-[#5d5e61] group-hover:text-[#af101a] transition-colors">
+                          <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-mono-code uppercase font-semibold text-[#1a1b22] group-hover:text-[#af101a] tracking-wider transition-colors">
+                          + Buat CV Baru
+                        </span>
+                      </div>
+
+                      {/* 2. Daftar Kartu Resume */}
+                      {resumes.map((resume) => (
+                        <ResumeCard
+                          key={resume.id}
+                          resume={resume}
+                          onEdit={handleEditResume}
+                          onRename={(r) => setRenameTarget(r)}
+                          onDuplicate={handleDuplicateResume}
+                          onDelete={(r) => setDeleteTarget(r)}
+                          onDownload={handleDownloadResume}
+                          isDownloading={downloadingId === resume.id}
+                        />
+                      ))}
                     </div>
                   )}
                 </section>
@@ -364,42 +477,48 @@ export const DashboardPage = () => {
                   </ul>
                 </div>
 
-                {/* 2. Recent Activity Widget */}
+                {/* 2. Recent Activity Widget (Aktivitas Nyata Akun) */}
                 <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none">
                   <h3 className="text-sm font-bold text-[#0f172a] border-b border-[#e2e8f0] pb-2 font-mono-code uppercase">
                     Aktivitas Terbaru
                   </h3>
 
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-6 h-6 bg-[#fef2f2] border border-[#fecaca] text-[#af101a] flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none">
-                        <FileText className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-[#1a1b22]">
-                          Ruang Kerja Resume Aktif
-                        </p>
-                        <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3" />
-                          <span>Hari ini</span>
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-6 h-6 bg-[#f0fdf4] border border-[#bbf7d0] text-[#15803d] flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-[#1a1b22]">
-                          Autentikasi Akun Terverifikasi
-                        </p>
-                        <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3" />
-                          <span>{user?.email || "Email akun"}</span>
-                        </p>
-                      </div>
-                    </div>
+                    {activities.map((act) => {
+                      const IconComponent = act.icon;
+                      return (
+                        <div key={act.id} className="flex items-start gap-2.5">
+                          <div
+                            className={`w-6 h-6 border flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none ${act.iconBg}`}
+                          >
+                            <IconComponent className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="text-xs font-semibold text-[#1a1b22] truncate"
+                              title={act.title}
+                            >
+                              {act.title}
+                            </p>
+                            <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              <span>{act.time}</span>
+                              {act.detail && (
+                                <>
+                                  <span>•</span>
+                                  <span
+                                    className="truncate max-w-[140px]"
+                                    title={act.detail}
+                                  >
+                                    {act.detail}
+                                  </span>
+                                </>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
