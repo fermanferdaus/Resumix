@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
+import { Footer } from "./Footer.jsx";
 
 export const AuthLayout = ({ title, subtitle, children, footerLink }) => {
   return (
-    <div className="min-h-screen bg-[#fbf8ff] text-[#1a1b22] flex flex-col justify-between p-4 sm:p-6 rounded-none">
+    <div className="min-h-screen bg-[#fbf8ff] text-[#1a1b22] flex flex-col justify-between rounded-none">
       {/* Top spacing */}
       <div className="h-4 sm:h-8" />
 
       {/* Center Container */}
-      <main className="w-full max-w-md mx-auto flex flex-col items-center">
+      <main className="w-full max-w-md mx-auto flex flex-col items-center px-4 sm:px-6">
         {/* Branding Header */}
         <div className="text-center mb-6 w-full flex flex-col items-center">
           <Link to="/" className="inline-block mb-3">
@@ -39,19 +40,8 @@ export const AuthLayout = ({ title, subtitle, children, footerLink }) => {
         {footerLink && <div className="mt-6 text-center text-sm text-[#5d5e61]">{footerLink}</div>}
       </main>
 
-      {/* Footer */}
-      <footer className="w-full max-w-screen-xl mx-auto py-6 border-t border-[#e2e8f0] mt-12 flex flex-col sm:flex-row justify-between items-center text-xs text-[#5d5e61] gap-4 rounded-none">
-        <div className="font-semibold text-[#1a1b22]">Resumix ATS Platform</div>
-        <div>© 2026 Resumix. All rights reserved.</div>
-        <div className="flex gap-4">
-          <a href="#" className="hover:underline hover:text-[#af101a] transition-colors">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:underline hover:text-[#af101a] transition-colors">
-            Terms & Conditions
-          </a>
-        </div>
-      </footer>
+      {/* Reusable Footer Component */}
+      <Footer className="bg-transparent border-t border-[#e2e8f0]" />
     </div>
   );
 };

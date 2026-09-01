@@ -1,14 +1,50 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "../../components/layout/Navbar.jsx";
+import { Footer } from "../../components/layout/Footer.jsx";
 import { useAuthStore } from "../../store/authStore.js";
 import { authApi } from "../../api/authApi.js";
-import { Button } from "../../components/ui/button.jsx";
+import { Input } from "../../components/ui/input.jsx";
 import { Alert } from "../../components/ui/alert.jsx";
-import { Plus, FileText, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import { ResumeCard } from "../../components/dashboard/ResumeCard.jsx";
+import { DashboardSkeleton } from "../../components/dashboard/DashboardSkeleton.jsx";
+import { CreateResumeModal } from "../../components/dashboard/CreateResumeModal.jsx";
+import { RenameResumeModal } from "../../components/dashboard/RenameResumeModal.jsx";
+import { DeleteConfirmModal } from "../../components/dashboard/DeleteConfirmModal.jsx";
+import {
+  useResumesQuery,
+  useCreateResumeMutation,
+  useUpdateResumeMutation,
+  useDuplicateResumeMutation,
+  useDeleteResumeMutation,
+} from "../../hooks/useResumeQueries.js";
+import {
+  Plus,
+  Search,
+  CheckCircle2,
+  Lightbulb,
+  FileText,
+  Clock,
+} from "lucide-react";
 
 export const DashboardPage = () => {
   const { user, setUser } = useAuthStore();
+  const [searchTerm, setSearchTerm] = useState("");
   const [notice, setNotice] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Modals state
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [renameTarget, setRenameTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  // Queries & Mutations
+  const { data: resumesData, isLoading: isResumesLoading } = useResumesQuery({
+    search: searchTerm || undefined,
+  });
+  const createResumeMutation = useCreateResumeMutation();
+  const updateResumeMutation = useUpdateResumeMutation();
+  const duplicateResumeMutation = useDuplicateResumeMutation();
+  const deleteResumeMutation = useDeleteResumeMutation();
 
   useEffect(() => {
     // Ambil profil user terbaru dari backend
@@ -24,154 +60,293 @@ export const DashboardPage = () => {
       });
   }, [setUser]);
 
+  const isInitialLoading = isResumesLoading && !resumesData;
+  const resumes = resumesData?.data || [];
+
+  // Handlers
+  const handleCreateResume = async (formData) => {
+    setErrorMessage("");
+    try {
+      await createResumeMutation.mutateAsync(formData);
+      setIsCreateOpen(false);
+      setNotice(`Resume "${formData.title}" berhasil dibuat!`);
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Gagal membuat resume baru. Silakan coba lagi."
+      );
+    }
+  };
+
+  const handleRenameResume = async ({ id, title, targetRole }) => {
+    setErrorMessage("");
+    try {
+      await updateResumeMutation.mutateAsync({
+        id,
+        data: { title, targetRole },
+      });
+      setRenameTarget(null);
+      setNotice("Informasi resume berhasil diperbarui!");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Gagal memperbarui judul resume."
+      );
+    }
+  };
+
+  const handleDuplicateResume = async (id) => {
+    setErrorMessage("");
+    try {
+      await duplicateResumeMutation.mutateAsync(id);
+      setNotice("Resume berhasil diduplikasi!");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Gagal menduplikasi resume."
+      );
+    }
+  };
+
+  const handleDeleteResume = async (id) => {
+    setErrorMessage("");
+    try {
+      await deleteResumeMutation.mutateAsync(id);
+      setDeleteTarget(null);
+      setNotice("Resume telah berhasil dihapus.");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Gagal menghapus resume."
+      );
+    }
+  };
+
+  const handleEditResume = (resume) => {
+    setNotice(
+      `Editor Pembuat CV untuk "${resume.title}" akan segera aktif di tahap berikutnya!`
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none">
       <div>
         <Navbar />
 
-        <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">
-          {/* Notice Banner */}
-          {notice && (
-            <div className="mb-6">
-              <Alert variant="info" onClose={() => setNotice("")}>
-                <span>{notice}</span>
-              </Alert>
+        <main className="w-full mx-auto px-4 sm:px-6 py-8">
+          {/* 1. Full Dashboard Skeleton saat initial load */}
+          {isInitialLoading ? (
+            <DashboardSkeleton />
+          ) : (
+            <div className="w-full flex flex-col lg:flex-row gap-8">
+              {/* Left/Main Panel (Flex-grow) */}
+              <div className="flex-1 flex flex-col gap-6">
+                {/* Header Selamat Datang */}
+                <header className="bg-white border border-[#e2e8f0] p-6 sm:p-8 rounded-none">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-[#0f172a] tracking-tight">
+                    Selamat datang kembali,{" "}
+                    <span className="text-[#af101a]">{user?.fullName || "Pengguna"}</span>
+                  </h1>
+                  <p className="text-sm text-[#5d5e61] mt-1 leading-relaxed">
+                    Kelola profil resume profesional Anda dan persiapkan diri untuk meraih peluang karir impian.
+                  </p>
+                </header>
+
+                {/* Alert Notifikasi Global */}
+                {notice && (
+                  <Alert variant="info" onClose={() => setNotice("")}>
+                    <span>{notice}</span>
+                  </Alert>
+                )}
+
+                {errorMessage && (
+                  <Alert variant="error" onClose={() => setErrorMessage("")}>
+                    <span>{errorMessage}</span>
+                  </Alert>
+                )}
+
+                {/* Section Daftar Resume */}
+                <section className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-bold text-[#0f172a] tracking-tight">
+                        Daftar Resume Saya
+                      </h2>
+                      <span className="text-xs font-mono-code text-[#5d5e61] bg-[#f8fafc] border border-[#e2e8f0] px-2 py-0.5 rounded-none">
+                        [{resumes.length} CV]
+                      </span>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="w-full sm:w-64 relative">
+                      <Search className="w-4 h-4 text-[#5d5e61] absolute left-3 top-1/2 -translate-y-1/2" />
+                      <Input
+                        type="text"
+                        placeholder="Cari resume..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 py-1.5 text-xs rounded-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Grid Resume Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {/* 1. Tombol Card 'Buat CV Baru' */}
+                    <div
+                      onClick={() => setIsCreateOpen(true)}
+                      className="bg-white border border-dashed border-[#e2e8f0] hover:border-[#af101a] hover:bg-[#fef2f2]/20 transition-colors flex flex-col items-center justify-center p-6 min-h-[220px] cursor-pointer group rounded-none"
+                    >
+                      <div className="w-12 h-12 rounded-none border border-[#e2e8f0] group-hover:border-[#af101a] group-hover:bg-white bg-[#f8fafc] flex items-center justify-center mb-3 text-[#5d5e61] group-hover:text-[#af101a] transition-colors">
+                        <Plus className="w-6 h-6" />
+                      </div>
+                      <span className="text-xs font-mono-code uppercase font-semibold text-[#1a1b22] group-hover:text-[#af101a] tracking-wider transition-colors">
+                        + Buat CV Baru
+                      </span>
+                    </div>
+
+                    {/* 2. Daftar Kartu Resume */}
+                    {resumes.map((resume) => (
+                      <ResumeCard
+                        key={resume.id}
+                        resume={resume}
+                        onEdit={handleEditResume}
+                        onRename={(r) => setRenameTarget(r)}
+                        onDuplicate={handleDuplicateResume}
+                        onDelete={(r) => setDeleteTarget(r)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Empty State jika pencarian tidak menemukan hasil */}
+                  {resumes.length === 0 && searchTerm && (
+                    <div className="bg-white border border-[#e2e8f0] p-8 text-center rounded-none">
+                      <p className="text-xs text-[#5d5e61]">
+                        Tidak ditemukan resume dengan kata kunci "<strong>{searchTerm}</strong>".
+                      </p>
+                    </div>
+                  )}
+                </section>
+              </div>
+
+              {/* Right Panel / Sidebar (Inspired by Stitch) */}
+              <aside className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-6">
+                {/* 1. Profile Strength / ATS Score Widget */}
+                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none">
+                  <div className="flex justify-between items-end">
+                    <h3 className="text-sm font-bold text-[#0f172a] uppercase font-mono-code">
+                      Kekuatan Resume ATS
+                    </h3>
+                    <span className="text-xs font-mono-code font-bold text-[#af101a]">
+                      100%
+                    </span>
+                  </div>
+
+                  {/* Flat Progress Bar */}
+                  <div className="w-full bg-[#f1f5f9] h-2 rounded-none overflow-hidden">
+                    <div className="bg-[#af101a] h-full w-full rounded-none" />
+                  </div>
+
+                  <p className="text-xs text-[#5d5e61] mt-1 leading-relaxed">
+                    Struktur data resume Anda telah memenuhi kaidah algoritma parser ATS.
+                  </p>
+
+                  {/* Checklist Poin ATS */}
+                  <ul className="flex flex-col gap-2 mt-2 pt-3 border-t border-[#f1f5f9] text-xs">
+                    <li className="flex items-center gap-2 text-[#1a1b22]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
+                      <span>Struktur Heading Terstandarisasi</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-[#1a1b22]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
+                      <span>Kronologi Pengalaman Kerja Terstruktur</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-[#1a1b22]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#15803d] flex-shrink-0" />
+                      <span>Format Tipografi Bebas Simbol Non-Standar</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* 2. Recent Activity Widget */}
+                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none">
+                  <h3 className="text-sm font-bold text-[#0f172a] border-b border-[#e2e8f0] pb-2 font-mono-code uppercase">
+                    Aktivitas Terbaru
+                  </h3>
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 bg-[#fef2f2] border border-[#fecaca] text-[#af101a] flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none">
+                        <FileText className="w-3.5 h-3.5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-[#1a1b22]">
+                          Ruang Kerja Resume Aktif
+                        </p>
+                        <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
+                          <Clock className="w-3 h-3" />
+                          <span>Hari ini</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 bg-[#f0fdf4] border border-[#bbf7d0] text-[#15803d] flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-[#1a1b22]">
+                          Autentikasi Akun Terverifikasi
+                        </p>
+                        <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
+                          <Clock className="w-3 h-3" />
+                          <span>{user?.email || "Email akun"}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Pro Tip Card (Soft Flat Red Tint) */}
+                <div className="bg-[#fef2f2] border border-[#fecaca] p-5 flex flex-col gap-2 rounded-none">
+                  <div className="flex items-center gap-2 text-[#af101a]">
+                    <Lightbulb className="w-4 h-4" />
+                    <span className="text-xs font-mono-code uppercase font-bold tracking-wider">
+                      Tips ATS Pro
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#1a1b22] leading-relaxed">
+                    Sesuaikan kata kunci keahlian pada resume Anda dengan deskripsi lowongan kerja untuk meningkatkan skor seleksi awal hingga 40%.
+                  </p>
+                </div>
+              </aside>
             </div>
           )}
-
-          {/* Hero Banner (Soft Flat 2.0 / Clean Minimalist) */}
-          <div className="bg-white border border-[#e2e8f0] p-6 sm:p-10 mb-8 rounded-none">
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#fef2f2] border border-[#fecaca] text-xs font-mono-code uppercase font-semibold text-[#af101a] mb-4 rounded-none">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>&lt;Workspace Aktif /&gt;</span>
-                </div>
-                <h1 className="text-2xl sm:text-4xl font-bold text-[#0f172a] tracking-tight">
-                  Selamat datang, <span className="text-[#af101a]">{user?.fullName || "Pengguna"}</span>!
-                </h1>
-                <p className="text-sm text-[#5d5e61] mt-2 max-w-xl leading-relaxed">
-                  Bangun resume berstandar Applicant Tracking System (ATS) profesional dengan struktur data presisi dan ekspor PDF siap kerja.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 self-start md:self-auto">
-                <Button
-                  size="lg"
-                  className="flex items-center gap-2 rounded-none"
-                  onClick={() => setNotice("Editor Pembuat CV akan segera aktif di tahap berikutnya!")}
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Buat CV Baru</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-none"
-                  onClick={() => setNotice("Template ATS terstruktur siap digunakan!")}
-                >
-                  Lihat Template
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Minimalist Stats Counters Row (Sesuai Referensi Clean Soft Flat) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white border border-[#e2e8f0] p-5 text-center rounded-none">
-              <div className="text-2xl sm:text-3xl font-bold text-[#af101a] font-mono-code mb-1">0</div>
-              <div className="text-xs font-semibold text-[#1a1b22] uppercase tracking-wider">Total Resume</div>
-              <div className="text-[11px] text-[#5d5e61] mt-1">Draf Tersimpan</div>
-            </div>
-
-            <div className="bg-white border border-[#e2e8f0] p-5 text-center rounded-none">
-              <div className="text-2xl sm:text-3xl font-bold text-[#1a1b22] font-mono-code mb-1">100%</div>
-              <div className="text-xs font-semibold text-[#1a1b22] uppercase tracking-wider">ATS Score Ready</div>
-              <div className="text-[11px] text-[#5d5e61] mt-1">Standar Format Baku</div>
-            </div>
-
-            <div className="bg-white border border-[#e2e8f0] p-5 text-center rounded-none">
-              <div className="text-2xl sm:text-3xl font-bold text-[#1a1b22] font-mono-code mb-1">1</div>
-              <div className="text-xs font-semibold text-[#1a1b22] uppercase tracking-wider">Template Aktif</div>
-              <div className="text-[11px] text-[#5d5e61] mt-1">Single Clean Layout</div>
-            </div>
-
-            <div className="bg-white border border-[#e2e8f0] p-5 text-center rounded-none">
-              <div className="text-2xl sm:text-3xl font-bold text-[#15803d] font-mono-code mb-1">24/7</div>
-              <div className="text-xs font-semibold text-[#1a1b22] uppercase tracking-wider">Cloud Storage</div>
-              <div className="text-[11px] text-[#5d5e61] mt-1">Akses Kapan Saja</div>
-            </div>
-          </div>
-
-          {/* Kartu Status & Info Akun */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white border border-[#e2e8f0] p-5 rounded-none">
-              <div className="text-xs font-mono-code uppercase text-[#5d5e61] mb-1">Email Terdaftar</div>
-              <div className="text-sm font-semibold text-[#1a1b22] truncate">{user?.email}</div>
-              <div className="mt-3 flex items-center gap-1.5 text-xs text-[#15803d]">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Akun Terverifikasi via OTP</span>
-              </div>
-            </div>
-
-            <div className="bg-white border border-[#e2e8f0] p-5 rounded-none">
-              <div className="text-xs font-mono-code uppercase text-[#5d5e61] mb-1">ID Publik (UUIDv7)</div>
-              <div className="text-xs font-mono-code text-[#1a1b22] truncate">{user?.id || "N/A"}</div>
-              <div className="mt-3 flex items-center gap-1.5 text-xs text-[#1a1b22]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#af101a]" />
-                <span>Keamanan Arsitektur Dual-ID</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Daftar CV User */}
-          <div className="bg-white border border-[#e2e8f0] p-6 sm:p-8 rounded-none">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold text-[#0f172a] flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#af101a]" />
-                <span>Daftar Resume Anda</span>
-              </h2>
-              <div className="text-xs font-mono-code text-[#5d5e61]">
-                [ 0 / 1 Dokumen ]
-              </div>
-            </div>
-
-            <div className="border border-dashed border-[#e2e8f0] p-12 text-center bg-[#fafafa] rounded-none">
-              <div className="w-12 h-12 rounded-none bg-[#fef2f2] border border-[#fecaca] flex items-center justify-center mx-auto mb-3 text-[#af101a]">
-                <FileText className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-semibold text-[#1a1b22] mb-1">Belum ada resume yang dibuat</h3>
-              <p className="text-xs text-[#5d5e61] max-w-sm mx-auto mb-5 leading-relaxed">
-                Mulai buat CV standar ATS pertama Anda menggunakan formulir 2-panel terstruktur kami.
-              </p>
-              <Button
-                variant="primary"
-                size="sm"
-                className="rounded-none"
-                onClick={() => setNotice("Editor Pembuat CV akan segera aktif di tahap berikutnya!")}
-              >
-                Mulai Buat Resume Sekarang
-              </Button>
-            </div>
-          </div>
         </main>
       </div>
 
-      {/* Footer Minimalist */}
-      <footer className="w-full bg-white border-t border-[#e2e8f0] py-6 px-4 sm:px-6 mt-12 rounded-none">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-[#5d5e61] gap-4">
-          <div className="flex items-center gap-2 font-semibold text-[#1a1b22]">
-            <span>Resumix ATS CV Builder</span>
-            <span className="text-[10px] px-2 py-0.5 bg-[#fef2f2] border border-[#fecaca] text-[#af101a] font-mono-code">v1.0.0</span>
-          </div>
-          <div>© 2026 Resumix. All rights reserved.</div>
-          <div className="flex gap-4">
-            <a href="#" className="hover:underline hover:text-[#af101a] transition-colors">Dokumentasi API</a>
-            <a href="#" className="hover:underline hover:text-[#af101a] transition-colors">Privasi</a>
-            <a href="#" className="hover:underline hover:text-[#af101a] transition-colors">Syarat & Ketentuan</a>
-          </div>
-        </div>
-      </footer>
+      {/* Reusable Footer Component */}
+      <Footer />
+
+      {/* Modals */}
+      <CreateResumeModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onSubmit={handleCreateResume}
+        isLoading={createResumeMutation.isPending}
+      />
+
+      <RenameResumeModal
+        isOpen={!!renameTarget}
+        resume={renameTarget}
+        onClose={() => setRenameTarget(null)}
+        onSubmit={handleRenameResume}
+        isLoading={updateResumeMutation.isPending}
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        resume={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteResume}
+        isLoading={deleteResumeMutation.isPending}
+      />
     </div>
   );
 };
