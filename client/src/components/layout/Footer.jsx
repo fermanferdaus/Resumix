@@ -24,6 +24,12 @@ export const Footer = ({ className = "" }) => {
           >
             ☕ Traktir Kopi
           </a>
+          <a
+            href={`mailto:${appConfig.feedbackEmail}?subject=Feedback%20Resumix%20ATS%20Builder`}
+            className="hover:underline hover:text-[#0f172a] text-[#5d5e61] transition-colors"
+          >
+            Kirim Feedback
+          </a>
           <Link to="#" className="hover:underline hover:text-[#af101a] transition-colors">
             Privasi
           </Link>

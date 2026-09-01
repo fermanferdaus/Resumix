@@ -37,6 +37,7 @@ import {
   X,
   Coffee,
   ExternalLink,
+  Mail,
 } from "lucide-react";
 
 const formatActivityTime = (dateString) => {
@@ -602,6 +603,31 @@ export const DashboardPage = () => {
                   >
                     <Coffee className="w-3.5 h-3.5 text-[#1a1b22]" />
                     <span>Dukung via Saweria</span>
+                    <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
+                  </a>
+                </div>
+
+                {/* 5. Feedback & Bantuan Pengembang */}
+                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none hover:border-[#af101a]/40 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-[#f0f9ff] border border-[#bae6fd] text-[#0284c7] flex items-center justify-center flex-shrink-0 rounded-none">
+                      <Mail className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs font-mono-code uppercase font-bold tracking-wider text-[#0f172a]">
+                      Kritik & Masukan 💬
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-[#5d5e61] leading-relaxed">
+                    Punya ide fitur baru, kendala teknis, atau pertanyaan? Hubungi pengembang langsung via email.
+                  </p>
+
+                  <a
+                    href={`mailto:${appConfig.feedbackEmail}?subject=Feedback%20Resumix%20ATS%20Builder`}
+                    className="inline-flex items-center justify-center gap-2 bg-[#f8fafc] hover:bg-[#f1f5f9] text-[#0f172a] border border-[#e2e8f0] hover:border-[#cbd5e1] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer mt-1"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-[#5d5e61]" />
+                    <span>Hubungi via Email</span>
                     <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
                   </a>
                 </div>
