@@ -18,6 +18,30 @@ export const SECTIONS = [
   { id: "skills", label: "Keahlian", icon: Wrench },
 ];
 
+export const DEFAULT_BODY_SECTION_ORDER = [
+  "summary",
+  "educations",
+  "experiences",
+  "organizations",
+  "certifications",
+  "skills",
+];
+
+export const normalizeSectionOrder = (savedOrder) => {
+  if (!Array.isArray(savedOrder) || savedOrder.length === 0) {
+    return [...DEFAULT_BODY_SECTION_ORDER];
+  }
+  const validSaved = savedOrder.filter((id) =>
+    DEFAULT_BODY_SECTION_ORDER.includes(id)
+  );
+  DEFAULT_BODY_SECTION_ORDER.forEach((id) => {
+    if (!validSaved.includes(id)) {
+      validSaved.push(id);
+    }
+  });
+  return validSaved;
+};
+
 export const DEFAULT_SECTION_TITLES = {
   summary: "PROFIL",
   educations: "PENDIDIKAN",
