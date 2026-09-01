@@ -231,7 +231,79 @@ async function runSuite() {
     }),
   });
   assert.strictEqual(loginNewRes.status, 200, "Login with new password must return 200");
+  const authHeader = { Authorization: `Bearer ${loginNewRes.data.data.accessToken}` };
   logPass("POST", "/auth/login", loginNewRes.status, "Authentication with new credential verified", loginNewRes.duration);
+
+  // 15. Create Resume (POST /resumes)
+  const createResumeRes = await request("/resumes", {
+    method: "POST",
+    headers: authHeader,
+    body: JSON.stringify({
+      title: "Senior Full Stack ATS CV",
+      targetRole: "Full Stack Engineer",
+    }),
+  });
+  assert.strictEqual(createResumeRes.status, 201, "Create resume must return 201");
+  assert.strictEqual(createResumeRes.data.data.title, "Senior Full Stack ATS CV");
+  const createdResumeId = createResumeRes.data.data.id;
+  logPass("POST", "/resumes", createResumeRes.status, "New ATS Resume created with UUIDv7", createResumeRes.duration);
+
+  // 16. List Resumes (GET /resumes)
+  const listResumesRes = await request("/resumes", {
+    headers: authHeader,
+  });
+  assert.strictEqual(listResumesRes.status, 200, "List resumes must return 200");
+  assert(Array.isArray(listResumesRes.data.data), "Resumes data must be an array");
+  assert(listResumesRes.data.data.length >= 1, "Must contain at least 1 resume");
+  logPass("GET", "/resumes", listResumesRes.status, "User resumes list retrieved", listResumesRes.duration);
+
+  // 17. Search Resumes by Keyword (GET /resumes?search=Full+Stack)
+  const searchRes = await request("/resumes?search=Full+Stack", {
+    headers: authHeader,
+  });
+  assert.strictEqual(searchRes.status, 200, "Search resumes must return 200");
+  assert.strictEqual(searchRes.data.data.length, 1);
+  logPass("GET", "/resumes?search=Full+Stack", searchRes.status, "Resume search query matched", searchRes.duration);
+
+  // 18. Get Resume Detail (GET /resumes/:id)
+  const detailRes = await request(`/resumes/${createdResumeId}`, {
+    headers: authHeader,
+  });
+  assert.strictEqual(detailRes.status, 200, "Get resume detail must return 200");
+  assert.strictEqual(detailRes.data.data.id, createdResumeId);
+  assert(detailRes.data.data.data.header, "Resume data must contain ATS header");
+  logPass("GET", "/resumes/:id", detailRes.status, "Resume detail & JSON schema verified", detailRes.duration);
+
+  // 19. Update Resume (PUT /resumes/:id)
+  const updateRes = await request(`/resumes/${createdResumeId}`, {
+    method: "PUT",
+    headers: authHeader,
+    body: JSON.stringify({
+      title: "Lead Full Stack Architect CV",
+      targetRole: "Lead Architect",
+    }),
+  });
+  assert.strictEqual(updateRes.status, 200, "Update resume must return 200");
+  assert.strictEqual(updateRes.data.data.title, "Lead Full Stack Architect CV");
+  logPass("PUT", "/resumes/:id", updateRes.status, "Resume title and target role updated", updateRes.duration);
+
+  // 20. Duplicate Resume (POST /resumes/:id/duplicate)
+  const duplicateRes = await request(`/resumes/${createdResumeId}/duplicate`, {
+    method: "POST",
+    headers: authHeader,
+  });
+  assert.strictEqual(duplicateRes.status, 201, "Duplicate resume must return 201");
+  assert.strictEqual(duplicateRes.data.data.title, "Lead Full Stack Architect CV (Salinan)");
+  const duplicatedResumeId = duplicateRes.data.data.id;
+  logPass("POST", "/resumes/:id/duplicate", duplicateRes.status, "Resume duplicated with clean clone", duplicateRes.duration);
+
+  // 21. Delete Resume (DELETE /resumes/:id)
+  const deleteRes = await request(`/resumes/${duplicatedResumeId}`, {
+    method: "DELETE",
+    headers: authHeader,
+  });
+  assert.strictEqual(deleteRes.status, 200, "Delete resume must return 200");
+  logPass("DELETE", "/resumes/:id", deleteRes.status, "Duplicated resume deleted successfully", deleteRes.duration);
 
   console.log("--------------------------------------------------------------------------------");
   console.log(`Results: ${passed}/${total} integration tests passed (0 failures)`);

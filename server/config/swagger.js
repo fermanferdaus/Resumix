@@ -280,5 +280,86 @@ export const swaggerDocument = {
         },
       },
     },
+    "/resumes": {
+      get: {
+        summary: "Daftar resume milik pengguna",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "search", in: "query", schema: { type: "string" }, description: "Pencarian judul atau posisi" },
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+        ],
+        responses: {
+          200: { description: "Daftar resume berhasil diambil" },
+          401: { description: "Belum terautentikasi" },
+        },
+      },
+      post: {
+        summary: "Buat resume baru",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["title"],
+                properties: {
+                  title: { type: "string", example: "Senior Frontend Engineer 2026" },
+                  targetRole: { type: "string", example: "Full Stack Developer" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: { description: "Resume berhasil dibuat" },
+          422: { description: "Validasi gagal" },
+        },
+      },
+    },
+    "/resumes/{id}": {
+      get: {
+        summary: "Detail resume berdasarkan Public UUIDv7",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          200: { description: "Detail resume" },
+          404: { description: "Resume tidak ditemukan" },
+        },
+      },
+      put: {
+        summary: "Perbarui resume",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          200: { description: "Resume berhasil diperbarui" },
+        },
+      },
+      delete: {
+        summary: "Hapus resume",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          200: { description: "Resume berhasil dihapus" },
+        },
+      },
+    },
+    "/resumes/{id}/duplicate": {
+      post: {
+        summary: "Duplikasi resume",
+        tags: ["Resumes"],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          201: { description: "Resume berhasil diduplikasi" },
+        },
+      },
+    },
   },
 };

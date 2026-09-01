@@ -8,6 +8,7 @@ import { OtpVerifyPage } from "./pages/auth/OtpVerifyPage.jsx";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage.jsx";
 import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage.jsx";
 import { DashboardPage } from "./pages/dashboard/DashboardPage.jsx";
+import { EditorPage } from "./pages/editor/EditorPage.jsx";
 import { ProtectedRoute } from "./components/common/ProtectedRoute.jsx";
 
 const queryClient = new QueryClient({
@@ -54,6 +55,9 @@ export function App() {
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/editor/:id" element={<EditorPage />} />
+              <Route path="/templates" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/editor" element={<Navigate to="/dashboard" replace />} />
             </Route>
 
             {/* Fallback */}

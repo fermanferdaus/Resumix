@@ -6,3 +6,7 @@ import { v7 as uuidv7 } from "uuid";
 export const generatePublicId = () => {
   return uuidv7();
 };
+
+export const generateUuidV7 = () => {
+  return uuidv7();
+};
