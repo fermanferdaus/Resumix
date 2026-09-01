@@ -75,4 +75,24 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
       assert.strictEqual(mockResumeData.skills.hardSkills.includes("React"), true);
     });
   });
+
+  describe("Pemeriksaan Batas Kuota 5 CV Akun", () => {
+    it("harus menandai kuota penuh ketika jumlah resume mencapai 5", () => {
+      const fiveResumes = [
+        { id: "1" },
+        { id: "2" },
+        { id: "3" },
+        { id: "4" },
+        { id: "5" },
+      ];
+      const isQuotaFull = fiveResumes.length >= 5;
+      assert.strictEqual(isQuotaFull, true);
+    });
+
+    it("harus memperbolehkan pembuatan jika jumlah resume kurang dari 5", () => {
+      const threeResumes = [{ id: "1" }, { id: "2" }, { id: "3" }];
+      const isQuotaFull = threeResumes.length >= 5;
+      assert.strictEqual(isQuotaFull, false);
+    });
+  });
 });

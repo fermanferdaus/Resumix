@@ -182,8 +182,24 @@ export const DashboardPage = () => {
   }, [resumes, user]);
 
   // Handlers
+  const handleOpenCreateModal = () => {
+    if (resumes.length >= 5) {
+      setErrorMessage(
+        "Batas maksimal 5 CV telah tercapai. Silakan hapus salah satu CV terlebih dahulu untuk membuat CV baru."
+      );
+      return;
+    }
+    setIsCreateOpen(true);
+  };
+
   const handleCreateResume = async (formData) => {
     setErrorMessage("");
+    if (resumes.length >= 5) {
+      setErrorMessage(
+        "Batas maksimal 5 CV telah tercapai. Silakan hapus salah satu CV terlebih dahulu untuk membuat CV baru."
+      );
+      return;
+    }
     try {
       const res = await createResumeMutation.mutateAsync(formData);
       setIsCreateOpen(false);
@@ -215,6 +231,12 @@ export const DashboardPage = () => {
 
   const handleDuplicateResume = async (id) => {
     setErrorMessage("");
+    if (resumes.length >= 5) {
+      setErrorMessage(
+        "Batas maksimal 5 CV telah tercapai. Silakan hapus salah satu CV terlebih dahulu untuk menduplikasi."
+      );
+      return;
+    }
     try {
       await duplicateResumeMutation.mutateAsync(id);
       setNotice("Resume berhasil diduplikasi!");
@@ -325,8 +347,14 @@ export const DashboardPage = () => {
                       <h2 className="text-lg font-bold text-[#0f172a] tracking-tight">
                         Daftar Resume Saya
                       </h2>
-                      <span className="text-xs font-mono-code text-[#5d5e61] bg-[#f8fafc] border border-[#e2e8f0] px-2 py-0.5 rounded-none">
-                        [{resumes.length} CV]
+                      <span
+                        className={`text-xs font-mono-code px-2 py-0.5 rounded-none border ${
+                          resumes.length >= 5
+                            ? "bg-[#fef2f2] text-[#af101a] border-[#fecaca] font-bold"
+                            : "bg-[#f8fafc] text-[#5d5e61] border-[#e2e8f0]"
+                        }`}
+                      >
+                        [{resumes.length}/5 CV{resumes.length >= 5 ? " - Batas Tercapai" : ""}]
                       </span>
                     </div>
 
@@ -387,8 +415,17 @@ export const DashboardPage = () => {
                     >
                       {/* 1. Tombol Card 'Buat CV Baru' */}
                       <div
-                        onClick={() => setIsCreateOpen(true)}
-                        className="bg-white border border-dashed border-[#e2e8f0] hover:border-[#af101a] hover:bg-[#fef2f2]/20 transition-colors flex flex-col items-center justify-center p-6 min-h-[220px] cursor-pointer group rounded-none"
+                        onClick={handleOpenCreateModal}
+                        className={`bg-white border border-dashed transition-colors flex flex-col items-center justify-center p-6 min-h-[220px] cursor-pointer group rounded-none ${
+                          resumes.length >= 5
+                            ? "border-[#fecaca] bg-[#fef2f2]/30 opacity-80 hover:border-[#af101a]"
+                            : "border-[#e2e8f0] hover:border-[#af101a] hover:bg-[#fef2f2]/20"
+                        }`}
+                        title={
+                          resumes.length >= 5
+                            ? "Batas kuota 5 CV telah tercapai. Hapus salah satu CV untuk membuat yang baru."
+                            : "Buat Resume CV Baru"
+                        }
                       >
                         <div className="w-12 h-12 rounded-none border border-[#e2e8f0] group-hover:border-[#af101a] group-hover:bg-white bg-[#f8fafc] flex items-center justify-center mb-3 text-[#5d5e61] group-hover:text-[#af101a] transition-colors">
                           <Plus className="w-6 h-6" />
@@ -396,6 +433,11 @@ export const DashboardPage = () => {
                         <span className="text-xs font-mono-code uppercase font-semibold text-[#1a1b22] group-hover:text-[#af101a] tracking-wider transition-colors">
                           + Buat CV Baru
                         </span>
+                        {resumes.length >= 5 && (
+                          <span className="text-[10px] font-mono-code text-[#af101a] mt-1 font-bold">
+                            (Batas 5 CV Tercapai)
+                          </span>
+                        )}
                       </div>
 
                       {/* 2. Daftar Kartu Resume */}

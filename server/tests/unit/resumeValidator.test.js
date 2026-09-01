@@ -5,6 +5,7 @@ import {
   updateResumeSchema,
   queryResumeSchema,
 } from "../../validators/resumeValidator.js";
+import { MAX_RESUMES_PER_USER } from "../../services/resumeService.js";
 
 describe("Unit: Zod Resume Validators", () => {
   describe("createResumeSchema", () => {
@@ -55,6 +56,12 @@ describe("Unit: Zod Resume Validators", () => {
       assert.strictEqual(result.data.page, 2);
       assert.strictEqual(result.data.limit, 15);
       assert.strictEqual(result.data.search, "developer");
+    });
+  });
+
+  describe("Kebijakan Kuota Resume Pengguna", () => {
+    it("harus menetapkan batas maksimal 5 resume per akun", () => {
+      assert.strictEqual(MAX_RESUMES_PER_USER, 5);
     });
   });
 });

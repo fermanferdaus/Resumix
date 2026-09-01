@@ -2,6 +2,11 @@ import prisma from "../config/prisma.js";
 import { generatePublicId } from "../utils/id.js";
 
 /**
+ * Batas maksimal resume per akun pengguna
+ */
+export const MAX_RESUMES_PER_USER = 5;
+
+/**
  * Default ATS Resume JSON Schema sesuai PRD.md Section 7
  */
 export const getDefaultResumeData = (user = {}, targetRole = "") => ({
@@ -102,6 +107,19 @@ export const listResumes = async (userIdentifier, { search = "", page = 1, limit
  */
 export const createResume = async (userIdentifier, { title, targetRole }, userDetails = {}) => {
   const userId = await resolveInternalUserId(userIdentifier);
+
+  const existingCount = await prisma.resume.count({
+    where: { userId },
+  });
+
+  if (existingCount >= MAX_RESUMES_PER_USER) {
+    const error = new Error(
+      `Batas maksimal pembuatan resume telah tercapai (maksimal ${MAX_RESUMES_PER_USER} CV per akun).`
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
   const publicId = generatePublicId();
   const initialData = getDefaultResumeData(userDetails, targetRole);
 
@@ -195,6 +213,19 @@ export const updateResume = async (userIdentifier, publicId, { title, targetRole
  */
 export const duplicateResume = async (userIdentifier, publicId) => {
   const userId = await resolveInternalUserId(userIdentifier);
+
+  const existingCount = await prisma.resume.count({
+    where: { userId },
+  });
+
+  if (existingCount >= MAX_RESUMES_PER_USER) {
+    const error = new Error(
+      `Batas maksimal pembuatan resume telah tercapai (maksimal ${MAX_RESUMES_PER_USER} CV per akun).`
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
   const original = await prisma.resume.findFirst({
     where: {
       publicId,
