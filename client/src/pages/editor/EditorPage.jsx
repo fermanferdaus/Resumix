@@ -10,9 +10,10 @@ import { resumeApi } from "../../api/resumeApi.js";
 import { EditorSubheader } from "../../components/editor/EditorSubheader.jsx";
 import { EditorSidebar } from "../../components/editor/EditorSidebar.jsx";
 import { EditorSectionForm } from "../../components/editor/EditorSectionForm.jsx";
+import { EditorSkeleton } from "../../components/editor/EditorSkeleton.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
 import { calculateAtsProgress } from "../../lib/resumeScore.js";
-import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/button.jsx";
 
 export const EditorPage = () => {
@@ -214,16 +215,9 @@ export const EditorPage = () => {
     }, 1000);
   };
 
-  // Loading State
+  // Loading State with Dedicated Skeleton
   if (isDetailLoading) {
-    return (
-      <div className="min-h-screen bg-[#fbf8ff] flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#af101a]" />
-        <p className="text-xs font-mono-code text-[#5d5e61]">
-          Menyiapkan lembar kerja resume...
-        </p>
-      </div>
-    );
+    return <EditorSkeleton />;
   }
 
   // Error State
