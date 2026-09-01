@@ -31,40 +31,13 @@ import {
   CheckCircle2,
   Circle,
   Lightbulb,
-  FileText,
-  Clock,
   Loader2,
   X,
   Coffee,
   ExternalLink,
   Mail,
+  FileCheck,
 } from "lucide-react";
-
-const formatActivityTime = (dateString) => {
-  if (!dateString) return "Baru saja";
-  try {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMins < 1) return "Baru saja";
-    if (diffMins < 60) return `${diffMins} menit lalu`;
-    if (diffHours < 24) return `${diffHours} jam lalu`;
-    if (diffDays === 1) return "Kemarin";
-    if (diffDays < 7) return `${diffDays} hari lalu`;
-
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  } catch {
-    return "Baru saja";
-  }
-};
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -144,43 +117,6 @@ export const DashboardPage = () => {
           passed: false,
         },
       ];
-
-  // Membangun riwayat aktivitas nyata yang dilakukan akun & resume
-  const activities = useMemo(() => {
-    const list = [];
-
-    // 1. Aktivitas resume (hingga 2 resume terbaru)
-    if (resumes && resumes.length > 0) {
-      resumes.slice(0, 2).forEach((r) => {
-        const isNew =
-          Math.abs(new Date(r.updatedAt) - new Date(r.createdAt)) < 60000;
-        list.push({
-          id: `resume-${r.id}`,
-          icon: FileText,
-          iconBg: "bg-[#fef2f2] border-[#fecaca] text-[#af101a]",
-          title: isNew ? `Membuat "${r.title}"` : `Memperbarui "${r.title}"`,
-          time: formatActivityTime(r.updatedAt),
-          detail: r.targetRole ? `<${r.targetRole} />` : null,
-        });
-      });
-    }
-
-    // 2. Aktivitas akun terverifikasi / terdaftar
-    if (user) {
-      list.push({
-        id: "account-verified",
-        icon: CheckCircle2,
-        iconBg: "bg-[#f0fdf4] border-[#bbf7d0] text-[#15803d]",
-        title: user.isVerified
-          ? "Autentikasi Akun Terverifikasi"
-          : "Akun Terdaftar",
-        time: formatActivityTime(user.createdAt),
-        detail: user.email,
-      });
-    }
-
-    return list;
-  }, [resumes, user]);
 
   // Handlers
   const handleOpenCreateModal = () => {
@@ -313,7 +249,9 @@ export const DashboardPage = () => {
           {isInitialLoading ? (
             <DashboardSkeleton />
           ) : (
-            <div className="w-full flex flex-col lg:flex-row gap-8">
+            <div className="w-full flex flex-col gap-6">
+              {/* Top Area: Main Grid & Sidebar */}
+              <div className="w-full flex flex-col lg:flex-row gap-8">
               {/* Left/Main Panel (Flex-grow) */}
               <div className="flex-1 flex flex-col gap-6">
                 {/* Header Selamat Datang */}
@@ -522,55 +460,61 @@ export const DashboardPage = () => {
                   </ul>
                 </div>
 
-                {/* 2. Recent Activity Widget (Aktivitas Nyata Akun) */}
+                {/* 2. Standar Format ATS Widget (5 Poin Praktis) */}
                 <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none">
-                  <h3 className="text-sm font-bold text-[#0f172a] border-b border-[#e2e8f0] pb-2 font-mono-code uppercase">
-                    Aktivitas Terbaru
-                  </h3>
-
-                  <div className="flex flex-col gap-3">
-                    {activities.map((act) => {
-                      const IconComponent = act.icon;
-                      return (
-                        <div key={act.id} className="flex items-start gap-2.5">
-                          <div
-                            className={`w-6 h-6 border flex items-center justify-center flex-shrink-0 mt-0.5 rounded-none ${act.iconBg}`}
-                          >
-                            <IconComponent className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p
-                              className="text-xs font-semibold text-[#1a1b22] truncate"
-                              title={act.title}
-                            >
-                              {act.title}
-                            </p>
-                            <p className="text-[11px] text-[#5d5e61] flex items-center gap-1 mt-0.5">
-                              <Clock className="w-3 h-3 flex-shrink-0" />
-                              <span>{act.time}</span>
-                              {act.detail && (
-                                <>
-                                  <span>•</span>
-                                  <span
-                                    className="truncate max-w-[140px]"
-                                    title={act.detail}
-                                  >
-                                    {act.detail}
-                                  </span>
-                                </>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-2">
+                    <div className="flex items-center gap-2">
+                      <FileCheck className="w-4 h-4 text-[#af101a]" />
+                      <h3 className="text-sm font-bold text-[#0f172a] font-mono-code uppercase">
+                        Standar Format ATS
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-mono-code bg-[#f8fafc] text-[#5d5e61] border border-[#e2e8f0] px-1.5 py-0.5 rounded-none font-semibold">
+                      Panduan
+                    </span>
                   </div>
-                </div>
 
-                {/* 3. Pro Tip Card (Soft Flat Red Tint) */}
-                <div className="bg-[#fef2f2] border border-[#fecaca] p-5 flex flex-col gap-2 rounded-none">
-                  <div className="flex items-center gap-2 text-[#af101a]">
-                    <Lightbulb className="w-4 h-4" />
+                  <p className="text-[11px] text-[#5d5e61] leading-relaxed">
+                    Panduan praktis menyusun resume agar lolos seleksi otomatis dan mudah dibaca rekruter:
+                  </p>
+
+                  <ul className="space-y-2.5 text-xs text-[#5d5e61]">
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
+                      <span>
+                        <strong className="text-[#0f172a]">Kronologi Terbalik:</strong> Tulis riwayat pengalaman kerja dan riwayat pendidikan mulai dari posisi paling baru hingga paling lama.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
+                      <span>
+                        <strong className="text-[#0f172a]">Fokus Hasil & Angka:</strong> Tulis pencapaian dengan data terukur (contoh: <em>"Meningkatkan efisiensi kerja 25%"</em>), bukan sekadar menyalin daftar tugas rutin.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
+                      <span>
+                        <strong className="text-[#0f172a]">Sesuaikan Kata Kunci:</strong> Cantumkan istilah teknis, keterampilan, atau sertifikasi yang tertulis pada kualifikasi lowongan yang dituju.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#af101a] font-bold text-xs mt-0.5">•</span>
+                      <span>
+                        <strong className="text-[#0f172a]">Format Teks Bersih:</strong> Hindari tabel bertingkat, grafik bar keahlian, foto profil, atau ikon dekoratif yang memicu error pembacaan.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </aside>
+            </div>
+
+            {/* Section Bawah Full-Width: Panduan, Dukungan, & Masukan */}
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+              {/* Card 1: Tips ATS Pro */}
+              <div className="bg-[#fef2f2] border border-[#fecaca] p-5 flex flex-col justify-between rounded-none">
+                <div>
+                  <div className="flex items-center gap-2 text-[#af101a] mb-2">
+                    <Lightbulb className="w-4 h-4 flex-shrink-0" />
                     <span className="text-xs font-mono-code uppercase font-bold tracking-wider">
                       Tips ATS Pro
                     </span>
@@ -579,59 +523,60 @@ export const DashboardPage = () => {
                     Sesuaikan kata kunci keahlian pada resume Anda dengan deskripsi lowongan kerja untuk meningkatkan skor seleksi awal hingga 40%.
                   </p>
                 </div>
+              </div>
 
-                {/* 4. Saweria / Traktir Kopi Card */}
-                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none hover:border-[#eab308]/60 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#fefce8] border border-[#fef08a] text-[#ca8a04] flex items-center justify-center flex-shrink-0 rounded-none">
-                      <Coffee className="w-3.5 h-3.5" />
+              {/* Card 2: Traktir Kopi */}
+              <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col justify-between rounded-none hover:border-[#eab308]/60 transition-colors">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-5 h-5 bg-[#fefce8] border border-[#fef08a] text-[#ca8a04] flex items-center justify-center flex-shrink-0 rounded-none">
+                      <Coffee className="w-3 h-3" />
                     </div>
                     <span className="text-xs font-mono-code uppercase font-bold tracking-wider text-[#0f172a]">
-                      Traktir Kopi ☕
+                      Traktir Kopi
                     </span>
                   </div>
-
-                  <p className="text-xs text-[#5d5e61] leading-relaxed">
-                    Suka dengan Resumix? Dukung pengembangan aplikasi ini dengan mentraktir secangkir kopi melalui Saweria!
+                  <p className="text-xs text-[#5d5e61] leading-relaxed mb-3">
+                    Suka dengan Resumix? Dukung pengembangan aplikasi ini melalui Saweria!
                   </p>
-
-                  <a
-                    href={appConfig.saweriaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer mt-1"
-                  >
-                    <Coffee className="w-3.5 h-3.5 text-[#1a1b22]" />
-                    <span>Dukung via Saweria</span>
-                    <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
-                  </a>
                 </div>
+                <a
+                  href={appConfig.saweriaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer"
+                >
+                  <Coffee className="w-3.5 h-3.5 text-[#1a1b22]" />
+                  <span>Dukung via Saweria</span>
+                  <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
+                </a>
+              </div>
 
-                {/* 5. Feedback & Bantuan Pengembang */}
-                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none hover:border-[#af101a]/40 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#f0f9ff] border border-[#bae6fd] text-[#0284c7] flex items-center justify-center flex-shrink-0 rounded-none">
-                      <Mail className="w-3.5 h-3.5" />
+              {/* Card 3: Kritik & Masukan */}
+              <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col justify-between rounded-none hover:border-[#af101a]/40 transition-colors">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-5 h-5 bg-[#f0f9ff] border border-[#bae6fd] text-[#0284c7] flex items-center justify-center flex-shrink-0 rounded-none">
+                      <Mail className="w-3 h-3" />
                     </div>
                     <span className="text-xs font-mono-code uppercase font-bold tracking-wider text-[#0f172a]">
-                      Kritik & Masukan 💬
+                      Kritik & Masukan
                     </span>
                   </div>
-
-                  <p className="text-xs text-[#5d5e61] leading-relaxed">
-                    Punya ide fitur baru, kendala teknis, atau pertanyaan? Hubungi pengembang langsung via email.
+                  <p className="text-xs text-[#5d5e61] leading-relaxed mb-3">
+                    Punya ide fitur baru atau kendala? Hubungi kami langsung via email.
                   </p>
-
-                  <a
-                    href={`mailto:${appConfig.feedbackEmail}?subject=Feedback%20Resumix%20ATS%20Builder`}
-                    className="inline-flex items-center justify-center gap-2 bg-[#f8fafc] hover:bg-[#f1f5f9] text-[#0f172a] border border-[#e2e8f0] hover:border-[#cbd5e1] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer mt-1"
-                  >
-                    <Mail className="w-3.5 h-3.5 text-[#5d5e61]" />
-                    <span>Hubungi via Email</span>
-                    <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
-                  </a>
                 </div>
-              </aside>
+                <a
+                  href={`mailto:${appConfig.feedbackEmail}?subject=Feedback%20Resumix%20ATS%20Builder`}
+                  className="inline-flex items-center justify-center gap-2 bg-[#f8fafc] hover:bg-[#f1f5f9] text-[#0f172a] border border-[#e2e8f0] hover:border-[#cbd5e1] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer"
+                >
+                  <Mail className="w-3.5 h-3.5 text-[#5d5e61]" />
+                  <span>Hubungi via Email</span>
+                  <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
+                </a>
+              </div>
+            </div>
             </div>
           )}
         </main>
