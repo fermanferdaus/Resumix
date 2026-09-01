@@ -45,11 +45,11 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
   describe("Integritas Struktur Standar ATS Resume JSON", () => {
     const mockResumeData = {
       header: {
-        fullName: "Ferman Ferdaus",
+        fullName: "Budi Santoso",
         targetRole: "Full Stack Developer",
-        email: "ferman@example.com",
+        email: "budi@example.com",
         phone: "+628123456789",
-        website: "https://ferman.dev",
+        website: "https://budi.dev",
         location: "Jakarta, Indonesia",
       },
       summary: "Senior Software Engineer dengan spesialisasi arsitektur web modern.",

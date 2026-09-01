@@ -8,17 +8,17 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
     it("harus menghasilkan 100% untuk data resume yang terisi penuh", () => {
       const fullResume = {
         header: {
-          fullName: "Ferman Ferdaus",
-          targetRole: "Fullstack Developer",
-          email: "ferman@example.com",
-          phone: "+628123456789",
-          location: "Bandar Lampung, Indonesia",
+          fullName: "Budi Santoso",
+          targetRole: "Software Engineer",
+          email: "budi@example.com",
+          phone: "+6281234567890",
+          location: "Jakarta, Indonesia",
         },
-        summary: "Fullstack Developer dengan pengalaman arsitektur web modern.",
-        educations: [{ degree: "S1 Teknik Komputer", institution: "UTI" }],
-        experiences: [{ role: "Fullstack Developer", company: "Oemah Service" }],
-        organizations: [{ role: "Ketua", name: "UKM Robotik" }],
-        certifications: ["Sertifikat AI dan IoT"],
+        summary: "Software Engineer dengan pengalaman arsitektur web modern.",
+        educations: [{ degree: "S1 Teknik Informatika", institution: "Universitas Indonesia" }],
+        experiences: [{ role: "Software Engineer", company: "PT Teknologi Bangsa" }],
+        organizations: [{ role: "Ketua", name: "Himpunan Mahasiswa" }],
+        certifications: ["Sertifikat AI dan Cloud"],
         skills: {
           hardSkills: [{ category: "Backend", items: "Node.js, Express" }],
           softSkills: ["Leadership"],
@@ -33,9 +33,9 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
     it("harus menghitung proporsional jika hanya header terisi", () => {
       const partialResume = {
         header: {
-          fullName: "Ferman Ferdaus",
-          targetRole: "Fullstack Developer",
-          email: "ferman@example.com",
+          fullName: "Budi Santoso",
+          targetRole: "Software Engineer",
+          email: "budi@example.com",
         },
       };
       // fullName(10) + targetRole(10) + email(5) = 25
@@ -49,10 +49,10 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
   describe("Format Informasi Kontak ATS", () => {
     it("harus menggabungkan nomor telepon, email, website, dan lokasi dengan delimiter ' / '", () => {
       const header = {
-        phone: "+62 85267216405",
-        email: "fermanf91@gmail.com",
-        website: "https://os-tech.online",
-        location: "Bandar Lampung, Lampung, Indonesia",
+        phone: "+62 812 3456 7890",
+        email: "budi.santoso@example.com",
+        website: "https://portfolio-budi.example.com",
+        location: "Jakarta Selatan, DKI Jakarta, Indonesia",
       };
 
       const contactString = [
@@ -66,20 +66,20 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
 
       assert.strictEqual(
         contactString,
-        "+62 85267216405 / fermanf91@gmail.com / https://os-tech.online / Bandar Lampung, Lampung, Indonesia"
+        "+62 812 3456 7890 / budi.santoso@example.com / https://portfolio-budi.example.com / Jakarta Selatan, DKI Jakarta, Indonesia"
       );
     });
 
     it("harus menggabungkan beberapa tautan (links) jika pengguna mengisi lebih dari satu link", () => {
       const header = {
-        phone: "+62 85267216405",
-        email: "fermanf91@gmail.com",
+        phone: "+62 812 3456 7890",
+        email: "budi.santoso@example.com",
         links: [
-          "https://os-tech.online",
-          "https://linkedin.com/in/ferman",
-          "https://github.com/ferman",
+          "https://portfolio-budi.example.com",
+          "https://linkedin.com/in/budisantoso",
+          "https://github.com/budisantoso",
         ],
-        location: "Bandar Lampung, Lampung, Indonesia",
+        location: "Jakarta Selatan, DKI Jakarta, Indonesia",
       };
 
       const linkItems = Array.isArray(header.links)
@@ -97,7 +97,7 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
 
       assert.strictEqual(
         contactString,
-        "+62 85267216405 / fermanf91@gmail.com / https://os-tech.online / https://linkedin.com/in/ferman / https://github.com/ferman / Bandar Lampung, Lampung, Indonesia"
+        "+62 812 3456 7890 / budi.santoso@example.com / https://portfolio-budi.example.com / https://linkedin.com/in/budisantoso / https://github.com/budisantoso / Jakarta Selatan, DKI Jakarta, Indonesia"
       );
     });
   });
@@ -302,8 +302,8 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
     };
 
     it("harus memformat nama file PDF sesuai standar 'Resumix-nama pengguna-posisi'", () => {
-      const filename = formatPdfFilename("Ferman Ferdaus", "Full-Stack Developer");
-      assert.strictEqual(filename, "Resumix-Ferman Ferdaus-Full-Stack Developer");
+      const filename = formatPdfFilename("Budi Santoso", "Full-Stack Developer");
+      assert.strictEqual(filename, "Resumix-Budi Santoso-Full-Stack Developer");
     });
 
     it("harus menggunakan fallback jika nama atau posisi kosong", () => {

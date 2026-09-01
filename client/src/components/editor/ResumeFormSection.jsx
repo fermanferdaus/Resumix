@@ -262,7 +262,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-fullName"
                   type="text"
-                  placeholder="Contoh: FERMAN FERDAUS"
+                  placeholder="Contoh: Alex Pratama"
                   value={data.header?.fullName || ""}
                   onChange={(e) => handleHeaderChange("fullName", e.target.value)}
                 />
@@ -273,7 +273,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-targetRole"
                   type="text"
-                  placeholder="Contoh: Fullstack Developer"
+                  placeholder="Contoh: Software Engineer"
                   value={data.header?.targetRole || ""}
                   onChange={(e) => handleHeaderChange("targetRole", e.target.value)}
                 />
@@ -286,7 +286,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-phone"
                   type="text"
-                  placeholder="+62 85267216405"
+                  placeholder="Contoh: +62 812 3456 7890"
                   value={data.header?.phone || ""}
                   onChange={(e) => handleHeaderChange("phone", e.target.value)}
                 />
@@ -297,7 +297,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-email"
                   type="email"
-                  placeholder="email@example.com"
+                  placeholder="Contoh: nama.anda@example.com"
                   value={data.header?.email || ""}
                   onChange={(e) => handleHeaderChange("email", e.target.value)}
                 />
@@ -310,7 +310,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-website"
                   type="text"
-                  placeholder="https://os-tech.online"
+                  placeholder="Contoh: https://linkedin.com/in/username"
                   value={data.header?.website || ""}
                   onChange={(e) => handleHeaderChange("website", e.target.value)}
                 />
@@ -321,7 +321,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                 <Input
                   id="header-location"
                   type="text"
-                  placeholder="Bandar Lampung, Lampung, Indonesia"
+                  placeholder="Contoh: Jakarta Selatan, DKI Jakarta, Indonesia"
                   value={data.header?.location || ""}
                   onChange={(e) => handleHeaderChange("location", e.target.value)}
                 />
@@ -412,7 +412,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Gelar / Jurusan *</Label>
                     <Input
                       type="text"
-                      placeholder="SARJANA TEKNIK KOMPUTER"
+                      placeholder="Contoh: S1 Teknik Informatika"
                       value={edu.degree || ""}
                       onChange={(e) => handleUpdateEducation(idx, "degree", e.target.value)}
                     />
@@ -421,7 +421,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>IPK / Nilai (Opsional)</Label>
                     <Input
                       type="text"
-                      placeholder="3.83/4.00"
+                      placeholder="Contoh: 3.80 / 4.00"
                       value={edu.gpa || ""}
                       onChange={(e) => handleUpdateEducation(idx, "gpa", e.target.value)}
                     />
@@ -433,7 +433,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Nama Institusi / Universitas *</Label>
                     <Input
                       type="text"
-                      placeholder="Universitas Teknokrat Indonesia"
+                      placeholder="Contoh: Universitas Indonesia"
                       value={edu.institution || ""}
                       onChange={(e) =>
                         handleUpdateEducation(idx, "institution", e.target.value)
@@ -444,7 +444,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Lokasi / Negara</Label>
                     <Input
                       type="text"
-                      placeholder="Indonesia"
+                      placeholder="Contoh: Depok, Indonesia"
                       value={edu.location || ""}
                       onChange={(e) =>
                         handleUpdateEducation(idx, "location", e.target.value)
@@ -540,7 +540,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Peran / Posisi Pekerjaan *</Label>
                     <Input
                       type="text"
-                      placeholder="OWNER & FULLSTACK DEVELOPER"
+                      placeholder="Contoh: Senior Frontend Engineer"
                       value={exp.role || ""}
                       onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)}
                     />
@@ -549,7 +549,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Nama Perusahaan / Organisasi *</Label>
                     <Input
                       type="text"
-                      placeholder="OEMAH SERVICE"
+                      placeholder="Contoh: PT Teknologi Bangsa Indonesia"
                       value={exp.company || ""}
                       onChange={(e) =>
                         handleUpdateExperience(idx, "company", e.target.value)
@@ -563,7 +563,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Lokasi Perusahaan</Label>
                     <Input
                       type="text"
-                      placeholder="BANDAR LAMPUNG"
+                      placeholder="Contoh: Jakarta Pusat, Indonesia"
                       value={exp.location || ""}
                       onChange={(e) =>
                         handleUpdateExperience(idx, "location", e.target.value)
@@ -693,7 +693,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Jabatan / Peran *</Label>
                     <Input
                       type="text"
-                      placeholder="Ketua Divisi KRSBI-Humanoid"
+                      placeholder="Contoh: Ketua Departemen Pengembangan SDM"
                       value={org.role || ""}
                       onChange={(e) =>
                         handleUpdateOrganization(idx, "role", e.target.value)
@@ -704,7 +704,7 @@ export const ResumeFormSection = ({ data, onChange }) => {
                     <Label>Nama Organisasi *</Label>
                     <Input
                       type="text"
-                      placeholder="UKM Robotik, Universitas Teknokrat Indonesia"
+                      placeholder="Contoh: Himpunan Mahasiswa Teknik Komputer"
                       value={org.name || ""}
                       onChange={(e) =>
                         handleUpdateOrganization(idx, "name", e.target.value)

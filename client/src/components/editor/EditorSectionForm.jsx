@@ -401,7 +401,7 @@ export const EditorSectionForm = ({
               <Input
                 id="header-fullName"
                 type="text"
-                placeholder="Contoh: FERMAN FERDAUS"
+                placeholder="Contoh: Alex Pratama"
                 value={data.header?.fullName || ""}
                 onChange={(e) => handleHeaderChange("fullName", e.target.value)}
               />
@@ -412,7 +412,7 @@ export const EditorSectionForm = ({
               <Input
                 id="header-targetRole"
                 type="text"
-                placeholder="Contoh: Fullstack Developer"
+                placeholder="Contoh: Software Engineer"
                 value={data.header?.targetRole || ""}
                 onChange={(e) => handleHeaderChange("targetRole", e.target.value)}
               />
@@ -425,7 +425,7 @@ export const EditorSectionForm = ({
               <Input
                 id="header-phone"
                 type="text"
-                placeholder="+62 85267216405"
+                placeholder="Contoh: +62 812 3456 7890"
                 value={data.header?.phone || ""}
                 onChange={(e) => handleHeaderChange("phone", e.target.value)}
               />
@@ -436,7 +436,7 @@ export const EditorSectionForm = ({
               <Input
                 id="header-email"
                 type="email"
-                placeholder="email@example.com"
+                placeholder="Contoh: nama.anda@example.com"
                 value={data.header?.email || ""}
                 onChange={(e) => handleHeaderChange("email", e.target.value)}
               />
@@ -448,7 +448,7 @@ export const EditorSectionForm = ({
             <Input
               id="header-location"
               type="text"
-              placeholder="Contoh: Bandar Lampung, Lampung, Indonesia"
+              placeholder="Contoh: Jakarta Selatan, DKI Jakarta, Indonesia"
               value={data.header?.location || ""}
               onChange={(e) => handleHeaderChange("location", e.target.value)}
             />
@@ -461,7 +461,7 @@ export const EditorSectionForm = ({
               <div key={lIdx} className="flex gap-2 items-center">
                 <Input
                   type="text"
-                  placeholder="Contoh: https://linkedin.com/in/ferman atau https://os-tech.online"
+                  placeholder="Contoh: https://linkedin.com/in/username atau https://github.com/username"
                   value={link}
                   onChange={(e) => handleUpdateLink(lIdx, e.target.value)}
                 />
@@ -536,7 +536,7 @@ export const EditorSectionForm = ({
                   <Label>Jenjang & Jurusan *</Label>
                   <Input
                     type="text"
-                    placeholder="Contoh: SMA IPA / SMK RPL / S1 Teknik Komputer"
+                    placeholder="Contoh: S1 Teknik Informatika / SMK Rekayasa Perangkat Lunak"
                     value={edu.degree || ""}
                     onChange={(e) => handleUpdateEducation(idx, "degree", e.target.value)}
                   />
@@ -545,7 +545,7 @@ export const EditorSectionForm = ({
                   <Label>Nilai Akhir / IPK</Label>
                   <Input
                     type="text"
-                    placeholder="Contoh: 88.5 atau 3.83/4.00"
+                    placeholder="Contoh: 3.80 / 4.00 atau 88.5"
                     value={edu.gpa || ""}
                     onChange={(e) => handleUpdateEducation(idx, "gpa", e.target.value)}
                   />
@@ -557,7 +557,7 @@ export const EditorSectionForm = ({
                   <Label>Nama Sekolah / Kampus *</Label>
                   <Input
                     type="text"
-                    placeholder="Contoh: SMAN 1 Bandar Lampung / Universitas Teknokrat"
+                    placeholder="Contoh: Universitas Indonesia / Institut Teknologi Bandung"
                     value={edu.institution || ""}
                     onChange={(e) =>
                       handleUpdateEducation(idx, "institution", e.target.value)
@@ -568,7 +568,7 @@ export const EditorSectionForm = ({
                   <Label>Lokasi (Kota, Negara)</Label>
                   <Input
                     type="text"
-                    placeholder="Contoh: Bandar Lampung, Indonesia"
+                    placeholder="Contoh: Depok, Indonesia / Bandung, Indonesia"
                     value={edu.location || ""}
                     onChange={(e) =>
                       handleUpdateEducation(idx, "location", e.target.value)
@@ -702,7 +702,7 @@ export const EditorSectionForm = ({
                   <Label>Posisi / Jabatan *</Label>
                   <Input
                     type="text"
-                    placeholder="OWNER & FULLSTACK DEVELOPER"
+                    placeholder="Contoh: Senior Frontend Engineer"
                     value={exp.role || ""}
                     onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)}
                   />
@@ -711,7 +711,7 @@ export const EditorSectionForm = ({
                   <Label>Nama Perusahaan *</Label>
                   <Input
                     type="text"
-                    placeholder="OEMAH SERVICE"
+                    placeholder="Contoh: PT Teknologi Bangsa Indonesia"
                     value={exp.company || ""}
                     onChange={(e) =>
                       handleUpdateExperience(idx, "company", e.target.value)
@@ -724,7 +724,7 @@ export const EditorSectionForm = ({
                 <Label>Lokasi Perusahaan</Label>
                 <Input
                   type="text"
-                  placeholder="Contoh: Bandar Lampung, Indonesia"
+                  placeholder="Contoh: Jakarta Pusat, Indonesia"
                   value={exp.location || ""}
                   onChange={(e) =>
                     handleUpdateExperience(idx, "location", e.target.value)
@@ -857,7 +857,7 @@ export const EditorSectionForm = ({
                   <Label>Jabatan / Peran *</Label>
                   <Input
                     type="text"
-                    placeholder="Ketua Divisi KRSBI-Humanoid"
+                    placeholder="Contoh: Ketua Departemen Pengembangan SDM"
                     value={org.role || ""}
                     onChange={(e) =>
                       handleUpdateOrganization(idx, "role", e.target.value)
@@ -868,7 +868,7 @@ export const EditorSectionForm = ({
                   <Label>Nama Organisasi *</Label>
                   <Input
                     type="text"
-                    placeholder="UKM Robotik, Universitas Teknokrat Indonesia"
+                    placeholder="Contoh: Himpunan Mahasiswa Teknik Komputer"
                     value={org.name || ""}
                     onChange={(e) =>
                       handleUpdateOrganization(idx, "name", e.target.value)
