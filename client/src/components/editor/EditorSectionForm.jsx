@@ -4,7 +4,7 @@ import { Button } from "../ui/button.jsx";
 import { MonthYearPicker } from "../ui/MonthYearPicker.jsx";
 import { YearPicker } from "../ui/YearPicker.jsx";
 import { SECTIONS, DEFAULT_SECTION_TITLES } from "../../constants/editorSections.js";
-import { Plus, Trash2, ArrowLeft, ArrowRight, Sparkles, X } from "lucide-react";
+import { Plus, Trash2, ArrowLeft, ArrowRight, X } from "lucide-react";
 
 export const EditorSectionForm = ({
   activeSection,
@@ -335,10 +335,6 @@ export const EditorSectionForm = ({
       {/* Section Header */}
       <div className="border-b border-[#e2e8f0] pb-4 flex items-center justify-between">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#fef2f2] border border-[#fecaca] text-[10px] font-mono-code uppercase font-semibold text-[#af101a] mb-1.5 rounded-none">
-            <Sparkles className="w-3 h-3" />
-            <span>Bagian #{currentSectionIndex + 1} dari {SECTIONS.length}</span>
-          </div>
           <h2 className="text-lg font-bold text-[#0f172a] tracking-tight">
             {currentSection.label}
           </h2>

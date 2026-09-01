@@ -217,7 +217,17 @@ export const EditorPage = () => {
   }, [formData]);
 
   const handlePrint = () => {
+    const originalTitle = document.title;
+    const name = formData.header?.fullName?.trim() || "Pengguna";
+    const role =
+      formData.header?.targetRole?.trim() || targetRole?.trim() || "Resume";
+    const pdfFilename = `Resumix_${name}_${role}`;
+
+    document.title = pdfFilename;
     window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   };
 
   // Loading State

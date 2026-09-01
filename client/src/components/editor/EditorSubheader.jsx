@@ -138,7 +138,7 @@ export const EditorSubheader = ({
           className="flex items-center gap-1.5 rounded-none font-semibold text-xs h-8 shadow-none"
         >
           <Printer className="w-3.5 h-3.5" />
-          <span>Cetak / Unduh PDF</span>
+          <span>Unduh PDF</span>
         </Button>
       </div>
     </div>

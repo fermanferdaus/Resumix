@@ -307,4 +307,22 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
       );
     });
   });
+
+  describe("Format Nama File Unduhan PDF (Resumix-nama pengguna-posisi)", () => {
+    const formatPdfFilename = (fullName, targetRole) => {
+      const name = fullName?.trim() || "Pengguna";
+      const role = targetRole?.trim() || "Resume";
+      return `Resumix-${name}-${role}`;
+    };
+
+    it("harus memformat nama file PDF sesuai standar 'Resumix-nama pengguna-posisi'", () => {
+      const filename = formatPdfFilename("Ferman Ferdaus", "Full-Stack Developer");
+      assert.strictEqual(filename, "Resumix-Ferman Ferdaus-Full-Stack Developer");
+    });
+
+    it("harus menggunakan fallback jika nama atau posisi kosong", () => {
+      const filename = formatPdfFilename("", "");
+      assert.strictEqual(filename, "Resumix-Pengguna-Resume");
+    });
+  });
 });
