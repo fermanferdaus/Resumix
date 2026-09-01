@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { appConfig } from "../../config/appConfig.js";
 
 export const Footer = ({ className = "" }) => {
   return (
@@ -13,8 +14,16 @@ export const Footer = ({ className = "" }) => {
         {/* Copyright */}
         <div>© 2026 Resumix. All rights reserved.</div>
 
-        {/* Legal / Policy Links */}
-        <div className="flex gap-4">
+        {/* Legal & Support Links */}
+        <div className="flex items-center gap-4">
+          <a
+            href={appConfig.saweriaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline hover:text-[#ca8a04] text-[#854d0e] font-medium transition-colors"
+          >
+            ☕ Traktir Kopi
+          </a>
           <Link to="#" className="hover:underline hover:text-[#af101a] transition-colors">
             Privasi
           </Link>

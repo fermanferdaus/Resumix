@@ -13,6 +13,7 @@ import { RenameResumeModal } from "../../components/dashboard/RenameResumeModal.
 import { DeleteConfirmModal } from "../../components/dashboard/DeleteConfirmModal.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
 import { resumeApi } from "../../api/resumeApi.js";
+import { appConfig } from "../../config/appConfig.js";
 import {
   calculateAtsProgress,
   getAtsChecklist,
@@ -34,6 +35,8 @@ import {
   Clock,
   Loader2,
   X,
+  Coffee,
+  ExternalLink,
 } from "lucide-react";
 
 const formatActivityTime = (dateString) => {
@@ -533,6 +536,33 @@ export const DashboardPage = () => {
                   <p className="text-xs text-[#1a1b22] leading-relaxed">
                     Sesuaikan kata kunci keahlian pada resume Anda dengan deskripsi lowongan kerja untuk meningkatkan skor seleksi awal hingga 40%.
                   </p>
+                </div>
+
+                {/* 4. Saweria / Traktir Kopi Card */}
+                <div className="bg-white border border-[#e2e8f0] p-5 flex flex-col gap-3 rounded-none hover:border-[#eab308]/60 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-[#fefce8] border border-[#fef08a] text-[#ca8a04] flex items-center justify-center flex-shrink-0 rounded-none">
+                      <Coffee className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs font-mono-code uppercase font-bold tracking-wider text-[#0f172a]">
+                      Traktir Kopi ☕
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-[#5d5e61] leading-relaxed">
+                    Suka dengan Resumix? Dukung pengembangan aplikasi ini dengan mentraktir secangkir kopi melalui Saweria!
+                  </p>
+
+                  <a
+                    href={appConfig.saweriaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs py-2 px-3 transition-colors rounded-none cursor-pointer mt-1"
+                  >
+                    <Coffee className="w-3.5 h-3.5 text-[#1a1b22]" />
+                    <span>Dukung via Saweria</span>
+                    <ExternalLink className="w-3 h-3 ml-auto opacity-75" />
+                  </a>
                 </div>
               </aside>
             </div>

@@ -1,7 +1,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { Button } from "../ui/button.jsx";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Coffee } from "lucide-react";
+import { appConfig } from "../../config/appConfig.js";
 
 export const Navbar = () => {
   const { user, logout } = useAuthStore();
@@ -63,8 +64,21 @@ export const Navbar = () => {
           </nav>
         </div>
 
-        {/* Right: User Profile & Logout (No Build Button) */}
-        <div className="flex items-center gap-4">
+        {/* Right: Traktir Kopi, User Profile & Logout */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Tombol Traktir Kopi Saweria */}
+          <a
+            href={appConfig.saweriaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
+            title="Dukung Resumix / Traktir Kopi via Saweria"
+          >
+            <Coffee className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="hidden sm:inline">Traktir Kopi</span>
+            <span className="sm:hidden">Kopi</span>
+          </a>
+
           <div className="flex items-center gap-2 text-sm text-[#1a1b22] font-medium">
             <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] flex items-center justify-center text-[#af101a] font-bold">
               {user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />}
