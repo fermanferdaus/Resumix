@@ -71,7 +71,7 @@ export const ResetPasswordPage = () => {
           Sudah ingat kata sandi Anda?{" "}
           <Link
             to="/login"
-            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#d32f2f] transition-colors"
+            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#af101a] transition-colors"
           >
             Masuk di Sini
           </Link>
@@ -139,7 +139,7 @@ export const ResetPasswordPage = () => {
           size="lg"
           isLoading={resetPasswordMutation.isPending}
           disabled={!token || !!successMessage}
-          className="mt-4"
+          className="mt-4 rounded-none"
         >
           Simpan Kata Sandi Baru
         </Button>

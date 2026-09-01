@@ -101,7 +101,7 @@ export const RegisterPage = () => {
           Sudah memiliki akun?{" "}
           <Link
             to="/login"
-            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#d32f2f] transition-colors"
+            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#af101a] transition-colors"
           >
             Masuk di Sini
           </Link>
@@ -137,7 +137,7 @@ export const RegisterPage = () => {
               fullWidth
               size="lg"
               isLoading={checkEmailMutation.isPending}
-              className="mt-2"
+              className="mt-2 rounded-none"
             >
               Lanjutkan
             </Button>
@@ -169,7 +169,7 @@ export const RegisterPage = () => {
                   setStep(1);
                   setErrorMessage("");
                 }}
-                className="text-xs text-[#d32f2f] hover:underline cursor-pointer font-medium"
+                className="text-xs text-[#af101a] hover:underline cursor-pointer font-medium"
               >
                 Ubah Email
               </button>
@@ -180,7 +180,7 @@ export const RegisterPage = () => {
               value={verifiedEmail}
               readOnly
               disabled
-              className="bg-[#f8fafc] text-[#5d5e61] cursor-not-allowed"
+              className="bg-[#f8fafc] text-[#5d5e61] cursor-not-allowed rounded-none"
             />
           </div>
 
@@ -228,7 +228,7 @@ export const RegisterPage = () => {
             fullWidth
             size="lg"
             isLoading={registerMutation.isPending}
-            className="mt-4"
+            className="mt-4 rounded-none"
           >
             Daftar & Kirim Kode OTP
           </Button>

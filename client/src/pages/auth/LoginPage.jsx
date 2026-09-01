@@ -86,7 +86,7 @@ export const LoginPage = () => {
           Belum memiliki akun?{" "}
           <Link
             to="/register"
-            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#d32f2f] transition-colors"
+            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#af101a] transition-colors"
           >
             Daftar Sekarang
           </Link>
@@ -111,14 +111,14 @@ export const LoginPage = () => {
       )}
 
       {/* Pilihan Mode Masuk */}
-      <div className="flex border border-[#e2e8f0] mb-6 bg-[#f8fafc]">
+      <div className="flex border border-[#e2e8f0] mb-6 bg-[#f8fafc] rounded-none">
         <button
           type="button"
           onClick={() => {
             setLoginMode("otp");
             setErrorMessage("");
           }}
-          className={`flex-1 py-2.5 text-xs font-mono-code uppercase font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
+          className={`flex-1 py-2.5 text-xs font-mono-code uppercase font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer rounded-none ${
             loginMode === "otp"
               ? "bg-[#1a1c1e] text-white"
               : "text-[#5d5e61] hover:text-[#1a1b22]"
@@ -133,7 +133,7 @@ export const LoginPage = () => {
             setLoginMode("password");
             setErrorMessage("");
           }}
-          className={`flex-1 py-2.5 text-xs font-mono-code uppercase font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
+          className={`flex-1 py-2.5 text-xs font-mono-code uppercase font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer rounded-none ${
             loginMode === "password"
               ? "bg-[#1a1c1e] text-white"
               : "text-[#5d5e61] hover:text-[#1a1b22]"
@@ -163,7 +163,7 @@ export const LoginPage = () => {
             fullWidth
             size="lg"
             isLoading={sendOtpMutation.isPending}
-            className="mt-2"
+            className="mt-2 rounded-none"
           >
             Kirim Kode Verifikasi
           </Button>
@@ -187,7 +187,7 @@ export const LoginPage = () => {
               <Label htmlFor="password" className="mb-0">Kata Sandi</Label>
               <Link
                 to="/forgot-password"
-                className="text-xs text-[#5d5e61] hover:text-[#d32f2f] transition-colors font-medium"
+                className="text-xs text-[#5d5e61] hover:text-[#af101a] transition-colors font-medium"
               >
                 Lupa kata sandi?
               </Link>
@@ -207,7 +207,7 @@ export const LoginPage = () => {
             fullWidth
             size="lg"
             isLoading={loginMutation.isPending}
-            className="mt-2"
+            className="mt-2 rounded-none"
           >
             Masuk dengan Kata Sandi
           </Button>

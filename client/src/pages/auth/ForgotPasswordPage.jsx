@@ -47,7 +47,7 @@ export const ForgotPasswordPage = () => {
           Ingat kata sandi Anda?{" "}
           <Link
             to="/login"
-            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#d32f2f] transition-colors"
+            className="text-[#1a1b22] font-semibold underline underline-offset-4 hover:text-[#af101a] transition-colors"
           >
             Masuk di Sini
           </Link>
@@ -99,7 +99,7 @@ export const ForgotPasswordPage = () => {
           fullWidth
           size="lg"
           isLoading={forgotPasswordMutation.isPending}
-          className="mt-2"
+          className="mt-2 rounded-none"
         >
           Verifikasi Email
         </Button>

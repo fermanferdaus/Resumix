@@ -3,11 +3,11 @@ import { cn } from "../../lib/utils.js";
 import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
 
 const alertVariants = cva(
-  "w-full p-3.5 text-xs flex items-start gap-2.5 transition-all border",
+  "w-full p-3.5 text-xs flex items-start gap-2.5 transition-all border rounded-none",
   {
     variants: {
       variant: {
-        error: "bg-[#fff2f0] border-[#ba1a1a] text-[#93000a]",
+        error: "bg-[#fff1f2] border-[#ba1a1a] text-[#93000a]",
         success: "bg-[#f0fdf4] border-[#15803d] text-[#166534]",
         info: "bg-[#f8fafc] border-[#94a3b8] text-[#334155]",
       },
@@ -49,7 +49,7 @@ export const Alert = ({
         <button
           type="button"
           onClick={onClose}
-          className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer -mr-1 -mt-1 p-1"
+          className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer -mr-1 -mt-1 p-1 rounded-none"
         >
           <X className="w-3.5 h-3.5" />
         </button>

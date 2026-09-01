@@ -128,6 +128,7 @@ export const OtpVerifyPage = () => {
           size="lg"
           isLoading={verifyOtpMutation.isPending}
           disabled={code.length !== 6}
+          className="rounded-none"
         >
           Verifikasi Akun
         </Button>
@@ -140,7 +141,7 @@ export const OtpVerifyPage = () => {
             type="button"
             onClick={handleResendOtp}
             disabled={sendOtpMutation.isPending}
-            className="text-[#d32f2f] hover:underline font-semibold flex items-center justify-center gap-1 mx-auto cursor-pointer"
+            className="text-[#af101a] hover:underline font-semibold flex items-center justify-center gap-1 mx-auto cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${sendOtpMutation.isPending ? "animate-spin" : ""}`} />
             <span>Kirim Ulang Kode</span>
