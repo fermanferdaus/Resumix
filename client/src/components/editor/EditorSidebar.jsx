@@ -34,7 +34,7 @@ export const EditorSidebar = ({
   };
 
   return (
-    <aside className="w-full lg:w-60 bg-white border-r border-[#e2e8f0] flex flex-col justify-between p-4 flex-shrink-0 print:hidden">
+    <aside className="w-full lg:w-60 bg-white border-r border-[#e2e8f0] flex flex-col justify-between p-4 flex-shrink-0 print:hidden h-full overflow-y-auto">
       <div className="space-y-4">
         {/* Progress Bar Kelengkapan Resume */}
         <div className="bg-[#f8fafc] border border-[#e2e8f0] p-3 rounded-none">

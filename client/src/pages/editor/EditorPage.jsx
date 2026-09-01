@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar.jsx";
-import { Footer } from "../../components/layout/Footer.jsx";
 import { useAuthStore } from "../../store/authStore.js";
 import {
   useResumeDetailQuery,
@@ -257,13 +256,14 @@ export const EditorPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] flex flex-col justify-between text-[#1a1b22] print:bg-white print:min-h-0 print:block pt-16 print:pt-0 print:p-0 print:m-0">
-      <div className="print:block print:p-0 print:m-0">
-        {/* Top Navbar (Same as Dashboard - Hidden on Print) */}
-        <div className="print:hidden">
-          <Navbar />
-        </div>
+    <div className="h-screen w-screen overflow-hidden bg-[#f1f5f9] flex flex-col text-[#1a1b22] print:bg-white print:h-auto print:min-h-0 print:block print:p-0 print:m-0">
+      {/* Top Navbar (Fixed - Hidden on Print) */}
+      <div className="print:hidden flex-shrink-0">
+        <Navbar />
+      </div>
 
+      {/* Editor Content Area (Locked Viewport) */}
+      <div className="flex-1 flex flex-col pt-16 print:pt-0 overflow-hidden print:overflow-visible print:block">
         {/* Subheader: Document Title, Autosave status, Zoom, and Print PDF */}
         <EditorSubheader
           title={title}
@@ -275,7 +275,7 @@ export const EditorPage = () => {
         />
 
         {/* Main 3-Column Workspace */}
-        <main className="w-full flex flex-col lg:flex-row overflow-hidden print:overflow-visible print:block print:p-0 print:m-0">
+        <main className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden print:overflow-visible print:block print:p-0 print:m-0">
           {/* 1. Left Sidebar: Section Navigation */}
           <EditorSidebar
             activeSection={activeSection}
@@ -284,8 +284,8 @@ export const EditorPage = () => {
             progress={progress}
           />
 
-          {/* 2. Center Column: Focused Section Form Editor */}
-          <div className="w-full lg:w-96 xl:w-[480px] bg-[#fbf8ff] border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-112px)] flex-shrink-0 print:hidden">
+          {/* 2. Center Column: Focused Section Form Editor (Scrollable) */}
+          <div className="w-full lg:w-96 xl:w-[480px] bg-[#fbf8ff] border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
             <EditorSectionForm
               activeSection={activeSection}
               onSelectSection={setActiveSection}
@@ -294,8 +294,8 @@ export const EditorPage = () => {
             />
           </div>
 
-          {/* 3. Right Column: Live A4 Preview */}
-          <div className="flex-1 bg-[#525659]/10 p-4 sm:p-8 overflow-auto max-h-[calc(100vh-112px)] flex justify-center items-start print:p-0 print:m-0 print:w-auto print:max-h-none print:bg-white print:overflow-visible print:block">
+          {/* 3. Right Column: Live A4 Preview (Scrollable) */}
+          <div className="flex-1 bg-[#525659]/10 p-4 sm:p-8 overflow-y-auto h-full flex justify-center items-start print:p-0 print:m-0 print:w-auto print:h-auto print:bg-white print:overflow-visible print:block">
             <ResumeA4Preview
               ref={previewRef}
               data={debouncedPreviewData}
@@ -303,11 +303,6 @@ export const EditorPage = () => {
             />
           </div>
         </main>
-      </div>
-
-      {/* Reusable Footer (Hidden during Print) */}
-      <div className="print:hidden">
-        <Footer />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export const EditorSubheader = ({
   onPrint,
 }) => {
   return (
-    <div className="w-full bg-white border-b border-[#e2e8f0] px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-16 z-30 rounded-none print:hidden">
+    <div className="w-full bg-white border-b border-[#e2e8f0] px-4 sm:px-6 py-2 flex items-center justify-between gap-3 rounded-none print:hidden h-12 flex-shrink-0">
       {/* Left: Back Link & Title */}
       <div className="flex items-center gap-3 flex-1 min-w-0">
         {/* Title Editor */}
