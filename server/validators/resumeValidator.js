@@ -27,7 +27,7 @@ export const updateResumeSchema = z.object({
     .max(100, { message: "Posisi target maksimal 100 karakter." })
     .optional()
     .nullable(),
-  data: z.record(z.any()).optional(),
+  data: z.any().optional(),
 });
 
 export const queryResumeSchema = z.object({

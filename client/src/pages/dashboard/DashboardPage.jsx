@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar.jsx";
 import { Footer } from "../../components/layout/Footer.jsx";
 import { useAuthStore } from "../../store/authStore.js";
@@ -27,6 +28,7 @@ import {
 } from "lucide-react";
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
   const { user, setUser } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [notice, setNotice] = useState("");
@@ -67,9 +69,11 @@ export const DashboardPage = () => {
   const handleCreateResume = async (formData) => {
     setErrorMessage("");
     try {
-      await createResumeMutation.mutateAsync(formData);
+      const res = await createResumeMutation.mutateAsync(formData);
       setIsCreateOpen(false);
-      setNotice(`Resume "${formData.title}" berhasil dibuat!`);
+      if (res.data?.id) {
+        navigate(`/editor/${res.data.id}`);
+      }
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "Gagal membuat resume baru. Silakan coba lagi."
@@ -119,13 +123,11 @@ export const DashboardPage = () => {
   };
 
   const handleEditResume = (resume) => {
-    setNotice(
-      `Editor Pembuat CV untuk "${resume.title}" akan segera aktif di tahap berikutnya!`
-    );
+    navigate(`/editor/${resume.id}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none">
+    <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none pt-16">
       <div>
         <Navbar />
 

@@ -10,8 +10,9 @@ import {
  */
 export const getResumes = async (req, res, next) => {
   try {
+    const userId = req.user._internalId || req.user.id;
     const query = queryResumeSchema.parse(req.query);
-    const result = await resumeService.listResumes(req.user.id, query);
+    const result = await resumeService.listResumes(userId, query);
 
     res.json({
       success: true,
@@ -30,8 +31,9 @@ export const getResumes = async (req, res, next) => {
  */
 export const createResume = async (req, res, next) => {
   try {
+    const userId = req.user._internalId || req.user.id;
     const payload = createResumeSchema.parse(req.body);
-    const result = await resumeService.createResume(req.user.id, payload, req.user);
+    const result = await resumeService.createResume(userId, payload, req.user);
 
     res.status(201).json({
       success: true,
@@ -49,7 +51,8 @@ export const createResume = async (req, res, next) => {
  */
 export const getResume = async (req, res, next) => {
   try {
-    const result = await resumeService.getResumeByPublicId(req.user.id, req.params.id);
+    const userId = req.user._internalId || req.user.id;
+    const result = await resumeService.getResumeByPublicId(userId, req.params.id);
 
     res.json({
       success: true,
@@ -67,8 +70,9 @@ export const getResume = async (req, res, next) => {
  */
 export const updateResume = async (req, res, next) => {
   try {
+    const userId = req.user._internalId || req.user.id;
     const payload = updateResumeSchema.parse(req.body);
-    const result = await resumeService.updateResume(req.user.id, req.params.id, payload);
+    const result = await resumeService.updateResume(userId, req.params.id, payload);
 
     res.json({
       success: true,
@@ -86,7 +90,8 @@ export const updateResume = async (req, res, next) => {
  */
 export const duplicateResume = async (req, res, next) => {
   try {
-    const result = await resumeService.duplicateResume(req.user.id, req.params.id);
+    const userId = req.user._internalId || req.user.id;
+    const result = await resumeService.duplicateResume(userId, req.params.id);
 
     res.status(201).json({
       success: true,
@@ -104,7 +109,8 @@ export const duplicateResume = async (req, res, next) => {
  */
 export const deleteResume = async (req, res, next) => {
   try {
-    await resumeService.deleteResume(req.user.id, req.params.id);
+    const userId = req.user._internalId || req.user.id;
+    await resumeService.deleteResume(userId, req.params.id);
 
     res.json({
       success: true,

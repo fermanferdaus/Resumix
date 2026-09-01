@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { Button } from "../ui/button.jsx";
 import { LogOut, User } from "lucide-react";
@@ -6,6 +6,11 @@ import { LogOut, User } from "lucide-react";
 export const Navbar = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isDashboard = location.pathname.startsWith("/dashboard");
+  const isTemplateOrEditor =
+    location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
   const handleLogout = () => {
     logout();
@@ -13,7 +18,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="w-full bg-white border-b border-[#e2e8f0] sticky top-0 z-50 rounded-none">
+    <header className="w-full bg-white border-b border-[#e2e8f0] fixed top-0 left-0 right-0 z-50 rounded-none print:hidden h-16">
       <div className="w-full mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Left: Logo & Navigation */}
         <div className="flex items-center gap-8 h-full">
@@ -29,17 +34,25 @@ export const Navbar = () => {
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium h-full">
             <Link
               to="/dashboard"
-              className="h-full flex items-center border-b-2 border-[#af101a] text-[#af101a] font-semibold pt-[2px]"
+              className={`h-full flex items-center pt-[2px] transition-colors ${
+                isDashboard
+                  ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
+              }`}
             >
               Dashboard
             </Link>
 
-            <span
-              className="h-full flex items-center text-[#5d5e61] cursor-not-allowed opacity-60 hover:text-[#1a1b22] transition-colors"
-              title="Template editor akan hadir di tahap berikutnya"
+            <Link
+              to="/dashboard"
+              className={`h-full flex items-center pt-[2px] transition-colors ${
+                isTemplateOrEditor
+                  ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
+              }`}
             >
               Template
-            </span>
+            </Link>
 
             <span
               className="h-full flex items-center text-[#5d5e61] cursor-not-allowed opacity-60 hover:text-[#1a1b22] transition-colors"

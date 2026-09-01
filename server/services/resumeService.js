@@ -24,14 +24,33 @@ export const getDefaultResumeData = (user = {}, targetRole = "") => ({
   },
 });
 
+const resolveInternalUserId = async (userIdentifier) => {
+  if (typeof userIdentifier === "bigint") return userIdentifier;
+  if (typeof userIdentifier === "number") return BigInt(userIdentifier);
+  if (typeof userIdentifier === "string" && /^\d+$/.test(userIdentifier)) {
+    return BigInt(userIdentifier);
+  }
+  const user = await prisma.user.findUnique({
+    where: { publicId: String(userIdentifier) },
+    select: { id: true },
+  });
+  if (!user) {
+    const error = new Error("Pengguna tidak ditemukan.");
+    error.statusCode = 404;
+    throw error;
+  }
+  return user.id;
+};
+
 /**
  * Mengambil daftar resume milik pengguna dengan pencarian dan paginasi
  */
-export const listResumes = async (userId, { search = "", page = 1, limit = 10 }) => {
+export const listResumes = async (userIdentifier, { search = "", page = 1, limit = 10 }) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const skip = (page - 1) * limit;
 
   const where = {
-    userId: BigInt(userId),
+    userId,
     ...(search
       ? {
           OR: [
@@ -79,14 +98,15 @@ export const listResumes = async (userId, { search = "", page = 1, limit = 10 })
 /**
  * Membuat resume baru dengan data default
  */
-export const createResume = async (userId, { title, targetRole }, userDetails = {}) => {
+export const createResume = async (userIdentifier, { title, targetRole }, userDetails = {}) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const publicId = generatePublicId();
   const initialData = getDefaultResumeData(userDetails, targetRole);
 
   const newResume = await prisma.resume.create({
     data: {
       publicId,
-      userId: BigInt(userId),
+      userId,
       title: title || "Resume Tanpa Judul",
       targetRole: targetRole || null,
       data: initialData,
@@ -106,11 +126,12 @@ export const createResume = async (userId, { title, targetRole }, userDetails = 
 /**
  * Mengambil detail resume berdasarkan publicId
  */
-export const getResumeByPublicId = async (userId, publicId) => {
+export const getResumeByPublicId = async (userIdentifier, publicId) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const resume = await prisma.resume.findFirst({
     where: {
       publicId,
-      userId: BigInt(userId),
+      userId,
     },
   });
 
@@ -133,11 +154,12 @@ export const getResumeByPublicId = async (userId, publicId) => {
 /**
  * Memperbarui resume
  */
-export const updateResume = async (userId, publicId, { title, targetRole, data }) => {
+export const updateResume = async (userIdentifier, publicId, { title, targetRole, data }) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const existing = await prisma.resume.findFirst({
     where: {
       publicId,
-      userId: BigInt(userId),
+      userId,
     },
   });
 
@@ -169,11 +191,12 @@ export const updateResume = async (userId, publicId, { title, targetRole, data }
 /**
  * Menduplikasi resume
  */
-export const duplicateResume = async (userId, publicId) => {
+export const duplicateResume = async (userIdentifier, publicId) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const original = await prisma.resume.findFirst({
     where: {
       publicId,
-      userId: BigInt(userId),
+      userId,
     },
   });
 
@@ -187,7 +210,7 @@ export const duplicateResume = async (userId, publicId) => {
   const duplicated = await prisma.resume.create({
     data: {
       publicId: newPublicId,
-      userId: BigInt(userId),
+      userId,
       title: `${original.title} (Salinan)`,
       targetRole: original.targetRole,
       data: original.data || {},
@@ -206,11 +229,12 @@ export const duplicateResume = async (userId, publicId) => {
 /**
  * Menghapus resume
  */
-export const deleteResume = async (userId, publicId) => {
+export const deleteResume = async (userIdentifier, publicId) => {
+  const userId = await resolveInternalUserId(userIdentifier);
   const existing = await prisma.resume.findFirst({
     where: {
       publicId,
-      userId: BigInt(userId),
+      userId,
     },
   });
 

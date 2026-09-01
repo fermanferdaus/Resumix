@@ -7,6 +7,8 @@ export const useResumesQuery = (params = {}) => {
   return useQuery({
     queryKey: [...RESUME_QUERY_KEY, params],
     queryFn: () => resumeApi.getResumes(params),
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
 
@@ -15,6 +17,8 @@ export const useResumeDetailQuery = (id) => {
     queryKey: ["resume", id],
     queryFn: () => resumeApi.getResume(id),
     enabled: !!id,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
 

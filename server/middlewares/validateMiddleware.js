@@ -14,7 +14,17 @@ export const validate = (schema, source = "body") => (req, res, next) => {
 
       return errorResponse(res, "Validasi gagal", errors, 422);
     }
-    req[source] = parsed.data;
+
+    if (source === "query") {
+      try {
+        req.query = parsed.data;
+      } catch {
+        Object.assign(req.query, parsed.data);
+      }
+    } else {
+      req[source] = parsed.data;
+    }
+
     next();
   } catch (error) {
     next(error);
