@@ -331,7 +331,7 @@ export const EditorSectionForm = ({
   };
 
   return (
-    <div className="bg-white border border-[#e2e8f0] p-6 rounded-none space-y-6">
+    <div className="space-y-6">
       {/* Section Header */}
       <div className="border-b border-[#e2e8f0] pb-4 flex items-center justify-between">
         <div>
@@ -364,7 +364,7 @@ export const EditorSectionForm = ({
               htmlFor={`section-title-${activeSection}`}
               className="text-[#af101a] font-bold mb-0 text-xs uppercase tracking-wide"
             >
-              Nama Bagian
+              Judul
             </Label>
             {data.sectionTitles?.[activeSection] &&
               data.sectionTitles[activeSection] !==
@@ -412,7 +412,7 @@ export const EditorSectionForm = ({
             </div>
 
             <div>
-              <Label htmlFor="header-targetRole">Profesi Target *</Label>
+              <Label htmlFor="header-targetRole">Profesi *</Label>
               <Input
                 id="header-targetRole"
                 type="text"
@@ -783,7 +783,7 @@ export const EditorSectionForm = ({
 
               {/* Bullet Points Deskripsi */}
               <div className="pt-2 border-t border-[#e2e8f0] space-y-2">
-                <Label>Poin Tanggung Jawab & Pencapaian (Action Verbs ATS)</Label>
+                <Label>Poin Tanggung Jawab & Pencapaian</Label>
                 {(exp.bullets || []).map((bullet, bIdx) => (
                   <div key={bIdx} className="flex gap-2 items-start">
                     <span className="text-xs font-bold text-[#af101a] mt-2">•</span>

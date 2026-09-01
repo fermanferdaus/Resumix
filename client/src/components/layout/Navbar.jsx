@@ -51,7 +51,7 @@ export const Navbar = () => {
                   : "text-[#5d5e61] hover:text-[#1a1b22]"
               }`}
             >
-              Template
+              Editor
             </Link>
 
             <span

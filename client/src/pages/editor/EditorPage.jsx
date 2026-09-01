@@ -300,7 +300,7 @@ export const EditorPage = () => {
 
           {/* 2. Center Column: Focused Section Form Editor (Collapsible & Scrollable) */}
           {isFormOpen && (
-            <div className="w-full lg:w-96 xl:w-[480px] bg-[#fbf8ff] border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
+            <div className="w-full lg:w-96 xl:w-[480px] bg-white border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
               <EditorSectionForm
                 activeSection={activeSection}
                 onSelectSection={setActiveSection}
