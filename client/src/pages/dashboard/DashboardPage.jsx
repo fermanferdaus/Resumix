@@ -304,11 +304,10 @@ export const DashboardPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-[#fbf8ff] flex flex-col justify-between text-[#1a1b22] rounded-none pt-16 print:hidden">
-      <div>
+      <div className="min-h-screen bg-[#fbf8ff] flex flex-col text-[#1a1b22] rounded-none pt-16 print:hidden">
         <Navbar />
 
-        <main className="w-full mx-auto px-4 sm:px-6 py-8">
+        <main className="w-full mx-auto px-4 sm:px-6 pt-6 pb-2 flex-1">
           {/* 1. Full Dashboard Skeleton saat initial load */}
           {isInitialLoading ? (
             <DashboardSkeleton />
@@ -465,7 +464,7 @@ export const DashboardPage = () => {
                   <div className="flex justify-between items-start gap-2">
                     <div>
                       <h3 className="text-sm font-bold text-[#0f172a] uppercase font-mono-code">
-                        Kekuatan Resume ATS
+                        Kualitas Resume ATS
                       </h3>
                       {latestResume ? (
                         <p className="text-[11px] text-[#5d5e61] truncate max-w-[190px] mt-0.5 font-medium" title={latestResume.title}>
@@ -610,10 +609,9 @@ export const DashboardPage = () => {
             </div>
           )}
         </main>
-      </div>
 
-      {/* Reusable Footer Component */}
-      <Footer />
+        {/* Reusable Footer Component */}
+        <Footer className="mt-4" />
 
       {/* Modals */}
       <CreateResumeModal

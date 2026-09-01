@@ -3,7 +3,7 @@ import { appConfig } from "../../config/appConfig.js";
 
 export const Footer = ({ className = "" }) => {
   return (
-    <footer className={`w-full bg-white border-t border-[#e2e8f0] py-6 px-4 sm:px-6 mt-12 rounded-none ${className}`}>
+    <footer className={`w-full bg-white border-t border-[#e2e8f0] py-4 px-4 sm:px-6 mt-auto rounded-none ${className}`}>
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-[#5d5e61] gap-4">
         {/* Brand & Version */}
         <div className="flex items-center gap-2 font-semibold text-[#1a1b22]">
