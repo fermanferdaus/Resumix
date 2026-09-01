@@ -14,7 +14,16 @@ import { EditorSkeleton } from "../../components/editor/EditorSkeleton.jsx";
 import { ResumeA4Preview } from "../../components/editor/ResumeA4Preview.jsx";
 import { normalizeSectionOrder } from "../../constants/editorSections.js";
 import { calculateAtsProgress } from "../../lib/resumeScore.js";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ListOrdered,
+  FileEdit,
+  Eye,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+} from "lucide-react";
 import { Button } from "../../components/ui/button.jsx";
 
 export const EditorPage = () => {
@@ -50,8 +59,10 @@ export const EditorPage = () => {
   const [debouncedPreviewData, setDebouncedPreviewData] = useState(formData);
   const [saveStatus, setSaveStatus] = useState("saved"); // "saved" | "saving" | "error"
   const [zoom, setZoom] = useState(100);
+  const [mobileZoom, setMobileZoom] = useState(48); // 48% fits standard mobile screens
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(true);
+  const [mobileTab, setMobileTab] = useState("form"); // "sections" | "form" | "preview"
 
   const previewRef = useRef(null);
   const isInitialLoadedRef = useRef(false);
@@ -79,11 +90,12 @@ export const EditorPage = () => {
         resume.data && typeof resume.data === "object" ? resume.data : {};
 
       // Auto-fill nama dan email dari user jika kosong
-      const rawLinks = Array.isArray(rawData.header?.links) && rawData.header.links.length > 0
-        ? rawData.header.links
-        : rawData.header?.website
-        ? [rawData.header.website]
-        : [""];
+      const rawLinks =
+        Array.isArray(rawData.header?.links) && rawData.header.links.length > 0
+          ? rawData.header.links
+          : rawData.header?.website
+          ? [rawData.header.website]
+          : [""];
 
       const initialHeader = {
         fullName: rawData.header?.fullName || user?.fullName || "",
@@ -99,7 +111,9 @@ export const EditorPage = () => {
         header: initialHeader,
         summary: rawData.summary || "",
         educations: Array.isArray(rawData.educations) ? rawData.educations : [],
-        experiences: Array.isArray(rawData.experiences) ? rawData.experiences : [],
+        experiences: Array.isArray(rawData.experiences)
+          ? rawData.experiences
+          : [],
         organizations: Array.isArray(rawData.organizations)
           ? rawData.organizations
           : [],
@@ -155,7 +169,8 @@ export const EditorPage = () => {
             id,
             data: {
               title: newTitle || "Resume Tanpa Judul",
-              targetRole: newTargetRole || newFormData.header?.targetRole || null,
+              targetRole:
+                newTargetRole || newFormData.header?.targetRole || null,
               data: newFormData,
             },
           });
@@ -287,8 +302,54 @@ export const EditorPage = () => {
           progress={progress}
         />
 
-        {/* Main 3-Column Workspace */}
-        <main className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden print:overflow-visible print:block print:p-0 print:m-0">
+        {/* Mobile View Tab Switcher (Visible only on < lg) */}
+        <div className="lg:hidden bg-white border-b border-[#e2e8f0] px-3 py-1.5 flex items-center justify-between flex-shrink-0 print:hidden z-10">
+          <div className="flex items-center gap-1 w-full bg-[#f8fafc] p-1 border border-[#e2e8f0]">
+            <button
+              type="button"
+              onClick={() => setMobileTab("sections")}
+              className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 text-xs font-semibold rounded-none transition-colors cursor-pointer ${
+                mobileTab === "sections"
+                  ? "bg-white text-[#af101a] border border-[#fecaca] shadow-xs"
+                  : "text-[#5d5e61] hover:text-[#0f172a]"
+              }`}
+            >
+              <ListOrdered className="w-3.5 h-3.5" />
+              <span>Bagian</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileTab("form")}
+              className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 text-xs font-semibold rounded-none transition-colors cursor-pointer ${
+                mobileTab === "form"
+                  ? "bg-white text-[#af101a] border border-[#fecaca] shadow-xs"
+                  : "text-[#5d5e61] hover:text-[#0f172a]"
+              }`}
+            >
+              <FileEdit className="w-3.5 h-3.5" />
+              <span>Formulir</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileTab("preview")}
+              className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 text-xs font-semibold rounded-none transition-colors cursor-pointer ${
+                mobileTab === "preview"
+                  ? "bg-white text-[#af101a] border border-[#fecaca] shadow-xs"
+                  : "text-[#5d5e61] hover:text-[#0f172a]"
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Pratinjau</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 1. DESKTOP WORKSPACE (Unchanged 3-column layout on lg+) */}
+        {/* ======================================================== */}
+        <main className="hidden lg:flex flex-1 w-full flex-row overflow-hidden print:hidden">
           {/* 1. Left Sidebar: Section Navigation (Collapsible) */}
           {isSidebarOpen && (
             <EditorSidebar
@@ -309,7 +370,7 @@ export const EditorPage = () => {
 
           {/* 2. Center Column: Focused Section Form Editor (Collapsible & Scrollable) */}
           {isFormOpen && (
-            <div className="w-full lg:w-96 xl:w-[480px] bg-white border-r border-[#e2e8f0] p-4 sm:p-6 overflow-y-auto h-full flex-shrink-0 print:hidden">
+            <div className="w-96 xl:w-[480px] bg-white border-r border-[#e2e8f0] p-6 overflow-y-auto h-full flex-shrink-0">
               <EditorSectionForm
                 activeSection={activeSection}
                 onSelectSection={setActiveSection}
@@ -321,7 +382,7 @@ export const EditorPage = () => {
           )}
 
           {/* 3. Right Column: Live A4 Preview (Scrollable) */}
-          <div className="flex-1 bg-[#525659]/10 p-4 sm:p-8 overflow-y-auto h-full flex justify-center items-start print:p-0 print:m-0 print:w-auto print:h-auto print:bg-white print:overflow-visible print:block">
+          <div className="flex-1 bg-[#525659]/10 p-8 overflow-y-auto h-full flex justify-center items-start">
             <ResumeA4Preview
               ref={previewRef}
               data={debouncedPreviewData}
@@ -329,6 +390,112 @@ export const EditorPage = () => {
             />
           </div>
         </main>
+
+        {/* ======================================================== */}
+        {/* 2. MOBILE WORKSPACE (Dedicated tabbed view on < lg) */}
+        {/* ======================================================== */}
+        <div className="flex-1 lg:hidden flex flex-col overflow-hidden print:hidden">
+          {/* Mobile Tab 1: Daftar Bagian (Sections list & Drag) */}
+          {mobileTab === "sections" && (
+            <div className="flex-1 overflow-y-auto bg-white p-4">
+              <div className="mb-3 pb-2 border-b border-[#e2e8f0] flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[#0f172a]">
+                    Pilih Bagian Resume
+                  </h3>
+                  <p className="text-[11px] text-[#5d5e61]">
+                    Pilih bagian untuk diedit atau atur urutan tampilannya di CV.
+                  </p>
+                </div>
+              </div>
+
+              <EditorSidebar
+                activeSection={activeSection}
+                onSelectSection={(secId) => {
+                  setActiveSection(secId);
+                  setMobileTab("form");
+                }}
+                formData={formData}
+                isFormOpen={true}
+                onReorderSections={handleReorderSections}
+              />
+            </div>
+          )}
+
+          {/* Mobile Tab 2: Formulir Pengisian (Active Section Form) */}
+          {mobileTab === "form" && (
+            <div className="flex-1 overflow-y-auto bg-white p-4">
+              <EditorSectionForm
+                activeSection={activeSection}
+                onSelectSection={setActiveSection}
+                data={formData}
+                onChange={handleFormChange}
+                onClose={() => setMobileTab("sections")}
+              />
+            </div>
+          )}
+
+          {/* Mobile Tab 3: Pratinjau A4 CV (Mobile Zoom & Auto-Fit) */}
+          {mobileTab === "preview" && (
+            <div className="flex-1 flex flex-col overflow-hidden bg-[#525659]/10">
+              {/* Mobile Zoom Toolbar */}
+              <div className="bg-white border-b border-[#e2e8f0] px-3 py-1.5 flex items-center justify-between gap-2 flex-shrink-0">
+                <span className="text-[11px] font-mono-code text-[#5d5e61]">
+                  Skala Pratinjau:
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setMobileZoom((z) => Math.max(30, z - 10))}
+                    className="p-1 border border-[#e2e8f0] bg-[#f8fafc] text-[#0f172a] hover:bg-white text-xs"
+                    title="Perkecil"
+                  >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-xs font-mono-code font-bold px-1.5 min-w-[36px] text-center">
+                    {mobileZoom}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMobileZoom((z) => Math.min(120, z + 10))}
+                    className="p-1 border border-[#e2e8f0] bg-[#f8fafc] text-[#0f172a] hover:bg-white text-xs"
+                    title="Perbesar"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMobileZoom(48)}
+                    className="p-1 border border-[#e2e8f0] bg-[#f8fafc] text-[#5d5e61] hover:text-[#0f172a] hover:bg-white text-xs ml-1 flex items-center gap-1"
+                    title="Pas Layar HP (48%)"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span className="text-[10px] font-mono-code">Pas Layar</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* A4 Document Preview Canvas */}
+              <div className="flex-1 overflow-auto p-2 sm:p-4 flex justify-center items-start">
+                <ResumeA4Preview
+                  ref={previewRef}
+                  data={debouncedPreviewData}
+                  zoom={mobileZoom}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ======================================================== */}
+        {/* 3. PRINT CANVAS (Only rendered during print) */}
+        {/* ======================================================== */}
+        <div className="hidden print:block print:p-0 print:m-0 print:w-auto print:h-auto print:bg-white">
+          <ResumeA4Preview
+            data={debouncedPreviewData}
+            zoom={100}
+          />
+        </div>
       </div>
     </div>
   );
