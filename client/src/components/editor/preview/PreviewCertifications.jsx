@@ -1,11 +1,12 @@
 export const PreviewCertifications = ({
   certifications = [],
   title = "SERTIFIKAT DAN PRESTASI",
+  isLast = false,
 }) => {
   if (!certifications || certifications.length === 0) return null;
 
   return (
-    <section className="mb-4">
+    <section className={isLast ? "mb-0" : "mb-4"}>
       <h2
         style={{
           fontSize: "17px",
@@ -21,9 +22,13 @@ export const PreviewCertifications = ({
         style={{
           fontSize: "10px",
           lineHeight: 1.5,
-          borderBottom: "2px dotted #777",
-          paddingBottom: "9px",
-          marginBottom: "6px",
+          ...(isLast
+            ? {}
+            : {
+                borderBottom: "2px dotted #777",
+                paddingBottom: "9px",
+                marginBottom: "6px",
+              }),
         }}
       >
         {certifications.map((cert, idx) => {

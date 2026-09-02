@@ -15,6 +15,7 @@ import { HeaderSectionForm } from "./sections/HeaderSectionForm.jsx";
 import { SummarySectionForm } from "./sections/SummarySectionForm.jsx";
 import { EducationsSectionForm } from "./sections/EducationsSectionForm.jsx";
 import { ExperiencesSectionForm } from "./sections/ExperiencesSectionForm.jsx";
+import { ProjectsSectionForm } from "./sections/ProjectsSectionForm.jsx";
 import { OrganizationsSectionForm } from "./sections/OrganizationsSectionForm.jsx";
 import { CertificationsSectionForm } from "./sections/CertificationsSectionForm.jsx";
 import { SkillsSectionForm } from "./sections/SkillsSectionForm.jsx";
@@ -139,6 +140,14 @@ export const EditorSectionForm = ({
 
       {activeSection === "experiences" && (
         <ExperiencesSectionForm
+          data={data}
+          onChange={onChange}
+          onRequestDelete={setDeleteTarget}
+        />
+      )}
+
+      {activeSection === "projects" && (
+        <ProjectsSectionForm
           data={data}
           onChange={onChange}
           onRequestDelete={setDeleteTarget}

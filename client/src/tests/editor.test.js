@@ -332,6 +332,64 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
     });
   });
 
+  describe("Format Proyek Portofolio ATS", () => {
+    const formatProject = (proj) => {
+      if (!proj) return null;
+      const nameAndRole = [proj.name, proj.role].filter(Boolean).join(" / ");
+      const dateDisplay =
+        proj.startDate && proj.endDate
+          ? `${proj.startDate} - ${proj.endDate}`
+          : proj.startDate
+          ? `${proj.startDate} - Sekarang`
+          : proj.period || "";
+      const metaParts = [
+        dateDisplay,
+        proj.technologies ? `Teknologi: ${proj.technologies}` : "",
+      ].filter(Boolean);
+
+      return {
+        titleLine: `${nameAndRole}${proj.link ? ` (${proj.link})` : ""}`,
+        metaLine: metaParts.join(" | "),
+        bullets: proj.bullets || [],
+      };
+    };
+
+    it("harus memformat informasi proyek lengkap dengan peran, tautan, dan teknologi", () => {
+      const proj = {
+        name: "Resumix ATS Builder",
+        role: "Full Stack Engineer",
+        link: "https://github.com/fermanferdaus/resumix",
+        technologies: "React, Node.js, Express, PostgreSQL",
+        startDate: "Januari 2026",
+        endDate: "Sekarang",
+        bullets: ["Membangun arsitektur frontend modular."],
+      };
+
+      const result = formatProject(proj);
+      assert.strictEqual(
+        result.titleLine,
+        "Resumix ATS Builder / Full Stack Engineer (https://github.com/fermanferdaus/resumix)"
+      );
+      assert.strictEqual(
+        result.metaLine,
+        "Januari 2026 - Sekarang | Teknologi: React, Node.js, Express, PostgreSQL"
+      );
+      assert.strictEqual(result.bullets.length, 1);
+    });
+
+    it("harus mendukung proyek minimal tanpa tautan atau tanpa role", () => {
+      const proj = {
+        name: "Sistem Kasir POS",
+        technologies: "Java, MySQL",
+        period: "2024",
+      };
+
+      const result = formatProject(proj);
+      assert.strictEqual(result.titleLine, "Sistem Kasir POS");
+      assert.strictEqual(result.metaLine, "2024 | Teknologi: Java, MySQL");
+    });
+  });
+
   describe("Format Nama File Unduhan PDF (Resumix-nama pengguna-posisi)", () => {
     const formatPdfFilename = (fullName, targetRole) => {
       const name = fullName?.trim() || "Pengguna";

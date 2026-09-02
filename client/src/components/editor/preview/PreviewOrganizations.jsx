@@ -1,11 +1,12 @@
 export const PreviewOrganizations = ({
   organizations = [],
   title = "PENGALAMAN ORGANISASI",
+  isLast = false,
 }) => {
   if (!organizations || organizations.length === 0) return null;
 
   return (
-    <section className="mb-4">
+    <section className={isLast ? "mb-0" : "mb-4"}>
       <h2
         style={{
           fontSize: "17px",
@@ -21,9 +22,13 @@ export const PreviewOrganizations = ({
         style={{
           fontSize: "10px",
           lineHeight: 1.5,
-          borderBottom: "2px dotted #777",
-          paddingBottom: "9px",
-          marginBottom: "6px",
+          ...(isLast
+            ? {}
+            : {
+                borderBottom: "2px dotted #777",
+                paddingBottom: "9px",
+                marginBottom: "6px",
+              }),
         }}
       >
         {organizations.map((org, idx) => {
@@ -32,8 +37,8 @@ export const PreviewOrganizations = ({
             (org.startDate && org.endDate
               ? `${org.startDate} – ${org.endDate}`
               : org.startDate
-                ? `${org.startDate} – Sekarang`
-                : "");
+              ? `${org.startDate} – Sekarang`
+              : "");
 
           return (
             <li key={idx} className="text-black text-justify pl-0.5">

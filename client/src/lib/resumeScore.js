@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Menghitung persentase skor kesiapan ATS berdasarkan data form resume (0 - 100%)
  */
 export const calculateAtsProgress = (formData) => {
@@ -13,6 +13,7 @@ export const calculateAtsProgress = (formData) => {
   if (formData.summary?.trim()) score += 15;
   if (formData.educations?.length > 0) score += 15;
   if (formData.experiences?.length > 0) score += 20;
+  if (formData.projects?.length > 0) score += 5;
   if (formData.organizations?.length > 0) score += 5;
   if (formData.certifications?.length > 0) score += 5;
   if (

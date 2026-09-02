@@ -81,6 +81,7 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
       "summary",
       "educations",
       "experiences",
+      "projects",
       "organizations",
       "certifications",
       "skills",
@@ -110,6 +111,7 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
       const customOrder = [
         "experiences",
         "educations",
+        "projects",
         "skills",
         "summary",
         "organizations",
@@ -118,7 +120,7 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
       const result = normalizeOrder(customOrder);
       assert.strictEqual(result[0], "experiences");
       assert.strictEqual(result[1], "educations");
-      assert.strictEqual(result.length, 6);
+      assert.strictEqual(result.length, 7);
     });
 
     it("harus menyisipkan section yang hilang jika data tersimpan parsial", () => {
@@ -126,7 +128,8 @@ describe("Frontend Unit: Resume Data & Dashboard Utilities", () => {
       const result = normalizeOrder(partialOrder);
       assert.strictEqual(result[0], "experiences");
       assert.strictEqual(result[1], "educations");
-      assert.strictEqual(result.length, 6);
+      assert.strictEqual(result.length, 7);
+      assert.strictEqual(result.includes("projects"), true);
       assert.strictEqual(result.includes("skills"), true);
       assert.strictEqual(result.includes("summary"), true);
     });
