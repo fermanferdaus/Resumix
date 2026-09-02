@@ -32,12 +32,22 @@ export const PreviewCertifications = ({
           const name = isObj ? cert.name : cert;
           const issuer = isObj ? cert.issuer : "";
           const year = isObj ? cert.year || cert.date : "";
+          const credentialId = isObj
+            ? cert.credentialId || cert.number || cert.certificateNumber
+            : "";
 
-          if (!name && !issuer && !year) return null;
+          if (!name && !issuer && !year && !credentialId) return null;
 
           const parts = [];
           if (name) parts.push(name);
           if (issuer) parts.push(issuer);
+          if (credentialId && String(credentialId).trim()) {
+            const trimmed = String(credentialId).trim();
+            const formattedId = /^(no|id|credential|nomor)/i.test(trimmed)
+              ? trimmed
+              : `No. ${trimmed}`;
+            parts.push(formattedId);
+          }
           let mainText = parts.join(", ");
           if (year) {
             mainText += ` (${year})`;

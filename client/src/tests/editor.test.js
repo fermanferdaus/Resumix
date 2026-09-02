@@ -217,12 +217,22 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
       const name = isObj ? cert.name : cert;
       const issuer = isObj ? cert.issuer : "";
       const year = isObj ? (cert.year || cert.date) : "";
+      const credentialId = isObj
+        ? cert.credentialId || cert.number || cert.certificateNumber
+        : "";
 
-      if (!name && !issuer && !year) return "";
+      if (!name && !issuer && !year && !credentialId) return "";
 
       const parts = [];
       if (name) parts.push(name);
       if (issuer) parts.push(issuer);
+      if (credentialId && String(credentialId).trim()) {
+        const trimmed = String(credentialId).trim();
+        const formattedId = /^(no|id|credential|nomor)/i.test(trimmed)
+          ? trimmed
+          : `No. ${trimmed}`;
+        parts.push(formattedId);
+      }
       let mainText = parts.join(", ");
       if (year) {
         mainText += ` (${year})`;
@@ -240,6 +250,34 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
       assert.strictEqual(
         formatCert(cert),
         "Juara 1 Kontes Robot Indonesia (KRI), Puspresnas Kemendikbudristek (2024)"
+      );
+    });
+
+    it("harus mendukung sertifikat dengan nomor sertifikat atau credential ID", () => {
+      const cert = {
+        name: "AWS Certified Solutions Architect",
+        issuer: "Amazon Web Services",
+        credentialId: "AWS-987654",
+        year: "2024",
+      };
+
+      assert.strictEqual(
+        formatCert(cert),
+        "AWS Certified Solutions Architect, Amazon Web Services, No. AWS-987654 (2024)"
+      );
+    });
+
+    it("harus mempertahankan prefix nomor jika pengguna sudah menuliskan ID/No.", () => {
+      const cert = {
+        name: "Google Associate Cloud Engineer",
+        issuer: "Google Cloud",
+        credentialId: "ID: GCP-112233",
+        year: "2025",
+      };
+
+      assert.strictEqual(
+        formatCert(cert),
+        "Google Associate Cloud Engineer, Google Cloud, ID: GCP-112233 (2025)"
       );
     });
 
