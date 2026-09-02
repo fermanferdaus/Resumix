@@ -1,13 +1,14 @@
 export const PreviewSkills = ({
   skills = { hardSkills: [], softSkills: [] },
   title = "KEAHLIAN",
+  isLast = false,
 }) => {
   const hasHardSkills = skills?.hardSkills && skills.hardSkills.length > 0;
   const hasSoftSkills = skills?.softSkills && skills.softSkills.length > 0;
   if (!hasHardSkills && !hasSoftSkills) return null;
 
   return (
-    <section className="mb-4">
+    <section className={isLast ? "mb-0" : "mb-4"}>
       <h2
         style={{
           fontSize: "17px",
@@ -21,7 +22,7 @@ export const PreviewSkills = ({
 
       {/* Hard Skill */}
       {hasHardSkills && (
-        <div className="mb-2">
+        <div className={hasSoftSkills ? "mb-2" : ""}>
           {hasSoftSkills && (
             <div
               style={{
@@ -36,7 +37,17 @@ export const PreviewSkills = ({
           )}
           <ul
             className="list-disc pl-4 space-y-0.5"
-            style={{ fontSize: "10px", lineHeight: 1.5 }}
+            style={{
+              fontSize: "10px",
+              lineHeight: 1.5,
+              ...(!hasSoftSkills && !isLast
+                ? {
+                    borderBottom: "2px dotted #777",
+                    paddingBottom: "9px",
+                    marginBottom: "6px",
+                  }
+                : {}),
+            }}
           >
             {skills.hardSkills.map((h, idx) => {
               if (!h) return null;
@@ -85,7 +96,17 @@ export const PreviewSkills = ({
           )}
           <ul
             className="list-disc pl-4 space-y-0.5"
-            style={{ fontSize: "10px", lineHeight: 1.5 }}
+            style={{
+              fontSize: "10px",
+              lineHeight: 1.5,
+              ...(isLast
+                ? {}
+                : {
+                    borderBottom: "2px dotted #777",
+                    paddingBottom: "9px",
+                    marginBottom: "6px",
+                  }),
+            }}
           >
             {skills.softSkills.map((s, idx) => (
               <li key={idx} className="text-black text-justify pl-0.5">

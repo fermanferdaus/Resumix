@@ -16,7 +16,7 @@ export const CertificationsSectionForm = ({
   const handleAddCertification = () => {
     const newCertifications = [
       ...(data.certifications || []),
-      { name: "", issuer: "", year: "" },
+      { name: "", issuer: "", credentialId: "", year: "" },
     ];
     onChange({ ...data, certifications: newCertifications });
   };
@@ -94,6 +94,7 @@ export const CertificationsSectionForm = ({
             : {
                 name: typeof cert === "string" ? cert : "",
                 issuer: "",
+                credentialId: "",
                 year: "",
               };
 
@@ -151,7 +152,7 @@ export const CertificationsSectionForm = ({
                 <Label>Penyelenggara / Penerbit</Label>
                 <Input
                   type="text"
-                  placeholder="Contoh: Puspresnas Kemdikbudristek / Amazon Web Services"
+                  placeholder="Contoh: Amazon Web Services / Puspresnas"
                   value={certObj.issuer || ""}
                   onChange={(e) =>
                     handleUpdateCertification(idx, "issuer", e.target.value)
@@ -168,6 +169,18 @@ export const CertificationsSectionForm = ({
                   placeholder="Pilih Tahun"
                 />
               </div>
+            </div>
+
+            <div>
+              <Label>Nomor Sertifikat (Opsional)</Label>
+              <Input
+                type="text"
+                placeholder="Contoh: CERT-123456 / No. 8921 / ID: AWS-987654"
+                value={certObj.credentialId || certObj.number || ""}
+                onChange={(e) =>
+                  handleUpdateCertification(idx, "credentialId", e.target.value)
+                }
+              />
             </div>
           </div>
         );

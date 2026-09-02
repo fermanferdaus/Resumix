@@ -35,6 +35,8 @@ export const EditorSidebar = ({
         return (formData.educations || []).length > 0;
       case "experiences":
         return (formData.experiences || []).length > 0;
+      case "projects":
+        return (formData.projects || []).length > 0;
       case "organizations":
         return (formData.organizations || []).length > 0;
       case "certifications":

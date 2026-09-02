@@ -48,6 +48,7 @@ export const EditorPage = () => {
     summary: "",
     educations: [],
     experiences: [],
+    projects: [],
     organizations: [],
     certifications: [],
     skills: { hardSkills: [], softSkills: [] },
@@ -114,6 +115,7 @@ export const EditorPage = () => {
         experiences: Array.isArray(rawData.experiences)
           ? rawData.experiences
           : [],
+        projects: Array.isArray(rawData.projects) ? rawData.projects : [],
         organizations: Array.isArray(rawData.organizations)
           ? rawData.organizations
           : [],
@@ -346,11 +348,7 @@ export const EditorPage = () => {
           </div>
         </div>
 
-        {/* ======================================================== */}
-        {/* 1. DESKTOP WORKSPACE (Unchanged 3-column layout on lg+) */}
-        {/* ======================================================== */}
         <main className="hidden lg:flex flex-1 w-full flex-row overflow-hidden print:hidden">
-          {/* 1. Left Sidebar: Section Navigation (Collapsible) */}
           {isSidebarOpen && (
             <EditorSidebar
               activeSection={activeSection}
@@ -368,7 +366,6 @@ export const EditorPage = () => {
             />
           )}
 
-          {/* 2. Center Column: Focused Section Form Editor (Collapsible & Scrollable) */}
           {isFormOpen && (
             <div className="w-96 xl:w-[480px] bg-white border-r border-[#e2e8f0] p-6 overflow-y-auto h-full flex-shrink-0">
               <EditorSectionForm
@@ -381,7 +378,6 @@ export const EditorPage = () => {
             </div>
           )}
 
-          {/* 3. Right Column: Live A4 Preview (Scrollable) */}
           <div className="flex-1 bg-[#525659]/10 p-8 overflow-y-auto h-full flex justify-center items-start">
             <ResumeA4Preview
               ref={previewRef}
@@ -391,11 +387,7 @@ export const EditorPage = () => {
           </div>
         </main>
 
-        {/* ======================================================== */}
-        {/* 2. MOBILE WORKSPACE (Dedicated tabbed view on < lg) */}
-        {/* ======================================================== */}
         <div className="flex-1 lg:hidden flex flex-col overflow-hidden print:hidden">
-          {/* Mobile Tab 1: Daftar Bagian (Sections list & Drag) */}
           {mobileTab === "sections" && (
             <div className="flex-1 overflow-y-auto bg-white p-4">
               <div className="mb-3 pb-2 border-b border-[#e2e8f0] flex items-center justify-between">
@@ -422,7 +414,6 @@ export const EditorPage = () => {
             </div>
           )}
 
-          {/* Mobile Tab 2: Formulir Pengisian (Active Section Form) */}
           {mobileTab === "form" && (
             <div className="flex-1 overflow-y-auto bg-white p-4">
               <EditorSectionForm
@@ -435,7 +426,6 @@ export const EditorPage = () => {
             </div>
           )}
 
-          {/* Mobile Tab 3: Pratinjau A4 CV (Mobile Zoom & Auto-Fit) */}
           {mobileTab === "preview" && (
             <div className="flex-1 flex flex-col overflow-hidden bg-[#525659]/10">
               {/* Mobile Zoom Toolbar */}
@@ -487,9 +477,6 @@ export const EditorPage = () => {
           )}
         </div>
 
-        {/* ======================================================== */}
-        {/* 3. PRINT CANVAS (Only rendered during print) */}
-        {/* ======================================================== */}
         <div className="hidden print:block print:p-0 print:m-0 print:w-auto print:h-auto print:bg-white">
           <ResumeA4Preview
             data={debouncedPreviewData}

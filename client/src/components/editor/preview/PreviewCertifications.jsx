@@ -1,11 +1,12 @@
 export const PreviewCertifications = ({
   certifications = [],
   title = "SERTIFIKAT DAN PRESTASI",
+  isLast = false,
 }) => {
   if (!certifications || certifications.length === 0) return null;
 
   return (
-    <section className="mb-4">
+    <section className={isLast ? "mb-0" : "mb-4"}>
       <h2
         style={{
           fontSize: "17px",
@@ -21,9 +22,13 @@ export const PreviewCertifications = ({
         style={{
           fontSize: "10px",
           lineHeight: 1.5,
-          borderBottom: "2px dotted #777",
-          paddingBottom: "9px",
-          marginBottom: "6px",
+          ...(isLast
+            ? {}
+            : {
+                borderBottom: "2px dotted #777",
+                paddingBottom: "9px",
+                marginBottom: "6px",
+              }),
         }}
       >
         {certifications.map((cert, idx) => {
@@ -32,12 +37,22 @@ export const PreviewCertifications = ({
           const name = isObj ? cert.name : cert;
           const issuer = isObj ? cert.issuer : "";
           const year = isObj ? cert.year || cert.date : "";
+          const credentialId = isObj
+            ? cert.credentialId || cert.number || cert.certificateNumber
+            : "";
 
-          if (!name && !issuer && !year) return null;
+          if (!name && !issuer && !year && !credentialId) return null;
 
           const parts = [];
           if (name) parts.push(name);
           if (issuer) parts.push(issuer);
+          if (credentialId && String(credentialId).trim()) {
+            const trimmed = String(credentialId).trim();
+            const formattedId = /^(no|id|credential|nomor)/i.test(trimmed)
+              ? trimmed
+              : `No. ${trimmed}`;
+            parts.push(formattedId);
+          }
           let mainText = parts.join(", ");
           if (year) {
             mainText += ` (${year})`;

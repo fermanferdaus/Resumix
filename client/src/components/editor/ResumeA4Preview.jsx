@@ -9,6 +9,7 @@ import { PreviewHeader } from "./preview/PreviewHeader.jsx";
 import { PreviewSummary } from "./preview/PreviewSummary.jsx";
 import { PreviewEducations } from "./preview/PreviewEducations.jsx";
 import { PreviewExperiences } from "./preview/PreviewExperiences.jsx";
+import { PreviewProjects } from "./preview/PreviewProjects.jsx";
 import { PreviewOrganizations } from "./preview/PreviewOrganizations.jsx";
 import { PreviewCertifications } from "./preview/PreviewCertifications.jsx";
 import { PreviewSkills } from "./preview/PreviewSkills.jsx";
@@ -19,6 +20,7 @@ export const ResumeA4Preview = React.forwardRef(
     const summary = data.summary || "";
     const educations = data.educations || [];
     const experiences = data.experiences || [];
+    const projects = data.projects || [];
     const organizations = data.organizations || [];
     const certifications = data.certifications || [];
     const skills = data.skills || { hardSkills: [], softSkills: [] };
@@ -31,7 +33,36 @@ export const ResumeA4Preview = React.forwardRef(
     const scale = zoom / 100;
     const bodySectionOrder = normalizeSectionOrder(data.sectionOrder);
 
+    const isSectionNonEmpty = (secId) => {
+      switch (secId) {
+        case "summary":
+          return !!summary?.trim();
+        case "educations":
+          return educations.length > 0;
+        case "experiences":
+          return experiences.length > 0;
+        case "projects":
+          return projects.length > 0;
+        case "organizations":
+          return organizations.length > 0;
+        case "certifications":
+          return certifications.length > 0;
+        case "skills":
+          return (
+            (skills.hardSkills || []).length > 0 ||
+            (skills.softSkills || []).length > 0
+          );
+        default:
+          return false;
+      }
+    };
+
+    const activeSections = bodySectionOrder.filter(isSectionNonEmpty);
+    const lastActiveSectionId = activeSections[activeSections.length - 1];
+
     const renderSection = (sectionId) => {
+      const isLast = sectionId === lastActiveSectionId;
+
       switch (sectionId) {
         case "summary":
           return (
@@ -39,6 +70,7 @@ export const ResumeA4Preview = React.forwardRef(
               key="summary"
               summary={summary}
               title={sectionTitles.summary}
+              isLast={isLast}
             />
           );
         case "educations":
@@ -47,6 +79,7 @@ export const ResumeA4Preview = React.forwardRef(
               key="educations"
               educations={educations}
               title={sectionTitles.educations}
+              isLast={isLast}
             />
           );
         case "experiences":
@@ -55,6 +88,16 @@ export const ResumeA4Preview = React.forwardRef(
               key="experiences"
               experiences={experiences}
               title={sectionTitles.experiences}
+              isLast={isLast}
+            />
+          );
+        case "projects":
+          return (
+            <PreviewProjects
+              key="projects"
+              projects={projects}
+              title={sectionTitles.projects}
+              isLast={isLast}
             />
           );
         case "organizations":
@@ -63,6 +106,7 @@ export const ResumeA4Preview = React.forwardRef(
               key="organizations"
               organizations={organizations}
               title={sectionTitles.organizations}
+              isLast={isLast}
             />
           );
         case "certifications":
@@ -71,6 +115,7 @@ export const ResumeA4Preview = React.forwardRef(
               key="certifications"
               certifications={certifications}
               title={sectionTitles.certifications}
+              isLast={isLast}
             />
           );
         case "skills":
@@ -79,6 +124,7 @@ export const ResumeA4Preview = React.forwardRef(
               key="skills"
               skills={skills}
               title={sectionTitles.skills}
+              isLast={isLast}
             />
           );
         default:

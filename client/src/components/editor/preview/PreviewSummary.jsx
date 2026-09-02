@@ -1,8 +1,12 @@
-export const PreviewSummary = ({ summary = "", title = "PROFIL" }) => {
+export const PreviewSummary = ({
+  summary = "",
+  title = "PROFIL",
+  isLast = false,
+}) => {
   if (!summary) return null;
 
   return (
-    <section className="mb-4">
+    <section className={isLast ? "mb-0" : "mb-4"}>
       <h2
         style={{
           fontSize: "17px",
@@ -18,9 +22,13 @@ export const PreviewSummary = ({ summary = "", title = "PROFIL" }) => {
           fontSize: "10px",
           lineHeight: 1.5,
           textAlign: "justify",
-          borderBottom: "2px dotted #777",
-          paddingBottom: "9px",
-          marginBottom: "6px",
+          ...(isLast
+            ? {}
+            : {
+                borderBottom: "2px dotted #777",
+                paddingBottom: "9px",
+                marginBottom: "6px",
+              }),
         }}
         className="text-black font-normal"
       >

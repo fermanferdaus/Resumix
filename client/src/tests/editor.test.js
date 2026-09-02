@@ -217,12 +217,22 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
       const name = isObj ? cert.name : cert;
       const issuer = isObj ? cert.issuer : "";
       const year = isObj ? (cert.year || cert.date) : "";
+      const credentialId = isObj
+        ? cert.credentialId || cert.number || cert.certificateNumber
+        : "";
 
-      if (!name && !issuer && !year) return "";
+      if (!name && !issuer && !year && !credentialId) return "";
 
       const parts = [];
       if (name) parts.push(name);
       if (issuer) parts.push(issuer);
+      if (credentialId && String(credentialId).trim()) {
+        const trimmed = String(credentialId).trim();
+        const formattedId = /^(no|id|credential|nomor)/i.test(trimmed)
+          ? trimmed
+          : `No. ${trimmed}`;
+        parts.push(formattedId);
+      }
       let mainText = parts.join(", ");
       if (year) {
         mainText += ` (${year})`;
@@ -240,6 +250,34 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
       assert.strictEqual(
         formatCert(cert),
         "Juara 1 Kontes Robot Indonesia (KRI), Puspresnas Kemendikbudristek (2024)"
+      );
+    });
+
+    it("harus mendukung sertifikat dengan nomor sertifikat atau credential ID", () => {
+      const cert = {
+        name: "AWS Certified Solutions Architect",
+        issuer: "Amazon Web Services",
+        credentialId: "AWS-987654",
+        year: "2024",
+      };
+
+      assert.strictEqual(
+        formatCert(cert),
+        "AWS Certified Solutions Architect, Amazon Web Services, No. AWS-987654 (2024)"
+      );
+    });
+
+    it("harus mempertahankan prefix nomor jika pengguna sudah menuliskan ID/No.", () => {
+      const cert = {
+        name: "Google Associate Cloud Engineer",
+        issuer: "Google Cloud",
+        credentialId: "ID: GCP-112233",
+        year: "2025",
+      };
+
+      assert.strictEqual(
+        formatCert(cert),
+        "Google Associate Cloud Engineer, Google Cloud, ID: GCP-112233 (2025)"
       );
     });
 
@@ -291,6 +329,64 @@ describe("Frontend Unit: Editor Logic & ATS Layout Specs", () => {
         formatSkill(skillWithoutCategory),
         "React.js, Tailwind CSS, Next.js, Express.js"
       );
+    });
+  });
+
+  describe("Format Proyek Portofolio ATS", () => {
+    const formatProject = (proj) => {
+      if (!proj) return null;
+      const nameAndRole = [proj.name, proj.role].filter(Boolean).join(" / ");
+      const dateDisplay =
+        proj.startDate && proj.endDate
+          ? `${proj.startDate} - ${proj.endDate}`
+          : proj.startDate
+          ? `${proj.startDate} - Sekarang`
+          : proj.period || "";
+      const metaParts = [
+        dateDisplay,
+        proj.technologies ? `Teknologi: ${proj.technologies}` : "",
+      ].filter(Boolean);
+
+      return {
+        titleLine: `${nameAndRole}${proj.link ? ` (${proj.link})` : ""}`,
+        metaLine: metaParts.join(" | "),
+        bullets: proj.bullets || [],
+      };
+    };
+
+    it("harus memformat informasi proyek lengkap dengan peran, tautan, dan teknologi", () => {
+      const proj = {
+        name: "Resumix ATS Builder",
+        role: "Full Stack Engineer",
+        link: "https://github.com/fermanferdaus/resumix",
+        technologies: "React, Node.js, Express, PostgreSQL",
+        startDate: "Januari 2026",
+        endDate: "Sekarang",
+        bullets: ["Membangun arsitektur frontend modular."],
+      };
+
+      const result = formatProject(proj);
+      assert.strictEqual(
+        result.titleLine,
+        "Resumix ATS Builder / Full Stack Engineer (https://github.com/fermanferdaus/resumix)"
+      );
+      assert.strictEqual(
+        result.metaLine,
+        "Januari 2026 - Sekarang | Teknologi: React, Node.js, Express, PostgreSQL"
+      );
+      assert.strictEqual(result.bullets.length, 1);
+    });
+
+    it("harus mendukung proyek minimal tanpa tautan atau tanpa role", () => {
+      const proj = {
+        name: "Sistem Kasir POS",
+        technologies: "Java, MySQL",
+        period: "2024",
+      };
+
+      const result = formatProject(proj);
+      assert.strictEqual(result.titleLine, "Sistem Kasir POS");
+      assert.strictEqual(result.metaLine, "2024 | Teknologi: Java, MySQL");
     });
   });
 
