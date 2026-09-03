@@ -77,6 +77,12 @@ export const LandingNavbar = () => {
             >
               FAQ
             </a>
+            <a
+              href="#kontak"
+              className="text-xs font-semibold text-[#475569] hover:text-[#af101a] hover:bg-[#f8fafc] px-3 py-2 transition-colors"
+            >
+              Kontak
+            </a>
           </div>
 
           {/* Actions (Desktop) */}
@@ -181,6 +187,13 @@ export const LandingNavbar = () => {
               className="text-xs font-semibold text-[#0f172a] py-1.5 border-b border-[#f1f5f9]"
             >
               FAQ
+            </a>
+            <a
+              href="#kontak"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-semibold text-[#0f172a] py-1.5 border-b border-[#f1f5f9]"
+            >
+              Kontak
             </a>
             <a
               href="https://saweria.co/fermanferdaus"
