@@ -12,23 +12,23 @@ export const HeroSection = () => {
         {/* Left: Headline & CTAs */}
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div className="flex flex-col gap-4">
-            <span className="text-xs font-mono-code text-[#5d5e61] uppercase tracking-widest flex items-center gap-2">
-              <span className="w-8 h-px bg-[#5d5e61]"></span>
-              ATS COMPLIANT STANDARD // SYSTEM READY
+            <span className="text-xs font-mono-code text-[#af101a] font-bold uppercase tracking-wider flex items-center gap-2">
+              <span className="w-6 h-0.5 bg-[#af101a]"></span>
+              STANDAR ATS RESMI // 100% GRATIS
             </span>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[#0f172a] leading-[1.1] tracking-tight">
-              Construct Your <br className="hidden sm:inline" />
-              <span className="text-[#af101a]">Career Blueprint.</span>
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[#0f172a] leading-[1.15] tracking-tight">
+              Bikin CV ATS Rapi yang <br className="hidden sm:inline" />
+              <span className="text-[#af101a]">Siap Dibaca Rekruter.</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#334155] max-w-xl leading-relaxed">
-              Bangun resume profesional yang menembus <em>Applicant Tracking Systems</em> (ATS) dengan presisi. Format standar satu kolom, tipografi terkalibrasi, tanpa kompromi.
+            <p className="text-sm sm:text-base text-[#475569] max-w-xl leading-relaxed">
+              Format satu kolom bersih dan terstruktur rapi agar terbaca jelas oleh sistem ATS maupun tim HRD. Gratis dipakai, tanpa watermark, dan langsung bisa diunduh ke PDF siap kirim.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+            <Link to={isAuthenticated ? "/dashboard" : "/login"}>
               <Button
                 size="lg"
                 className="bg-[#af101a] hover:bg-[#1a1c1e] text-white font-semibold text-sm px-6 py-5 rounded-none flex items-center gap-2 transition-all shadow-sm"
@@ -45,7 +45,7 @@ export const HeroSection = () => {
                 className="bg-white hover:bg-[#f1f5f9] text-[#0f172a] border-[#1a1c1e] font-semibold text-sm px-6 py-5 rounded-none flex items-center gap-2 transition-colors"
               >
                 <FileText className="w-4 h-4 text-[#5d5e61]" />
-                <span>Lihat Template ATS</span>
+                <span>Lihat Contoh CV</span>
               </Button>
             </a>
           </div>
@@ -57,7 +57,7 @@ export const HeroSection = () => {
                 99.8%
               </span>
               <span className="text-[11px] font-mono-code text-[#5d5e61] uppercase tracking-wider block mt-0.5">
-                ATS Parse Rate
+                Akurasi ATS
               </span>
             </div>
             <div className="border-l border-[#e2e8f0] pl-4">
@@ -73,7 +73,7 @@ export const HeroSection = () => {
                 100%
               </span>
               <span className="text-[11px] font-mono-code text-[#5d5e61] uppercase tracking-wider block mt-0.5">
-                Gratis Selamanya
+                Gratis Dipakai
               </span>
             </div>
           </div>
@@ -87,13 +87,13 @@ export const HeroSection = () => {
             <div className="flex justify-between items-start border-b border-[#cbd5e1] pb-4">
               <div>
                 <h2 className="text-lg font-bold text-[#0f172a] tracking-tight uppercase">
-                  ALEX J. MERCER
+                  RADITYA PRATAMA
                 </h2>
                 <p className="text-xs font-mono-code font-bold text-[#af101a]">
-                  Senior Software Engineer
+                  Senior Full Stack Developer
                 </p>
                 <p className="text-[10px] text-[#5d5e61] mt-1 font-mono-code">
-                  +62 812 3456 7890 / alex.mercer@example.com / Jakarta, Indonesia
+                  +62 812 3456 7890 / raditya.pratama@email.com / Jakarta, Indonesia
                 </p>
               </div>
               <div className="flex gap-2 text-[#94a3b8]">
@@ -113,14 +113,14 @@ export const HeroSection = () => {
                 </span>
               </div>
               <div className="text-[10px] font-bold text-[#0f172a]">
-                Lead Platform Engineer / Tech Corp Nusantara
+                Lead Software Engineer / PT Inovasi Digital Nusantara
               </div>
               <ul className="text-[10px] text-[#334155] space-y-1 list-disc pl-4 leading-relaxed">
                 <li>
-                  Merancang arsitektur microservices performa tinggi dengan throughput 25.000 RPS.
+                  Memimpin tim 8 orang mengembangkan sistem web berskala besar dengan 100.000+ pengguna aktif.
                 </li>
                 <li>
-                  Mengoptimalkan database query Postgres yang memangkas waktu pemrosesan transaksi sebesar 42%.
+                  Memangkas waktu deployment dari 4 jam menjadi 15 menit menggunakan pipeline CI/CD otomatis.
                 </li>
               </ul>
             </div>
@@ -151,18 +151,18 @@ export const HeroSection = () => {
               <div className="flex items-center gap-2">
                 <Radar className="w-4 h-4 text-[#af101a] animate-pulse" />
                 <span className="text-xs font-mono-code font-bold text-[#0f172a] uppercase">
-                  ATS Scanner Active
+                  Pemeriksaan Format ATS
                 </span>
               </div>
-              <span className="text-[10px] font-mono-code px-1.5 py-0.5 bg-[#f1f5f9] border border-[#e2e8f0] text-[#0f172a]">
-                VERIFIED
+              <span className="text-[10px] font-mono-code px-1.5 py-0.5 bg-[#f0fdf4] border border-[#bbf7d0] text-[#166534] font-bold">
+                LOLOS
               </span>
             </div>
 
             <div className="space-y-2.5">
               <div>
                 <div className="flex justify-between text-[11px] font-mono-code mb-1">
-                  <span className="text-[#5d5e61]">Keyword Match</span>
+                  <span className="text-[#5d5e61]">Keterbacaan Teks</span>
                   <span className="text-[#0f172a] font-bold">94%</span>
                 </div>
                 <div className="w-full h-2 bg-[#f1f5f9] relative overflow-hidden">
@@ -172,7 +172,7 @@ export const HeroSection = () => {
 
               <div>
                 <div className="flex justify-between text-[11px] font-mono-code mb-1">
-                  <span className="text-[#5d5e61]">Formatting Integrity</span>
+                  <span className="text-[#5d5e61]">Kesesuaian Format</span>
                   <span className="text-[#0f172a] font-bold">100%</span>
                 </div>
                 <div className="w-full h-2 bg-[#f1f5f9] relative overflow-hidden">
@@ -183,7 +183,7 @@ export const HeroSection = () => {
               <div className="mt-2 pt-2 border-t border-[#f1f5f9] flex items-center gap-2 text-xs font-medium text-[#166534] bg-[#f0fdf4] p-2 border border-[#bbf7d0]">
                 <CheckCircle2 className="w-4 h-4 text-[#166534] shrink-0" />
                 <span className="font-mono-code text-[11px] font-bold">
-                  100% Parsed Successfully
+                  Format Siap Dikirim ke Portal Kerja
                 </span>
               </div>
             </div>

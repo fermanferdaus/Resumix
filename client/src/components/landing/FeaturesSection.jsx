@@ -4,42 +4,42 @@ export const FeaturesSection = () => {
   const features = [
     {
       icon: Shield,
-      title: "100% Lolos Parsing ATS",
+      title: "Format Bersih Lolos ATS",
       description:
-        "Format teks satu kolom linier tanpa tabel tersembunyi, ikon grafis, atau rating bintang yang sering menyebabkan data kandidat rusak di sistem HR.",
+        "Tata letak satu kolom yang mudah dipindai mesin seleksi perusahaan tanpa risiko teks terpotong atau salah baca.",
     },
     {
       icon: Eye,
-      title: "Pratinjau Lembar A4 Real-Time",
+      title: "Pratinjau Lembar A4 Langsung",
       description:
-        "Pratinjau langsung berdampingan dengan formulir. Apa yang Anda lihat di layar adalah 100% presisi sama dengan lembar dokumen PDF yang dicetak.",
+        "Tampilan di layar editor sama persis dengan lembar PDF yang Anda unduh, jadi tidak ada kejutan posisi tulisan bergeser.",
     },
     {
       icon: Move,
-      title: "Drag & Drop Urutan Bagian",
+      title: "Geser & Atur Urutan Bebas",
       description:
-        "Fleksibilitas penuh mengatur susunan riwayat pengalaman, pendidikan, proyek, hingga poin-poin kegiatan organisasi dengan mudah.",
+        "Mudah mengubah urutan pengalaman kerja, riwayat pendidikan, hingga poin kegiatan organisasi sesuai posisi yang dilamar.",
     },
     {
       icon: Lock,
-      title: "Keamanan Akun & Privasi Terjaga",
+      title: "Aman & Bebas Iklan",
       description:
-        "Sesi login terlindungi selama 12 jam, autentikasi terenkripsi, kuota 5 resume mandiri per akun, dan tanpa iklan pelacak.",
+        "Data tersimpan aman di akun Anda. Tanpa iklan yang mengganggu dan bisa membuat hingga 5 resume untuk berbagai lamaran.",
     },
   ];
 
   const faqs = [
     {
-      q: "Mengapa Resumix hanya memiliki 1 template?",
-      a: "Sistem ATS (seperti Workday dan Taleo) bekerja paling efektif dengan tata letak satu kolom yang bersih. Memiliki puluhan template warna-warni justru memperbesar risiko kegagalan parsing. Satu template standar industri ini dirancang agar dapat digunakan melamar ke perusahaan mana pun dengan rasa aman.",
+      q: "Mengapa hanya ada 1 pilihan template?",
+      a: "Sistem ATS dan rekruter lebih mengutamakan keterbacaan isi daripada desain warna-warni. Format satu kolom ini adalah standar industri yang paling aman dan diterima di berbagai perusahaan.",
     },
     {
-      q: "Apakah Resumix mengenakan biaya langganan atau unduhan?",
-      a: "Tidak. Resumix 100% gratis digunakan tanpa biaya berlangganan dan tanpa watermark. Anda dapat membuat hingga 5 resume berbeda untuk berbagai posisi lamaran kerja.",
+      q: "Apakah benar-benar gratis?",
+      a: "Ya, 100% gratis. Anda bisa membuat, mengedit, dan mengunduh file PDF kapan saja tanpa watermark dan tanpa biaya langganan.",
     },
     {
-      q: "Bagaimana cara mengekspor dokumen setelah selesai dibuat?",
-      a: "Cukup klik tombol Cetak / Unduh PDF di dalam editor. Dokumen akan langsung di-render menjadi PDF berbasis teks vektor asli berkualitas tinggi yang siap dikirim ke portal lowongan kerja.",
+      q: "Bagaimana cara mengunduh CV setelah selesai?",
+      a: "Klik tombol Cetak / Unduh PDF di halaman editor. CV Anda akan langsung di-render menjadi file PDF teks asli yang tajam dan siap dikirim.",
     },
   ];
 
@@ -48,14 +48,14 @@ export const FeaturesSection = () => {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-8">
         {/* Section Heading */}
         <div className="max-w-3xl mb-16">
-          <span className="text-xs font-mono-code text-[#af101a] uppercase font-bold tracking-widest block mb-2">
-            // ARCHITECTURAL ADVANTAGES
+          <span className="text-xs font-mono-code text-[#af101a] uppercase font-bold tracking-wider block mb-2">
+            FITUR UTAMA
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0f172a] tracking-tight">
-            Keunggulan Teknis yang Dibangun untuk Anda
+            Fokus pada Isi CV, Tanpa Pusing Atur Format
           </h2>
           <p className="text-sm sm:text-base text-[#5d5e61] mt-3 leading-relaxed">
-            Setiap komponen Resumix dikembangkan untuk memberikan keunggulan kompetitif pada berkas lamaran kerja Anda.
+            Menulis CV yang rapi tidak perlu menghabiskan waktu berjam-jam mengatur margin atau jarak spasi. Semua sudah disesuaikan agar Anda bisa langsung siap melamar kerja.
           </p>
         </div>
 
@@ -80,8 +80,8 @@ export const FeaturesSection = () => {
                   </p>
                 </div>
                 <div className="mt-6 pt-3 border-t border-[#f1f5f9] flex justify-between items-center text-[10px] font-mono-code text-[#94a3b8]">
-                  <span>FEATURE_0{idx + 1}</span>
-                  <span className="text-[#166534] font-bold">READY</span>
+                  <span>STANDAR_ATS</span>
+                  <span className="text-[#166534] font-bold">AKTIF</span>
                 </div>
               </div>
             );
@@ -92,7 +92,7 @@ export const FeaturesSection = () => {
         <div id="faq" className="max-w-4xl mx-auto pt-10 border-t border-[#e2e8f0]">
           <div className="text-center max-w-xl mx-auto mb-10">
             <span className="text-xs font-mono-code text-[#af101a] uppercase font-bold tracking-wider block mb-1">
-              FAQ
+              TANYA JAWAB
             </span>
             <h3 className="text-2xl font-bold text-[#0f172a]">
               Pertanyaan yang Sering Diajukan

@@ -11,14 +11,14 @@ export const TemplateShowcaseSection = () => {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mb-12">
-          <span className="text-xs font-mono-code text-[#af101a] uppercase font-bold tracking-widest block mb-2">
-            // SINGLE CERTIFIED TEMPLATE
+          <span className="text-xs font-mono-code text-[#af101a] uppercase font-bold tracking-wider block mb-2">
+            TEMPLATE STANDAR
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0f172a] tracking-tight">
-            Satu Template. Teruji Menembus Seluruh Sistem ATS.
+            Satu Template Bersih untuk Semua Lamaran Kerja
           </h2>
           <p className="text-sm sm:text-base text-[#5d5e61] mt-3 leading-relaxed">
-            Resumix menolak tren template dekoratif dua kolom dan grafis berlebihan yang sering digugurkan oleh mesin HR. Kami menghadirkan <strong>1 Template Standar Tunggal</strong> yang dirancang secara saintifik agar lolos di Workday, Taleo, Greenhouse, dan Lever.
+            Banyak sistem ATS gagal membaca CV yang memakai kolom ganda, tabel rumit, atau ikon grafis. Template ini menggunakan format satu kolom yang rapi, disukai rekruter, dan kompatibel dengan software ATS perusahaan seperti Workday, Taleo, dan Greenhouse.
           </p>
         </div>
 
@@ -127,25 +127,25 @@ export const TemplateShowcaseSection = () => {
           {/* Right: Technical Badges & Blueprint Rules */}
           <div className="lg:col-span-5 space-y-6">
             <div className="p-6 bg-[#f8fafc] border border-[#e2e8f0] space-y-4">
-              <h3 className="text-lg font-bold text-[#0f172a] flex items-center gap-2">
+              <h3 className="text-base font-bold text-[#0f172a] flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-[#af101a]" />
-                Standar Kepatuhan ATS
+                Kenapa Template Ini Aman untuk ATS?
               </h3>
               <p className="text-xs text-[#5d5e61] leading-relaxed">
-                Template ini dibangun atas konsensus riset sistem rekrutmen perusahaan Fortune 500 dan startup unicorn:
+                Dirancang mengikuti kaidah utama yang memudahkan sistem seleksi membaca data Anda:
               </p>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3.5 pt-1">
                 <div className="flex items-start gap-2.5">
                   <div className="w-5 h-5 bg-[#1a1c1e] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                   <div>
                     <span className="text-xs font-bold text-[#0f172a] block">
-                      Struktur Linier 1 Kolom
+                      Susunan Satu Kolom
                     </span>
-                    <span className="text-[11px] text-[#5d5e61]">
-                      Mencegah parser membaca teks dari kiri ke kanan yang saling bertumpuk antar kolom.
+                    <span className="text-[11px] text-[#5d5e61] leading-relaxed block mt-0.5">
+                      Teks dibaca urut dari atas ke bawah tanpa risiko kalimat tertukar antar kolom.
                     </span>
                   </div>
                 </div>
@@ -156,24 +156,10 @@ export const TemplateShowcaseSection = () => {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-[#0f172a] block">
-                      Tipografi & Hierarki Baku
+                      Judul Bagian Baku
                     </span>
-                    <span className="text-[11px] text-[#5d5e61]">
-                      Penggunaan heading standar (PENGALAMAN KERJA, PENDIDIKAN, KEAHLIAN) yang langsung dikenali parser regex ATS.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 bg-[#1a1c1e] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    <Check className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-[#0f172a] block">
-                      Bebas Jebakan Tabel & Grafik
-                    </span>
-                    <span className="text-[11px] text-[#5d5e61]">
-                      Tanpa rating bintang, bar keahlian, grafik, atau tabel tersembunyi yang membuat CV gagal diindeks.
+                    <span className="text-[11px] text-[#5d5e61] leading-relaxed block mt-0.5">
+                      Memakai nama bagian standar (Pengalaman Kerja, Pendidikan, Keahlian) yang mudah dipindai sistem.
                     </span>
                   </div>
                 </div>
@@ -184,10 +170,24 @@ export const TemplateShowcaseSection = () => {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-[#0f172a] block">
-                      Vektor Teks PDF Asli (Searchable)
+                      Tanpa Elemen Mengganggu
                     </span>
-                    <span className="text-[11px] text-[#5d5e61]">
-                      Ekspor dokumen tetap berupa teks digital murni yang dapat dicari dan disalin secara instan.
+                    <span className="text-[11px] text-[#5d5e61] leading-relaxed block mt-0.5">
+                      Bebas rating bintang, bar keahlian, atau tabel tersembunyi yang sering menggagalkan proses membaca CV.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5">
+                  <div className="w-5 h-5 bg-[#1a1c1e] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-[#0f172a] block">
+                      File PDF Teks Asli
+                    </span>
+                    <span className="text-[11px] text-[#5d5e61] leading-relaxed block mt-0.5">
+                      Hasil unduhan berupa teks digital asli yang tetap bisa diblok, disalin, dan dicari kata kuncinya.
                     </span>
                   </div>
                 </div>
@@ -198,25 +198,25 @@ export const TemplateShowcaseSection = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 bg-white border border-[#e2e8f0]">
                 <Cpu className="w-5 h-5 text-[#af101a] mb-2" />
-                <span className="text-xs font-bold text-[#0f172a] block">Kompatibilitas Mesin</span>
-                <span className="text-[11px] text-[#5d5e61]">Workday, Taleo, Greenhouse, Lever</span>
+                <span className="text-xs font-bold text-[#0f172a] block">Kompatibilitas</span>
+                <span className="text-[11px] text-[#5d5e61]">Workday, Greenhouse, Taleo, Lever</span>
               </div>
               <div className="p-4 bg-white border border-[#e2e8f0]">
                 <Printer className="w-5 h-5 text-[#af101a] mb-2" />
                 <span className="text-xs font-bold text-[#0f172a] block">Ukuran Kertas</span>
-                <span className="text-[11px] text-[#5d5e61]">A4 Standar Internasional (210 x 297mm)</span>
+                <span className="text-[11px] text-[#5d5e61]">A4 Standar (210 x 297 mm)</span>
               </div>
             </div>
 
             {/* CTA */}
             <div className="pt-2">
-              <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+              <Link to={isAuthenticated ? "/dashboard" : "/login"}>
                 <Button
                   size="lg"
                   className="w-full bg-[#af101a] hover:bg-[#1a1c1e] text-white font-semibold text-sm h-12 rounded-none flex items-center justify-center gap-2 shadow-sm"
                 >
                   <FileCheck className="w-4 h-4" />
-                  <span>Gunakan Template Ini Sekarang</span>
+                  <span>Gunakan Template Ini</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>

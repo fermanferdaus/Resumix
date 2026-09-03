@@ -6,7 +6,7 @@ export const LandingFooter = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 w-full max-w-screen-2xl mx-auto gap-4 text-xs">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="Resumix Logo" className="w-auto h-5 object-contain" />
-          <span className="font-bold">CV ATS BUILDER</span>
+          <span className="font-bold ">CV ATS Builder</span>
           <span>© 2026. All rights reserved.</span>
         </div>
 

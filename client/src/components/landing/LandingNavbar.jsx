@@ -32,13 +32,13 @@ export const LandingNavbar = () => {
             href="#keunggulan"
             className="text-sm font-medium text-[#5d5e61] hover:text-[#af101a] transition-colors"
           >
-            Keunggulan
+            Fitur
           </a>
           <a
             href="#faq"
             className="text-sm font-medium text-[#5d5e61] hover:text-[#af101a] transition-colors"
           >
-            Tanya Jawab
+            FAQ
           </a>
         </div>
 
@@ -126,14 +126,14 @@ export const LandingNavbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-semibold text-[#0f172a] py-1.5 border-b border-[#f1f5f9]"
             >
-              Keunggulan
+              Fitur
             </a>
             <a
               href="#faq"
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-semibold text-[#0f172a] py-1.5 border-b border-[#f1f5f9]"
             >
-              Tanya Jawab
+              FAQ
             </a>
             <a
               href="https://saweria.co/fermanferdaus"

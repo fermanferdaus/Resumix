@@ -10,17 +10,11 @@ export const CtaBannerSection = () => {
     <section className="py-16 bg-[#1a1c1e] text-white border-b border-[#0f172a]">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-[#ffb3ac]" />
-            <span className="text-xs font-mono-code uppercase font-bold text-[#ffb3ac] tracking-widest">
-              SIAPKAN BLUEPRINT ANDA
-            </span>
-          </div>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Siap Mengirimkan Lamaran Kerja dengan Percaya Diri?
+            Siap Bikin CV yang Lebih Rapi?
           </h2>
           <p className="text-xs sm:text-sm text-[#c6c6c9] mt-2 leading-relaxed">
-            Mulai susun riwayat profesional Anda dengan standar ATS terbaik hari ini. 100% gratis, tanpa biaya berlangganan tersembunyi.
+            Buat resume ATS Anda dalam beberapa menit. 100% gratis, tanpa watermark, dan langsung bisa diunduh ke format PDF.
           </p>
         </div>
 
