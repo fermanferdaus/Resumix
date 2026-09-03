@@ -10,6 +10,10 @@ import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage.jsx";
 import { DashboardPage } from "./pages/dashboard/DashboardPage.jsx";
 import { EditorPage } from "./pages/editor/EditorPage.jsx";
 import { ProfilePage } from "./pages/profile/ProfilePage.jsx";
+import { LandingPage } from "./pages/landing/LandingPage.jsx";
+import { NotFoundPage } from "./pages/error/NotFoundPage.jsx";
+import { ServerErrorPage } from "./pages/error/ServerErrorPage.jsx";
+import { ErrorBoundary } from "./components/common/ErrorBoundary.jsx";
 import { ProtectedRoute } from "./components/common/ProtectedRoute.jsx";
 
 const queryClient = new QueryClient({
@@ -27,47 +31,47 @@ export function App() {
   const { isAuthenticated } = useAuthStore();
 
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            {/* Root Route */}
-            <Route
-              path="/"
-              element={
-                isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
-              }
-            />
+    <ErrorBoundary>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              {/* Root Route: Landing Page */}
+              <Route path="/" element={<LandingPage />} />
 
-            {/* Public Auth Routes */}
-            <Route
-              path="/login"
-              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
-            />
-            <Route
-              path="/register"
-              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
-            />
-            <Route path="/verify-otp" element={<OtpVerifyPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+              {/* Public Auth Routes */}
+              <Route
+                path="/login"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+              />
+              <Route
+                path="/register"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+              />
+              <Route path="/verify-otp" element={<OtpVerifyPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/editor/:id" element={<EditorPage />} />
-              <Route path="/templates" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/editor" element={<Navigate to="/dashboard" replace />} />
-            </Route>
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/editor/:id" element={<EditorPage />} />
+                <Route path="/templates" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/editor" element={<Navigate to="/dashboard" replace />} />
+              </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </GoogleOAuthProvider>
+              {/* Explicit Server Error Route */}
+              <Route path="/500" element={<ServerErrorPage />} />
+
+              {/* Catch-all 404 Route */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </GoogleOAuthProvider>
+    </ErrorBoundary>
   );
 }
 

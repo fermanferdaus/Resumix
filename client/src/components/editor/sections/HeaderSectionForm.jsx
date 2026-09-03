@@ -137,7 +137,7 @@ export const HeaderSectionForm = ({ data, onChange, onRequestDelete }) => {
       </div>
 
       <div>
-        <Label htmlFor="header-targetrole">Profesi Target / Bidang Keahlian *</Label>
+        <Label htmlFor="header-targetrole">Profesi / Bidang Keahlian</Label>
         <Input
           id="header-targetrole"
           type="text"
@@ -184,7 +184,7 @@ export const HeaderSectionForm = ({ data, onChange, onRequestDelete }) => {
 
       {/* Tautan Web / Portofolio / LinkedIn / GitHub */}
       <div className="pt-2 border-t border-[#e2e8f0] space-y-2">
-        <Label>Tautan Profil / Portfolio / LinkedIn / GitHub (Bisa Beberapa Tautan)</Label>
+        <Label>Tautan Profil / Portfolio / LinkedIn / GitHub</Label>
         {links.map((link, lIdx) => {
           const isDragging = dragIndex === lIdx;
           const isOver = dragOverIndex === lIdx && dragIndex !== lIdx;

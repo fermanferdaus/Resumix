@@ -28,7 +28,7 @@ export const EditorSidebar = ({
     const h = formData.header || {};
     switch (sectionId) {
       case "header":
-        return !!(h.fullName?.trim() && h.targetRole?.trim() && h.email?.trim());
+        return !!(h.fullName?.trim() && h.email?.trim());
       case "summary":
         return !!formData.summary?.trim();
       case "educations":
