@@ -34,7 +34,7 @@ jobs:
       JWT_ACCESS_SECRET: test_jwt_access_secret_key_1234567890_min_32_characters
       JWT_ACCESS_EXPIRES_IN: 15m
       JWT_REFRESH_SECRET: test_jwt_refresh_secret_key_1234567890_min_32_characters
-      JWT_REFRESH_EXPIRES_IN: 12h
+      JWT_REFRESH_EXPIRES_IN: 7d
       SMTP_HOST: localhost
       SMTP_PORT: 2525
       SMTP_SECURE: false

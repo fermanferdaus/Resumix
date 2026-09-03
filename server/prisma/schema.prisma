@@ -12,9 +12,6 @@ model User {
   publicId     String         @unique @map("public_id")
   email        String         @unique
   fullName     String?        @map("full_name")
-  phone        String?        @map("phone")
-  dob          DateTime?      @map("dob")
-  domicile     String?        @map("domicile")
   password     String?
   isVerified   Boolean        @default(false) @map("is_verified")
   googleId     String?        @unique @map("google_id")

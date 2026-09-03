@@ -54,7 +54,7 @@ Pastikan file `.env` sudah dikonfigurasi berdasarkan `.env.example`:
 | `JWT_ACCESS_SECRET` | Secret key Access Token | `your_access_secret_key` |
 | `JWT_ACCESS_EXPIRES_IN` | Durasi masa berlaku Access Token | `15m` |
 | `JWT_REFRESH_SECRET` | Secret key Refresh Token | `your_refresh_secret_key` |
-| `JWT_REFRESH_EXPIRES_IN`| Durasi masa berlaku Refresh Token | `12h` |
+| `JWT_REFRESH_EXPIRES_IN`| Durasi masa berlaku Refresh Token | `7d` |
 | `MAIL_HOST` | Host SMTP Server (e.g. Mailtrap) | `sandbox.smtp.mailtrap.io` |
 | `MAIL_PORT` | Port SMTP Server | `2525` |
 | `MAIL_USER` | Username SMTP | `mailtrap_username` |

@@ -26,7 +26,3 @@ pnpm-debug.log*
 PRD.md
 docker-compose.db.yml
 CV_referensi.pdf
-
-# Uploaded media files
-server/public/uploads/*
-!server/public/uploads/**/.gitkeep
