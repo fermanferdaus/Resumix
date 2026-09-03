@@ -12,10 +12,16 @@ export const HeroSection = () => {
         {/* Left: Headline & CTAs */}
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div className="flex flex-col gap-4">
-            <span className="text-xs font-mono-code text-[#af101a] font-bold uppercase tracking-wider flex items-center gap-2">
-              <span className="w-6 h-0.5 bg-[#af101a]"></span>
-              STANDAR ATS RESMI // 100% GRATIS
-            </span>
+            {/* Tag & Status Pills */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-mono-code text-[#af101a] font-bold uppercase tracking-wider flex items-center gap-2">
+                <span className="w-6 h-0.5 bg-[#af101a]"></span>
+                STANDAR ATS RESMI
+              </span>
+              <span className="text-[10px] font-mono-code bg-[#f1f5f9] text-[#475569] px-2 py-0.5 border border-[#cbd5e1]">
+                100% BEBAS BIAYA
+              </span>
+            </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[#0f172a] leading-[1.15] tracking-tight">
               Bikin CV ATS Rapi yang <br className="hidden sm:inline" />
@@ -25,33 +31,51 @@ export const HeroSection = () => {
             <p className="text-sm sm:text-base text-[#475569] max-w-xl leading-relaxed">
               Format satu kolom bersih dan terstruktur rapi agar terbaca jelas oleh sistem ATS maupun tim HRD. Gratis dipakai, tanpa watermark, dan langsung bisa diunduh ke PDF siap kirim.
             </p>
+
+            {/* Quick Benefits Checklist */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1 text-xs text-[#334155] font-medium">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-[#af101a]"></span>
+                Lolos Parser Workday & Taleo
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-[#af101a]"></span>
+                Teks PDF Asli (Bisa Di-copy)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-[#af101a]"></span>
+                Bebas Watermark & Iklan
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Link to={isAuthenticated ? "/dashboard" : "/login"}>
-              <Button
-                size="lg"
-                className="bg-[#af101a] hover:bg-[#1a1c1e] text-white font-semibold text-sm px-6 py-5 rounded-none flex items-center gap-2 transition-all shadow-sm"
-              >
-                <span>{isAuthenticated ? "Buka Dashboard CV" : "Buat CV Sekarang"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+          <div className="space-y-2 pt-1">
+            <div className="flex flex-wrap gap-3">
+              <Link to={isAuthenticated ? "/dashboard" : "/login"}>
+                <Button
+                  size="lg"
+                  className="bg-[#af101a] hover:bg-[#1a1c1e] text-white font-semibold text-sm px-7 py-5 rounded-none flex items-center gap-2 transition-all shadow-sm"
+                >
+                  <span>{isAuthenticated ? "Buka Dashboard CV" : "Buat CV Sekarang"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
 
-            <a href="#template-showcase">
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-white hover:bg-[#f1f5f9] text-[#0f172a] border-[#1a1c1e] font-semibold text-sm px-6 py-5 rounded-none flex items-center gap-2 transition-colors"
-              >
-                <FileText className="w-4 h-4 text-[#5d5e61]" />
-                <span>Lihat Contoh CV</span>
-              </Button>
-            </a>
+              <a href="#template-showcase">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="bg-white hover:bg-[#f1f5f9] text-[#0f172a] border-[#1a1c1e] font-semibold text-sm px-6 py-5 rounded-none flex items-center gap-2 transition-colors"
+                >
+                  <FileText className="w-4 h-4 text-[#5d5e61]" />
+                  <span>Lihat Contoh CV</span>
+                </Button>
+              </a>
+            </div>
           </div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-3 gap-4 pt-6 mt-4 border-t border-[#e2e8f0]">
+          <div className="grid grid-cols-3 gap-4 pt-5 mt-2 border-t border-[#e2e8f0]">
             <div>
               <span className="text-2xl sm:text-3xl font-bold text-[#0f172a] block">
                 99.8%

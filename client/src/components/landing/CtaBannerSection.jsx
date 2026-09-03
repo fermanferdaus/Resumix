@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { Button } from "../ui/button.jsx";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const CtaBannerSection = () => {
   const { isAuthenticated } = useAuthStore();
