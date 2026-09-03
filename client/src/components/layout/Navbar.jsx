@@ -81,18 +81,17 @@ export const Navbar = () => {
         </div>
 
         {/* Right: Traktir Kopi, User Profile & Logout */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* Tombol Traktir Kopi Saweria */}
           <a
             href={appConfig.saweriaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-1.5 h-8 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
             title="Dukung Resumix / Traktir Kopi via Saweria"
           >
             <Coffee className="w-3.5 h-3.5 flex-shrink-0" />
             <span className="hidden sm:inline">Traktir Kopi</span>
-            <span className="sm:hidden">Kopi</span>
           </a>
 
           {/* User Profile Avatar & Name Link */}
@@ -121,10 +120,11 @@ export const Navbar = () => {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs rounded-none"
+            className="flex items-center justify-center gap-1.5 text-xs rounded-none h-8 px-2 sm:px-3"
+            title="Keluar dari akun"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Keluar</span>
+            <span className="hidden sm:inline">Keluar</span>
           </Button>
         </div>
       </div>
