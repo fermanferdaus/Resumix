@@ -2,6 +2,7 @@ import { LandingNavbar } from "../../components/landing/LandingNavbar.jsx";
 import { HeroSection } from "../../components/landing/HeroSection.jsx";
 import { TemplateShowcaseSection } from "../../components/landing/TemplateShowcaseSection.jsx";
 import { FeaturesSection } from "../../components/landing/FeaturesSection.jsx";
+import { ContactSection } from "../../components/landing/ContactSection.jsx";
 import { CtaBannerSection } from "../../components/landing/CtaBannerSection.jsx";
 import { LandingFooter } from "../../components/landing/LandingFooter.jsx";
 
@@ -16,6 +17,7 @@ export const LandingPage = () => {
         <HeroSection />
         <TemplateShowcaseSection />
         <FeaturesSection />
+        <ContactSection />
         <CtaBannerSection />
       </main>
 

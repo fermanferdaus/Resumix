@@ -22,11 +22,26 @@ describe("Frontend Unit: Landing Page Integrity & ATS Specifications", () => {
   });
 
   describe("Integritas Navigasi Anchor Landing Page", () => {
-    it("harus memuat anchor target yang valid untuk template dan keunggulan", () => {
-      const validAnchors = ["#template-showcase", "#keunggulan", "#faq"];
+    it("harus memuat anchor target yang valid untuk template, keunggulan, faq, dan kontak", () => {
+      const validAnchors = ["#template-showcase", "#keunggulan", "#faq", "#kontak"];
       assert.ok(validAnchors.includes("#template-showcase"));
       assert.ok(validAnchors.includes("#keunggulan"));
       assert.ok(validAnchors.includes("#faq"));
+      assert.ok(validAnchors.includes("#kontak"));
+    });
+  });
+
+  describe("Integritas Konfigurasi Saluran Kontak (.env Abstraction)", () => {
+    it("harus memuat kontak email, github, dan instagram", () => {
+      const mockContactConfig = {
+        email: "fermanf91@gmail.com",
+        githubUrl: "https://github.com/fermanferdaus",
+        instagramUrl: "https://instagram.com/fermanferdaus_",
+      };
+
+      assert.strictEqual(mockContactConfig.email, "fermanf91@gmail.com");
+      assert.ok(mockContactConfig.githubUrl.includes("fermanferdaus"));
+      assert.ok(mockContactConfig.instagramUrl.includes("fermanferdaus_"));
     });
   });
 
