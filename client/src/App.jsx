@@ -10,6 +10,7 @@ import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage.jsx";
 import { DashboardPage } from "./pages/dashboard/DashboardPage.jsx";
 import { EditorPage } from "./pages/editor/EditorPage.jsx";
 import { ProfilePage } from "./pages/profile/ProfilePage.jsx";
+import { LandingPage } from "./pages/landing/LandingPage.jsx";
 import { ProtectedRoute } from "./components/common/ProtectedRoute.jsx";
 
 const queryClient = new QueryClient({
@@ -31,13 +32,8 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            {/* Root Route */}
-            <Route
-              path="/"
-              element={
-                isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
-              }
-            />
+            {/* Root Route: Landing Page */}
+            <Route path="/" element={<LandingPage />} />
 
             {/* Public Auth Routes */}
             <Route

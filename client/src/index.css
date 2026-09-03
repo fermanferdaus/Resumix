@@ -60,6 +60,13 @@
   scrollbar-width: none !important;
 }
 
+/* Blueprint Grid Pattern for Hero Section */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+                    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
 .font-mono-code {
   font-family: "JetBrains Mono", monospace;
 }
