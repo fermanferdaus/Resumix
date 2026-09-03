@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { X, ZoomIn, ZoomOut, RotateCw, Check, Loader2 } from "lucide-react";
+import { X, ZoomIn, ZoomOut, RotateCw, Loader2 } from "lucide-react";
 import { Button } from "../ui/button.jsx";
 
 export const ImageCropperModal = ({
@@ -208,9 +208,6 @@ export const ImageCropperModal = ({
         {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-[#e2e8f0] bg-[#f8fafc]">
           <div>
-            <span className="font-mono-code text-[11px] font-bold text-[#af101a] tracking-wider uppercase block">
-              Editor Foto Profil
-            </span>
             <h3 className="text-sm font-bold text-[#0f172a]">
               Sesuaikan & Potong Foto
             </h3>
@@ -323,8 +320,7 @@ export const ImageCropperModal = ({
               </>
             ) : (
               <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Terapkan & Simpan Foto</span>
+                <span>Simpan Foto</span>
               </>
             )}
           </Button>

@@ -191,9 +191,6 @@ export const ProfilePage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-[#e2e8f0] pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono-code text-xs font-bold text-[#af101a] tracking-wider uppercase">
-                Pengaturan Akun
-              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#0f172a] mt-1 tracking-tight">
               Profil Pengguna
@@ -242,7 +239,7 @@ export const ProfilePage = () => {
             <div className="md:col-span-1 bg-white border border-[#e2e8f0] p-6 flex flex-col items-center text-center">
               {/* Avatar Frame */}
               <div className="relative group">
-                <div className="w-32 h-32 bg-[#f8fafc] border-2 border-[#1a1c1e] overflow-hidden flex items-center justify-center shadow-sm">
+                <div className="w-32 h-32 bg-[#f8fafc] overflow-hidden flex items-center justify-center shadow-sm">
                   {avatarSrc ? (
                     <img
                       src={avatarSrc}
@@ -427,7 +424,7 @@ export const ProfilePage = () => {
       <DeleteConfirmModal
         isOpen={isDeleteAvatarOpen}
         title="Hapus Foto Profil?"
-        description="Apakah Anda yakin ingin menghapus foto profil ini? Foto akan dihapus dari server."
+        description="Apakah Anda yakin ingin menghapus foto profil ini? Foto akan dihapus secara permanen."
         onClose={() => setIsDeleteAvatarOpen(false)}
         onConfirm={handleDeleteAvatar}
       />

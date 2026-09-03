@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Loader2, Save } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
 import { Label } from "../ui/label.jsx";
@@ -51,9 +51,6 @@ export const EditProfileModal = ({
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-[#e2e8f0] bg-[#f8fafc]">
           <div>
-            <span className="font-mono-code text-[11px] font-bold text-[#af101a] tracking-wider uppercase block">
-              Pengaturan Akun
-            </span>
             <h3 className="text-base font-bold text-[#0f172a]">
               Ubah Informasi Pribadi
             </h3>
@@ -184,8 +181,7 @@ export const EditProfileModal = ({
                 </>
               ) : (
                 <>
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Simpan Perubahan</span>
+                  <span>Simpan</span>
                 </>
               )}
             </Button>
