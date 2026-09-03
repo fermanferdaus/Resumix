@@ -52,7 +52,7 @@ export const LandingNavbar = () => {
             <div className="flex items-center gap-2.5">
               <span className="hidden sm:inline-block w-px h-4 bg-[#cbd5e1]"></span>
               <span className="hidden sm:inline-block text-[10px] font-mono-code font-bold uppercase tracking-wider text-[#af101a] bg-[#fef2f2] px-1.5 py-0.5 border border-[#fecaca]">
-                ATS CV BUILDER
+                CV ATS BUILDER
               </span>
             </div>
           </Link>
