@@ -38,4 +38,14 @@ describe("Unit: JWT Token Generator & Verification", () => {
     const decoded = verifyAccessToken(invalidToken);
     assert.strictEqual(decoded, null, "Token rusak harus mengembalikan null");
   });
+
+  it("harus memiliki durasi sesi refresh token selama 12 jam", async () => {
+    const { appConfig } = await import("../../config/app.js");
+    assert.strictEqual(appConfig.jwt.refreshExpiresIn, "12h");
+    assert.strictEqual(
+      appConfig.jwt.refreshCookieMaxAge,
+      12 * 60 * 60 * 1000,
+      "Durasi cookie refresh token harus tepat 12 jam (43,200,000 milidetik)"
+    );
+  });
 });

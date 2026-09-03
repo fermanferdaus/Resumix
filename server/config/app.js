@@ -16,8 +16,8 @@ export const appConfig = {
     accessSecret: process.env.JWT_ACCESS_SECRET, // Sensitif: Tanpa fallback
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
     refreshSecret: process.env.JWT_REFRESH_SECRET, // Sensitif: Tanpa fallback
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
-    refreshCookieMaxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "12h",
+    refreshCookieMaxAge: 12 * 60 * 60 * 1000, // 12 jam (43,200,000 ms)
   },
 
   cors: {
