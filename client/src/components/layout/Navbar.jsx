@@ -10,6 +10,7 @@ export const Navbar = () => {
   const location = useLocation();
 
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isProfile = location.pathname.startsWith("/profile");
   const isTemplateOrEditor =
     location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
@@ -17,6 +18,17 @@ export const Navbar = () => {
     logout();
     navigate("/login");
   };
+
+  const getAvatarFullUrl = (avatarUrl) => {
+    if (!avatarUrl) return null;
+    if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) {
+      return avatarUrl;
+    }
+    const base = appConfig.apiUrl.replace(/\/api\/v1\/?$/, "");
+    return `${base}${avatarUrl.startsWith("/") ? "" : "/"}${avatarUrl}`;
+  };
+
+  const avatarSrc = getAvatarFullUrl(user?.avatarUrl);
 
   return (
     <header className="w-full bg-white border-b border-[#e2e8f0] fixed top-0 left-0 right-0 z-50 rounded-none print:hidden h-16">
@@ -55,12 +67,16 @@ export const Navbar = () => {
               Editor
             </Link>
 
-            <span
-              className="h-full flex items-center text-[#5d5e61] cursor-not-allowed opacity-60 hover:text-[#1a1b22] transition-colors"
-              title="Manajemen profil akan hadir di tahap berikutnya"
+            <Link
+              to="/profile"
+              className={`h-full flex items-center pt-[2px] transition-colors ${
+                isProfile
+                  ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
+              }`}
             >
               Profil
-            </span>
+            </Link>
           </nav>
         </div>
 
@@ -79,12 +95,27 @@ export const Navbar = () => {
             <span className="sm:hidden">Kopi</span>
           </a>
 
-          <div className="flex items-center gap-2 text-sm text-[#1a1b22] font-medium">
-            <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] flex items-center justify-center text-[#af101a] font-bold">
-              {user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />}
+          {/* User Profile Avatar & Name Link */}
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 text-sm text-[#1a1b22] font-medium hover:opacity-85 transition-opacity cursor-pointer group"
+            title="Buka Pengaturan Profil"
+          >
+            <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] group-hover:border-[#af101a] overflow-hidden flex items-center justify-center text-[#af101a] font-bold transition-colors">
+              {avatarSrc ? (
+                <img
+                  src={avatarSrc}
+                  alt={user?.fullName || "Avatar"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />
+              )}
             </div>
-            <span className="hidden sm:inline font-semibold">{user?.fullName || user?.email}</span>
-          </div>
+            <span className="hidden sm:inline font-semibold group-hover:text-[#af101a] transition-colors">
+              {user?.fullName || user?.email}
+            </span>
+          </Link>
 
           <Button
             variant="outline"
