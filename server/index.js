@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
 import { appConfig } from "./config/app.js";
 import apiRoutes from "./routes/index.js";
 import { notFoundHandler, errorHandler } from "./middlewares/errorMiddleware.js";
@@ -13,8 +14,11 @@ const app = express();
 // Security & Parsing Middlewares
 app.use(cors(appConfig.cors));
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Static Media Serving (/uploads)
+app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
 // Swagger Interactive API Documentation
 app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

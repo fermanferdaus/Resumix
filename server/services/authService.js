@@ -14,9 +14,12 @@ import { appConfig } from "../config/app.js";
 export const formatUserResponse = (user) => ({
   id: user.publicId,
   email: user.email,
-  fullName: user.fullName,
+  fullName: user.fullName || "",
+  phone: user.phone || "",
+  dob: user.dob ? user.dob.toISOString().split("T")[0] : null,
+  domicile: user.domicile || "",
   isVerified: user.isVerified,
-  avatarUrl: user.avatarUrl,
+  avatarUrl: user.avatarUrl || null,
   createdAt: user.createdAt,
 });
 
