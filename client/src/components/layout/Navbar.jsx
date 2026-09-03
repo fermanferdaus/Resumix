@@ -10,6 +10,7 @@ export const Navbar = () => {
   const location = useLocation();
 
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isProfile = location.pathname.startsWith("/profile");
   const isTemplateOrEditor =
     location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
@@ -17,6 +18,17 @@ export const Navbar = () => {
     logout();
     navigate("/login");
   };
+
+  const getAvatarFullUrl = (avatarUrl) => {
+    if (!avatarUrl) return null;
+    if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) {
+      return avatarUrl;
+    }
+    const base = appConfig.apiUrl.replace(/\/api\/v1\/?$/, "");
+    return `${base}${avatarUrl.startsWith("/") ? "" : "/"}${avatarUrl}`;
+  };
+
+  const avatarSrc = getAvatarFullUrl(user?.avatarUrl);
 
   return (
     <header className="w-full bg-white border-b border-[#e2e8f0] fixed top-0 left-0 right-0 z-50 rounded-none print:hidden h-16">
@@ -55,45 +67,64 @@ export const Navbar = () => {
               Editor
             </Link>
 
-            <span
-              className="h-full flex items-center text-[#5d5e61] cursor-not-allowed opacity-60 hover:text-[#1a1b22] transition-colors"
-              title="Manajemen profil akan hadir di tahap berikutnya"
+            <Link
+              to="/profile"
+              className={`h-full flex items-center pt-[2px] transition-colors ${
+                isProfile
+                  ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
+              }`}
             >
               Profil
-            </span>
+            </Link>
           </nav>
         </div>
 
         {/* Right: Traktir Kopi, User Profile & Logout */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* Tombol Traktir Kopi Saweria */}
           <a
             href={appConfig.saweriaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-1.5 h-8 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
             title="Dukung Resumix / Traktir Kopi via Saweria"
           >
             <Coffee className="w-3.5 h-3.5 flex-shrink-0" />
             <span className="hidden sm:inline">Traktir Kopi</span>
-            <span className="sm:hidden">Kopi</span>
           </a>
 
-          <div className="flex items-center gap-2 text-sm text-[#1a1b22] font-medium">
-            <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] flex items-center justify-center text-[#af101a] font-bold">
-              {user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />}
+          {/* User Profile Avatar & Name Link */}
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 text-sm text-[#1a1b22] font-medium hover:opacity-85 transition-opacity cursor-pointer group"
+            title="Buka Pengaturan Profil"
+          >
+            <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] group-hover:border-[#af101a] overflow-hidden flex items-center justify-center text-[#af101a] font-bold transition-colors">
+              {avatarSrc ? (
+                <img
+                  src={avatarSrc}
+                  alt={user?.fullName || "Avatar"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />
+              )}
             </div>
-            <span className="hidden sm:inline font-semibold">{user?.fullName || user?.email}</span>
-          </div>
+            <span className="hidden sm:inline font-semibold group-hover:text-[#af101a] transition-colors">
+              {user?.fullName || user?.email}
+            </span>
+          </Link>
 
           <Button
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs rounded-none"
+            className="flex items-center justify-center gap-1.5 text-xs rounded-none h-8 px-2 sm:px-3"
+            title="Keluar dari akun"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Keluar</span>
+            <span className="hidden sm:inline">Keluar</span>
           </Button>
         </div>
       </div>
