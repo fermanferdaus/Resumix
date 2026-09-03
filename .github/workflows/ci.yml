@@ -1,0 +1,120 @@
+name: CI Pipeline (Lint, Test, & Build)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend-ci:
+    name: Backend (Lint, Unit & Integration Tests)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_cv_ats_builder
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      CLIENT_URL: http://localhost:5173
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_cv_ats_builder?schema=public
+      JWT_ACCESS_SECRET: test_jwt_access_secret_key_1234567890_min_32_characters
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_SECRET: test_jwt_refresh_secret_key_1234567890_min_32_characters
+      JWT_REFRESH_EXPIRES_IN: 12h
+      SMTP_HOST: localhost
+      SMTP_PORT: 2525
+      SMTP_SECURE: false
+      SMTP_USER: test_mail_user
+      SMTP_PASS: test_mail_password
+      MAIL_FROM_NAME: Resumix Test
+      MAIL_FROM_ADDRESS: no-reply@resumix.test
+      GOOGLE_CLIENT_ID: mock-google-client-id.apps.googleusercontent.com
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package.json
+
+      - name: Install Server Dependencies
+        working-directory: ./server
+        run: npm install
+
+      - name: Run Backend Linter (ESLint)
+        working-directory: ./server
+        run: npm run lint
+
+      - name: Push Prisma Schema & Generate Client
+        working-directory: ./server
+        run: |
+          npx prisma db push
+          npx prisma generate
+
+      - name: Run Backend Unit Tests
+        working-directory: ./server
+        run: npm test
+
+      - name: Start Server in Background & Run Integration Tests
+        working-directory: ./server
+        run: |
+          node index.js &
+          SERVER_PID=$!
+          # Wait for API server to boot
+          sleep 3
+          # Run End-to-End API Integration Suite
+          npm run test:api
+          kill $SERVER_PID
+
+  frontend-ci:
+    name: Frontend (Lint, Unit Tests & Production Build)
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_API_URL: http://localhost:3000/api/v1
+      VITE_GOOGLE_CLIENT_ID: mock-google-client-id.apps.googleusercontent.com
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package.json
+
+      - name: Install Client Dependencies
+        working-directory: ./client
+        run: npm install
+
+      - name: Run Frontend Linter (ESLint)
+        working-directory: ./client
+        run: npm run lint
+
+      - name: Run Frontend Unit Tests
+        working-directory: ./client
+        run: npm test
+
+      - name: Verify Production Build
+        working-directory: ./client
+        run: npm run build
