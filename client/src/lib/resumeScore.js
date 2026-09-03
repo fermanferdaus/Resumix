@@ -29,7 +29,7 @@ export const calculateAtsProgress = (formData) => {
  */
 export const getAtsChecklist = (formData) => {
   const h = formData?.header || {};
-  const hasHeader = !!(h.fullName?.trim() && h.targetRole?.trim() && h.email?.trim());
+  const hasHeader = !!(h.fullName?.trim() && h.email?.trim());
   const hasExperiences = (formData?.experiences || []).length > 0;
   const hasEducations = (formData?.educations || []).length > 0;
   const hasSkills =

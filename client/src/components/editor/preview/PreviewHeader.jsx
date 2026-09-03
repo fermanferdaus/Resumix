@@ -27,17 +27,31 @@ export const PreviewHeader = ({ header = {} }) => {
         {header.fullName || "NAMA LENGKAP"}
       </h1>
 
-      <div
-        style={{
-          fontSize: "17px",
-          lineHeight: 1.3,
-          fontWeight: 700,
-          marginTop: "2px",
-        }}
-        className="text-black"
-      >
-        {header.targetRole || "Profesi Target"}
-      </div>
+      {header.targetRole?.trim() ? (
+        <div
+          style={{
+            fontSize: "17px",
+            lineHeight: 1.3,
+            fontWeight: 700,
+            marginTop: "2px",
+          }}
+          className="text-black"
+        >
+          {header.targetRole}
+        </div>
+      ) : !header.fullName?.trim() ? (
+        <div
+          style={{
+            fontSize: "17px",
+            lineHeight: 1.3,
+            fontWeight: 700,
+            marginTop: "2px",
+          }}
+          className="text-black"
+        >
+          Profesi Target
+        </div>
+      ) : null}
 
       <div
         style={{

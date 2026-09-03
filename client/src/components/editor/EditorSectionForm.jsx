@@ -76,45 +76,42 @@ export const EditorSectionForm = ({
   return (
     <div className="space-y-6 select-none">
       {/* Top Header Form: Section Name & Custom Title Input */}
-      <div className="flex justify-between items-start border-b border-[#e2e8f0] pb-3">
-        <div className="flex-1 mr-4">
-          <span className="text-xs font-mono-code font-bold text-[#af101a] uppercase tracking-wider block">
-            Formulir Bagian
-          </span>
-          <h2 className="text-base font-bold text-[#0f172a] mt-0.5">
+      <div className="border-b border-[#e2e8f0] pb-3 space-y-3">
+        <div className="flex justify-between items-center">
+          <h2 className="text-base font-bold text-[#0f172a]">
             {currentSection.label}
           </h2>
 
-          {activeSection !== "header" && (
-            <div className="mt-2 flex items-center gap-2 max-w-sm">
-              <Label
-                htmlFor="custom-section-title"
-                className="text-[11px] text-[#5d5e61] font-mono-code whitespace-nowrap mb-0"
-              >
-                Judul di CV:
-              </Label>
-              <Input
-                id="custom-section-title"
-                type="text"
-                value={getSectionTitle(activeSection)}
-                onChange={(e) =>
-                  handleSectionTitleChange(activeSection, e.target.value)
-                }
-                placeholder={DEFAULT_SECTION_TITLES[activeSection]}
-                className="h-7 text-xs font-semibold uppercase tracking-wider border-[#cbd5e1] focus:border-[#af101a]"
-              />
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[#5d5e61] hover:text-[#0f172a] p-1.5 cursor-pointer rounded-none hover:bg-[#f1f5f9] transition-colors"
+            title="Tutup formulir"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-[#5d5e61] hover:text-[#0f172a] p-1.5 cursor-pointer rounded-none hover:bg-[#f1f5f9] transition-colors"
-          title="Tutup formulir"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {activeSection !== "header" && (
+          <div className="w-full">
+            <Label
+              htmlFor="custom-section-title"
+              className="text-[11px] text-[#5d5e61] font-mono-code block mb-1"
+            >
+              Judul
+            </Label>
+            <Input
+              id="custom-section-title"
+              type="text"
+              value={getSectionTitle(activeSection)}
+              onChange={(e) =>
+                handleSectionTitleChange(activeSection, e.target.value)
+              }
+              placeholder={DEFAULT_SECTION_TITLES[activeSection]}
+              className="w-full h-8 text-xs font-semibold uppercase tracking-wider border-[#cbd5e1] focus:border-[#af101a]"
+            />
+          </div>
+        )}
       </div>
 
       {/* Dynamic Active Section Body */}

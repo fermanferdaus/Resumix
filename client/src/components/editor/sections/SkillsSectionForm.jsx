@@ -179,9 +179,6 @@ export const SkillsSectionForm = ({ data, onChange, onRequestDelete }) => {
           <span className="text-xs font-mono-code uppercase font-bold text-[#0f172a] block">
             HARD SKILL / KEAHLIAN TEKNIS
           </span>
-          <p className="text-[11px] text-[#5d5e61] mt-0.5">
-            Bisa dikelompokkan dengan nama kategori atau langsung ditulis tanpa kategori. Tahan dan geser untuk mengatur urutan.
-          </p>
         </div>
 
         {hardSkills.map((h, idx) => {
@@ -268,9 +265,6 @@ export const SkillsSectionForm = ({ data, onChange, onRequestDelete }) => {
           <span className="text-xs font-mono-code uppercase font-bold text-[#0f172a] block">
             SOFT SKILL
           </span>
-          <p className="text-[11px] text-[#5d5e61] mt-0.5">
-            Keahlian interpersonal, komunikasi, atau manajerial. Tahan dan geser untuk mengatur urutan.
-          </p>
         </div>
 
         {softSkills.map((s, idx) => {
