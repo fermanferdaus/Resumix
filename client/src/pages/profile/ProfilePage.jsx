@@ -134,7 +134,7 @@ export const ProfilePage = () => {
       if (res.data?.user) {
         setUser(res.data.user);
       }
-      setNotice("Foto profil berhasil diperbarui dan disimpan dalam format WebP optimal.");
+      setNotice("Foto profil berhasil diperbarui dan disimpan.");
       setTimeout(() => setNotice(null), 4000);
       setCropperOpen(false);
     } catch (err) {
@@ -183,10 +183,10 @@ export const ProfilePage = () => {
   const avatarSrc = getAvatarFullUrl(user?.avatarUrl);
 
   return (
-    <div className="min-h-screen bg-[#fbf8ff] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#fbf8ff] flex flex-col text-[#1a1b22] rounded-none pt-16 font-sans">
       <Navbar />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 md:py-12 mt-16">
+      <main className="w-full mx-auto px-4 sm:px-6 pt-6 pb-12 flex-1">
         {/* Header Title Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-[#e2e8f0] pb-6">
           <div>
@@ -194,14 +194,12 @@ export const ProfilePage = () => {
               <span className="font-mono-code text-xs font-bold text-[#af101a] tracking-wider uppercase">
                 Pengaturan Akun
               </span>
-              <span className="text-xs text-[#5d5e61]">•</span>
-              <span className="text-xs text-[#5d5e61]">Resumix Profile</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#0f172a] mt-1 tracking-tight">
               Profil Pengguna
             </h1>
             <p className="text-sm text-[#5d5e61] mt-0.5">
-              Kelola informasi pribadi, kontak terhubung, dan foto profil Anda.
+              Kelola informasi pribadi Anda.
             </p>
           </div>
 
@@ -305,7 +303,7 @@ export const ProfilePage = () => {
                   className="w-full text-xs rounded-none border-[#cbd5e1] hover:border-[#af101a] flex items-center justify-center gap-1.5"
                 >
                   <Camera className="w-3.5 h-3.5 text-[#af101a]" />
-                  <span>Unggah & Potong Foto</span>
+                  <span>Unggah Foto Profil</span>
                 </Button>
 
                 {user?.avatarUrl && (
@@ -321,10 +319,6 @@ export const ProfilePage = () => {
                   </Button>
                 )}
               </div>
-
-              <p className="text-[10px] text-[#94a3b8] font-mono-code mt-4">
-                Format: WEBP/JPG/PNG • Auto-kompresi
-              </p>
             </div>
 
             {/* Right Card: Personal Information Details */}
@@ -334,9 +328,6 @@ export const ProfilePage = () => {
                   <h2 className="text-base font-bold text-[#0f172a] uppercase tracking-wide font-mono-code">
                     Informasi Pribadi
                   </h2>
-                  <span className="text-[11px] font-mono-code text-[#af101a] font-semibold">
-                    Biodata Utama
-                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -404,7 +395,7 @@ export const ProfilePage = () => {
               <div className="mt-8 pt-4 border-t border-[#e2e8f0] bg-[#f8fafc] p-4 text-xs text-[#5d5e61] flex items-start gap-3">
                 <ShieldCheck className="w-4 h-4 text-[#af101a] mt-0.5 flex-shrink-0" />
                 <p className="leading-relaxed">
-                  Data biodata Anda tersimpan dengan aman dan dapat digunakan untuk mengisi bagian informasi kontak pada CV ATS secara otomatis saat membuat lembar resume baru.
+                  Data biodata Anda tersimpan dengan aman dan dapat digunakan untuk mengisi bagian informasi kontak pada CV secara otomatis saat membuat lembar resume baru.
                 </p>
               </div>
             </div>

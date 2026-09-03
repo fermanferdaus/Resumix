@@ -95,11 +95,8 @@ export const EditProfileModal = ({
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="edit-email" className="text-xs font-mono-code uppercase font-semibold text-[#5d5e61]">
-                  Alamat Email (Akun)
+                  Alamat Email
                 </Label>
-                <span className="text-[10px] font-mono-code bg-[#f1f5f9] text-[#5d5e61] px-1.5 py-0.5 border border-[#e2e8f0]">
-                  Permanen
-                </span>
               </div>
               <Input
                 id="edit-email"
@@ -147,7 +144,7 @@ export const EditProfileModal = ({
             {/* Domicile */}
             <div>
               <Label htmlFor="edit-domicile" className="text-xs font-mono-code uppercase font-semibold text-[#0f172a]">
-                Domisili (Kota, Negara)
+                Domisili
               </Label>
               <Input
                 id="edit-domicile"
