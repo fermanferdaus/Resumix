@@ -5,28 +5,29 @@ export const AdminSkeleton = () => {
   return (
     <div className="w-full flex flex-col gap-6 animate-pulse">
       {/* 4 Stat Cards Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 my-4 sm:my-6">
         {[1, 2, 3, 4].map((n) => (
-          <Card key={n} className="p-5">
+          <Card key={n} className="p-3 sm:p-5 rounded-none">
             <div className="flex items-center justify-between">
-              <Skeleton className="h-3 w-28 bg-[#f1f5f9]" />
-              <Skeleton className="h-8 w-8 bg-[#f8fafc] border border-[#e2e8f0]" />
+              <Skeleton className="h-3 w-16 sm:w-24 bg-[#f1f5f9]" />
+              <Skeleton className="h-6 w-6 sm:h-8 sm:w-8 bg-[#f8fafc] border border-[#e2e8f0]" />
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <Skeleton className="h-8 w-20 bg-[#f1f5f9]" />
-              <Skeleton className="h-3 w-8 bg-[#f8fafc]" />
+            <div className="mt-2 sm:mt-3 flex items-baseline gap-2">
+              <Skeleton className="h-6 sm:h-8 w-14 sm:w-20 bg-[#f1f5f9]" />
+              <Skeleton className="h-3 w-6 sm:w-8 bg-[#f8fafc]" />
             </div>
-            <Skeleton className="h-3 w-36 bg-[#f8fafc] mt-2.5" />
+            <Skeleton className="h-2.5 sm:h-3 w-24 sm:w-32 bg-[#f8fafc] mt-2 sm:mt-2.5" />
           </Card>
         ))}
       </div>
 
       {/* Tab Navigation Skeleton */}
-      <div className="flex items-center gap-2 border-b border-[#e2e8f0] pb-2 mb-6">
-        <Skeleton className="h-9 w-44 bg-[#f1f5f9] border border-[#e2e8f0]" />
-        <Skeleton className="h-9 w-40 bg-[#f8fafc] border border-[#e2e8f0]" />
-        <Skeleton className="h-9 w-36 bg-[#f8fafc] border border-[#e2e8f0]" />
-        <Skeleton className="h-9 w-48 bg-[#f8fafc] border border-[#e2e8f0]" />
+      <div className="flex items-center gap-2 border-b border-[#e2e8f0] pb-2 mb-6 overflow-x-auto">
+        <Skeleton className="h-8 sm:h-9 w-24 sm:w-32 bg-[#f1f5f9] border border-[#e2e8f0] shrink-0" />
+        <Skeleton className="h-8 sm:h-9 w-24 sm:w-28 bg-[#f8fafc] border border-[#e2e8f0] shrink-0" />
+        <Skeleton className="h-8 sm:h-9 w-20 sm:w-24 bg-[#f8fafc] border border-[#e2e8f0] shrink-0" />
+        <Skeleton className="h-8 sm:h-9 w-28 sm:w-32 bg-[#f8fafc] border border-[#e2e8f0] shrink-0" />
+        <Skeleton className="h-8 sm:h-9 w-28 sm:w-32 bg-[#f8fafc] border border-[#e2e8f0] shrink-0" />
       </div>
 
       {/* Overview Chart Skeleton */}

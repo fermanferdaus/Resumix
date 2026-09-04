@@ -7,23 +7,23 @@ import { Button } from "../ui/button.jsx";
 export const AdminAnomaliesTab = ({ anomalies, users = [], onRevokeSession }) => {
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="p-5 pb-4">
+      <Card className="rounded-none">
+        <CardHeader className="p-4 sm:p-5 pb-3">
           <CardTitle className="text-base font-bold text-[#0f172a]">
-            Pusat Deteksi Anomali & Pembobolan
+            Deteksi Anomali
           </CardTitle>
-          <CardDescription className="text-xs text-[#5d5e61] mt-1">
-            Sistem secara cerdas memantau lonjakan kegagalan password, serangan brute-force, dan penggunaan token tidak sah.
+          <CardDescription className="text-xs text-[#5d5e61] mt-0.5">
+            Peringatan login gagal berulang dan aktivitas mencurigakan dalam 24 jam terakhir.
           </CardDescription>
         </CardHeader>
       </Card>
 
       {anomalies.length === 0 ? (
-        <Card className="p-12 text-center">
-          <ShieldCheck className="w-12 h-12 text-[#16a34a] mx-auto mb-3" />
-          <h4 className="text-base font-bold text-[#0f172a]">Sistem Berjalan Aman</h4>
+        <Card className="p-8 sm:p-12 text-center rounded-none">
+          <ShieldCheck className="w-10 h-10 text-[#16a34a] mx-auto mb-2" />
+          <h4 className="text-sm sm:text-base font-bold text-[#0f172a]">Tidak Ada Anomali</h4>
           <p className="text-xs text-[#5d5e61] max-w-sm mx-auto mt-1 leading-relaxed">
-            Tidak terdeteksi aktivitas anomali atau upaya brute-force dalam 24 jam terakhir.
+            Semua aktivitas login berjalan normal dalam 24 jam terakhir.
           </p>
         </Card>
       ) : (

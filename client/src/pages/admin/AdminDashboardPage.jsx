@@ -209,20 +209,13 @@ export const AdminDashboardPage = () => {
 
       <main className="flex-1 max-w-full w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Dashboard Admin */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-[#e2e8f0]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-[#e2e8f0]">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <Badge variant="admin" className="gap-1.5 px-2.5 py-0.5 text-xs font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#af101a]" />
-                Admin Pusat Kendali
-              </Badge>
-              <span className="text-xs text-[#5d5e61] font-mono-code">• Pemantauan Real-Time</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0f172a]">
-              Dashboard Monitoring Sistem
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0f172a]">
+              Dashboard Admin
             </h1>
-            <p className="text-sm text-[#5d5e61] mt-1 leading-relaxed">
-              Pantau status login, populasi akun terdaftar, kuota CV per pengguna, dan deteksi anomali keamanan.
+            <p className="text-xs sm:text-sm text-[#5d5e61] mt-0.5">
+              Pantau pengguna, kuota CV, aktivitas login, dan keamanan sistem.
             </p>
           </div>
 
@@ -232,10 +225,10 @@ export const AdminDashboardPage = () => {
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing || isLoading}
-              className="gap-2 bg-white text-xs font-semibold text-[#1a1b22] border-[#e2e8f0] hover:border-[#af101a] rounded-none"
+              className="gap-2 bg-white text-xs font-semibold text-[#1a1b22] border-[#e2e8f0] hover:border-[#af101a] rounded-none w-full sm:w-auto"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#af101a]" : "text-[#5d5e61]"}`} />
-              Segarkan Data
+              Segarkan
             </Button>
           </div>
         </div>
@@ -249,25 +242,25 @@ export const AdminDashboardPage = () => {
             <AdminStatCards stats={stats} isLoading={isLoading} />
 
             {/* Tab Navigation Menggunakan shadcn/ui Button */}
-            <div className="flex items-center gap-2 border-b border-[#e2e8f0] pb-2 mb-6 overflow-x-auto">
+            <div className="flex items-center gap-1.5 sm:gap-2 border-b border-[#e2e8f0] pb-2 mb-6 overflow-x-auto whitespace-nowrap">
               <Button
                 variant={activeTab === "overview" ? "primary" : "subtle"}
                 size="sm"
                 onClick={() => setActiveTab("overview")}
-                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+                className="gap-1.5 text-xs font-semibold rounded-none cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <BarChart3 className="w-4 h-4" />
-                Ringkasan & Visual Grafik
+                Ringkasan
               </Button>
 
               <Button
                 variant={activeTab === "users" ? "primary" : "subtle"}
                 size="sm"
                 onClick={() => setActiveTab("users")}
-                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+                className="gap-1.5 text-xs font-semibold rounded-none cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <Users className="w-4 h-4" />
-                Pengguna & Kuota CV
+                Pengguna
                 <span
                   className={cn(
                     "text-[10px] px-1.5 py-0.2 rounded-none border font-mono-code font-bold",
@@ -284,10 +277,10 @@ export const AdminDashboardPage = () => {
                 variant={activeTab === "anomalies" ? "primary" : "subtle"}
                 size="sm"
                 onClick={() => setActiveTab("anomalies")}
-                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+                className="gap-1.5 text-xs font-semibold rounded-none cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <ShieldAlert className="w-4 h-4" />
-                Monitoring Anomali
+                Anomali
                 {anomalies.length > 0 && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded-none bg-[#ba1a1a] text-white font-mono-code font-bold animate-pulse">
                     {anomalies.length}
@@ -299,20 +292,20 @@ export const AdminDashboardPage = () => {
                 variant={activeTab === "logs" ? "primary" : "subtle"}
                 size="sm"
                 onClick={() => setActiveTab("logs")}
-                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+                className="gap-1.5 text-xs font-semibold rounded-none cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <Globe className="w-4 h-4" />
-                Log Aktivitas & Geolokasi
+                Log Aktivitas
               </Button>
 
               <Button
                 variant={activeTab === "security" ? "primary" : "subtle"}
                 size="sm"
                 onClick={() => setActiveTab("security")}
-                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+                className="gap-1.5 text-xs font-semibold rounded-none cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <KeyRound className="w-4 h-4" />
-                Keamanan & 2FA
+                Keamanan (2FA)
               </Button>
             </div>
 
