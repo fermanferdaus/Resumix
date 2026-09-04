@@ -108,16 +108,16 @@ export const Navbar = () => {
 
         {/* Right: Traktir Kopi, User Profile & Logout */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Tombol Traktir Kopi Saweria */}
+          {/* Tombol Traktir Kopi Saweria (Desktop Saja) */}
           <a
             href={appConfig.saweriaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-1.5 h-8 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
+            className="hidden md:inline-flex items-center justify-center gap-1.5 px-3 py-1.5 h-8 bg-[#faad14] hover:bg-[#d48806] text-[#1a1b22] font-semibold text-xs transition-colors rounded-none border border-[#d48806] cursor-pointer"
             title="Dukung Resumix / Traktir Kopi via Saweria"
           >
             <Coffee className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="hidden sm:inline">Traktir Kopi</span>
+            <span>Traktir Kopi</span>
           </a>
 
           {/* User Profile Avatar & Name Link */}
@@ -227,7 +227,6 @@ export const Navbar = () => {
               className="py-2 px-1 text-sm font-medium text-[#1a1b22] hover:text-[#af101a] transition-colors flex items-center justify-between"
             >
               <span>Traktir Kopi</span>
-              <Coffee className="w-3.5 h-3.5 text-[#faad14]" />
             </a>
           </nav>
 
