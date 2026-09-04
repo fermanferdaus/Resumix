@@ -49,6 +49,7 @@ export const uploadAvatarSchema = z.object({
   image: z
     .string({ required_error: "Data gambar wajib disertakan" })
     .min(10, "Data gambar tidak boleh kosong")
+    .max(3500000, "Ukuran gambar maksimal 2.5MB")
     .refine((val) => {
       // Validasi prefix Data URL gambar
       const match = val.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/);

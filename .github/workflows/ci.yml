@@ -43,6 +43,7 @@ jobs:
       MAIL_FROM_NAME: Resumix Test
       MAIL_FROM_ADDRESS: no-reply@resumix.test
       GOOGLE_CLIENT_ID: mock-google-client-id.apps.googleusercontent.com
+      ENABLE_AUTH_MOCK: "true"
 
     steps:
       - name: Checkout Repository

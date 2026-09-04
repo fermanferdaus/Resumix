@@ -3,6 +3,7 @@ import authRoutes from "./authRoutes.js";
 import resumeRoutes from "./resumeRoutes.js";
 import userRoutes from "./userRoutes.js";
 import prisma from "../config/prisma.js";
+import { appConfig } from "../config/app.js";
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.get("/health", async (req, res) => {
       success: false,
       message: "Database connection failed",
       data: { database: { connected: false } },
-      errors: [error.message],
+      errors: appConfig.isProduction ? null : [error.message],
     });
   }
 });
