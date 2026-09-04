@@ -21,11 +21,12 @@ WORKDIR /app
 
 RUN apk add --no-cache openssl libc6-compat wget
 
-ENV NODE_ENV=production
-
-# Install production dependencies only
+# Install production and optional native dependencies (such as sharp-linuxmusl-x64)
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --include=optional && npm cache clean --force
+
+ENV NODE_ENV=production
+ENV PORT=3000
 
 # Copy generated Prisma client from builder
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
@@ -42,8 +43,8 @@ RUN mkdir -p public/uploads && chown -R node:node /app
 USER node
 
 # Healthcheck monitoring (dynamic port from server/.env)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:${PORT}/api/v1/health || exit 1
 
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
 

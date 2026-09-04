@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "npx prisma db push --skip-generate && node index.js",
     "dev": "nodemon index.js",
     "test": "node --test tests/unit/*.test.js",
     "test:unit": "node --test tests/unit/*.test.js",
@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^9.1.0",
     "pg": "^8.23.0",
+    "prisma": "^6.4.1",
     "sharp": "^0.35.4",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^14.0.2",
@@ -32,7 +33,6 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.9.1",
     "globals": "^17.11.0",
-    "nodemon": "^3.1.14",
-    "prisma": "^6.4.1"
+    "nodemon": "^3.1.14"
   }
 }
