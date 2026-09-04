@@ -19,7 +19,7 @@ FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl libc6-compat wget su-exec
+RUN apk add --no-cache openssl libc6-compat wget su-exec dos2unix
 
 # Install production dependencies and explicitly install Sharp's native musl binary for Alpine Linux
 COPY package*.json ./
@@ -38,12 +38,12 @@ COPY . .
 
 # Entrypoint script to guarantee volume permissions for node user (UID 1000)
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh && mkdir -p public/uploads/avatars && chown -R node:node /app
+RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh && mkdir -p public/uploads/avatars && chown -R node:node /app
 
 # Healthcheck monitoring (dynamic port from server/.env)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:${PORT}/api/v1/health || exit 1
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
 CMD ["npm", "start"]
 
