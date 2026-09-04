@@ -31,6 +31,12 @@ export const authApi = {
     return res.data;
   },
 
+  // 2FA Verification (Google Authenticator / Backup Code)
+  verify2FA: async ({ tempToken, token }) => {
+    const res = await apiClient.post("/auth/2fa/verify", { tempToken, token });
+    return res.data;
+  },
+
   // Google OAuth Login
   googleAuth: async (idToken) => {
     const res = await apiClient.post("/auth/google", { idToken });

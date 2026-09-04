@@ -28,6 +28,7 @@ router.post("/send-otp", authSendLimiter, validate(sendOtpSchema), authControlle
 router.post("/verify-otp", authStrictLimiter, validate(verifyOtpSchema), authController.verifyOtp);
 router.post("/register", authGeneralLimiter, validate(registerSchema), authController.register);
 router.post("/login", authStrictLimiter, validate(loginSchema), authController.login);
+router.post("/2fa/verify", authStrictLimiter, authController.verify2FA);
 router.post("/google", authGeneralLimiter, validate(googleAuthSchema), authController.googleAuth);
 router.post("/forgot-password", authSendLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
 router.post("/reset-password", authStrictLimiter, validate(resetPasswordSchema), authController.resetPassword);

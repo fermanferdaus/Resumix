@@ -35,6 +35,7 @@ export const requireAuth = async (req, res, next) => {
       id: user.publicId,
       email: user.email,
       fullName: user.fullName,
+      role: user.role,
       isVerified: user.isVerified,
       avatarUrl: user.avatarUrl,
       _internalId: user.id,

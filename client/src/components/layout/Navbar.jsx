@@ -12,6 +12,7 @@ export const Navbar = () => {
 
   const isDashboard = location.pathname.startsWith("/dashboard");
   const isProfile = location.pathname.startsWith("/profile");
+  const isAdminPath = location.pathname.startsWith("/admin");
   const isTemplateOrEditor =
     location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
@@ -84,6 +85,19 @@ export const Navbar = () => {
             >
               Profil
             </Link>
+
+            {user?.role === "ADMIN" && (
+              <Link
+                to="/admin"
+                className={`h-full flex items-center gap-1.5 pt-[2px] transition-colors ${
+                  isAdminPath
+                    ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                    : "text-[#5d5e61] hover:text-[#1a1b22]"
+                }`}
+              >
+                Admin Panel
+              </Link>
+            )}
           </nav>
         </div>
 

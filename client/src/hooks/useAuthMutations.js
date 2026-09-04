@@ -66,6 +66,21 @@ export const useLoginMutation = () => {
   });
 };
 
+export const useVerify2FAMutation = () => {
+  const { setAuth } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async ({ tempToken, token }) => {
+      return await authApi.verify2FA({ tempToken, token });
+    },
+    onSuccess: (data) => {
+      if (data.data?.accessToken && data.data?.user) {
+        setAuth(data.data.user, data.data.accessToken);
+      }
+    },
+  });
+};
+
 export const useGoogleAuthMutation = () => {
   const { setAuth } = useAuthStore();
 
