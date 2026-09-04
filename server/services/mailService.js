@@ -26,9 +26,11 @@ const createTransporter = () => {
 const getLogoUrl = () => appConfig.mail.logoUrl;
 
 /**
- * Template Email HTML OTP Resumix (Professional Card Theme)
+ * Template Email HTML OTP Resumix (Soft Flat / ATS Blueprint Theme)
  */
 const renderOtpTemplate = (code, expiresMinutes) => {
+  const digits = String(code).split("");
+
   return `
   <!DOCTYPE html>
   <html lang="id">
@@ -37,32 +39,51 @@ const renderOtpTemplate = (code, expiresMinutes) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumix - Kode Verifikasi</title>
   </head>
-  <body style="margin: 0; padding: 36px 16px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+  <body style="margin: 0; padding: 40px 16px; background-color: #fbf8ff; font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1a1b22;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0; border-collapse: separate;">
+      <!-- Accent Top Crimson Bar -->
       <tr>
-        <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
-          <img src="${getLogoUrl()}" alt="Resumix" height="40" style="height: 40px; width: auto; max-width: 160px; display: inline-block; border: 0;" />
+        <td style="height: 3px; background-color: #af101a; line-height: 3px; font-size: 3px; padding: 0;">&nbsp;</td>
+      </tr>
+      <!-- Brand Logo Header -->
+      <tr>
+        <td style="padding: 32px 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+          <img src="${getLogoUrl()}" alt="Resumix" height="42" style="height: 42px; width: auto; max-width: 180px; display: inline-block; border: 0; outline: none;" />
         </td>
       </tr>
+      <!-- Main Content -->
       <tr>
         <td style="padding: 32px 32px 28px; text-align: center;">
-          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.2px;">Verifikasi Keamanan Akun</h1>
-          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 28px 0;">Gunakan kode One-Time Password (OTP) berikut untuk menyelesaikan verifikasi akun Resumix Anda:</p>
+          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.3px; line-height: 1.3;">Verifikasi Akun</h1>
+          <p style="font-size: 14px; color: #5d5e61; line-height: 1.6; margin: 0 0 28px 0;">Gunakan 6 digit kode verifikasi berikut untuk menyelesaikan proses masuk di platform Resumix:</p>
           
-          <div style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 18px 24px; display: inline-block; margin: 0 auto 24px auto;">
-            <span style="font-family: 'SF Pro Display', Consolas, 'Courier New', monospace; font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #dc2626; margin-left: 8px;">${code}</span>
-          </div>
+          <!-- 6 Individual Square OTP Boxes (matches website .otp-box) -->
+          <table role="presentation" border="0" cellpadding="0" cellspacing="6" style="margin: 0 auto 24px auto;">
+            <tr>
+              ${digits.map((digit) => `
+                <td style="width: 44px; height: 52px; text-align: center; vertical-align: middle; border: 1px solid #1a1c1e; background-color: #fbf8ff; font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace; font-size: 24px; font-weight: 700; color: #1a1b22; border-radius: 0;">
+                  ${digit}
+                </td>
+              `).join("")}
+            </tr>
+          </table>
 
-          <div style="margin-bottom: 24px;">
-            <span style="background-color: #fef2f2; color: #991b1b; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; display: inline-block;">⏱ Berlaku selama ${expiresMinutes} menit</span>
-          </div>
+          <p style="font-size: 13px; color: #5d5e61; line-height: 1.5; margin: 0 0 24px 0;">
+            Kode verifikasi berlaku selama <strong style="color: #af101a; font-weight: 600;">${expiresMinutes} menit</strong>.
+          </p>
 
-          <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0; padding-top: 16px; border-top: 1px solid #f1f5f9;">Demi keamanan, jangan pernah membagikan kode ini kepada siapapun. Jika Anda tidak merasa meminta kode ini, abaikan pesan ini dengan aman.</p>
+          <div style="height: 1px; background-color: #e2e8f0; width: 100%; margin: 0 0 16px 0;"></div>
+          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0; text-align: left;">
+            Demi keamanan, jangan pernah membagikan kode ini kepada siapapun termasuk pihak Resumix. Jika Anda tidak meminta kode ini, abaikan pesan ini dengan aman.
+          </p>
         </td>
       </tr>
+      <!-- Footer -->
       <tr>
-        <td style="background-color: #f8fafc; padding: 16px 32px; text-align: center; border-top: 1px solid #f1f5f9;">
-          <p style="font-size: 11px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">© ${new Date().getFullYear()} Resumix ATS CV Builder. All rights reserved.</p>
+        <td style="background-color: #fbf8ff; padding: 16px 32px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <p style="font-size: 11px; color: #5d5e61; margin: 0; letter-spacing: 0.3px;">
+            &copy; ${new Date().getFullYear()} Resumix. Platform Pembuat CV ATS Indonesia.
+          </p>
         </td>
       </tr>
     </table>
@@ -100,7 +121,7 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
 };
 
 /**
- * Template Email HTML Reset Sandi Resumix (Professional Card Theme - Action Button Only)
+ * Template Email HTML Reset Sandi Resumix (Soft Flat / ATS Blueprint Theme - Action Button Only)
  */
 const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
   return `
@@ -111,32 +132,51 @@ const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumix - Reset Kata Sandi</title>
   </head>
-  <body style="margin: 0; padding: 36px 16px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+  <body style="margin: 0; padding: 40px 16px; background-color: #fbf8ff; font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1a1b22;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0; border-collapse: separate;">
+      <!-- Accent Top Crimson Bar -->
       <tr>
-        <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
-          <img src="${getLogoUrl()}" alt="Resumix" height="40" style="height: 40px; width: auto; max-width: 160px; display: inline-block; border: 0;" />
+        <td style="height: 3px; background-color: #af101a; line-height: 3px; font-size: 3px; padding: 0;">&nbsp;</td>
+      </tr>
+      <!-- Brand Logo Header -->
+      <tr>
+        <td style="padding: 32px 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+          <img src="${getLogoUrl()}" alt="Resumix" height="42" style="height: 42px; width: auto; max-width: 180px; display: inline-block; border: 0; outline: none;" />
         </td>
       </tr>
+      <!-- Main Content -->
       <tr>
         <td style="padding: 32px 32px 28px; text-align: center;">
-          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.2px;">Atur Ulang Kata Sandi</h1>
-          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 28px 0;">Kami menerima permintaan untuk mengatur ulang kata sandi akun Resumix Anda. Silakan klik tombol di bawah ini untuk membuat kata sandi baru:</p>
+          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.3px; line-height: 1.3;">Atur Ulang Kata Sandi</h1>
+          <p style="font-size: 14px; color: #5d5e61; line-height: 1.6; margin: 0 0 28px 0;">Kami menerima permintaan untuk mengatur ulang kata sandi akun Resumix Anda. Silakan klik tombol di bawah ini untuk membuat kata sandi baru:</p>
           
-          <div style="margin: 0 auto 24px auto;">
-            <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: #dc2626; color: #ffffff !important; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 36px; border-radius: 8px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);">Atur Ulang Kata Sandi</a>
-          </div>
+          <!-- Flat Action Button Only -->
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 24px auto;">
+            <tr>
+              <td align="center" style="background-color: #af101a; border-radius: 0;">
+                <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: #af101a; color: #ffffff !important; font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; padding: 13px 32px; border-radius: 0; border: 1px solid #af101a;">
+                  Atur Ulang Kata Sandi
+                </a>
+              </td>
+            </tr>
+          </table>
 
-          <div style="margin-bottom: 24px;">
-            <span style="background-color: #fef2f2; color: #991b1b; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; display: inline-block;">⏱ Tautan berlaku selama ${expiresMinutes} menit</span>
-          </div>
+          <p style="font-size: 13px; color: #5d5e61; line-height: 1.5; margin: 0 0 24px 0;">
+            Tautan ini berlaku selama <strong style="color: #af101a; font-weight: 600;">${expiresMinutes} menit</strong>.
+          </p>
 
-          <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0; padding-top: 16px; border-top: 1px solid #f1f5f9;">Jika Anda tidak meminta pengaturan ulang kata sandi ini, abaikan email ini dengan aman. Akun Anda tetap terlindungi.</p>
+          <div style="height: 1px; background-color: #e2e8f0; width: 100%; margin: 0 0 16px 0;"></div>
+          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0; text-align: left;">
+            Jika Anda tidak meminta pengaturan ulang kata sandi ini, abaikan email ini dengan aman. Akun Anda tetap terlindungi.
+          </p>
         </td>
       </tr>
+      <!-- Footer -->
       <tr>
-        <td style="background-color: #f8fafc; padding: 16px 32px; text-align: center; border-top: 1px solid #f1f5f9;">
-          <p style="font-size: 11px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">© ${new Date().getFullYear()} Resumix ATS CV Builder. All rights reserved.</p>
+        <td style="background-color: #fbf8ff; padding: 16px 32px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <p style="font-size: 11px; color: #5d5e61; margin: 0; letter-spacing: 0.3px;">
+            &copy; ${new Date().getFullYear()} Resumix. Platform Pembuat CV ATS Indonesia.
+          </p>
         </td>
       </tr>
     </table>
@@ -172,3 +212,5 @@ export const sendResetPasswordEmail = async ({ to, resetUrl, expiresMinutes = 15
     return { sent: false, error: error.message };
   }
 };
+
+export { renderOtpTemplate, renderResetPasswordTemplate };
