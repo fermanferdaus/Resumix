@@ -491,12 +491,44 @@ export const revokeUserSessions = async (userPublicId) => {
 };
 
 /**
+ * Helper internal: Resolusi Pengguna Admin berdasarkan publicId string atau BigInt id
+ */
+const findAdminUserByIdentifier = async (identifier, select = null) => {
+  if (!identifier) return null;
+  const query = select ? { select } : {};
+
+  // 1. Coba cari berdasarkan publicId terlebih dahulu (format standar sesi JWT)
+  let user = await prisma.user.findUnique({
+    where: { publicId: String(identifier) },
+    ...query,
+  });
+  if (user) return user;
+
+  // 2. Fallback jika numeric ID (BigInt)
+  if (typeof identifier === "bigint" || /^\d+$/.test(String(identifier))) {
+    try {
+      user = await prisma.user.findUnique({
+        where: { id: BigInt(identifier) },
+        ...query,
+      });
+      if (user) return user;
+    } catch {
+      // Abaikan jika konversi gagal
+    }
+  }
+
+  return null;
+};
+
+/**
  * Inisialisasi Setup Google Authenticator (TOTP) untuk Admin
  */
 export const setup2FA = async (userId) => {
-  const user = await prisma.user.findUnique({
-    where: { id: BigInt(userId) },
-    select: { id: true, email: true, fullName: true, twoFactorEnabled: true },
+  const user = await findAdminUserByIdentifier(userId, {
+    id: true,
+    email: true,
+    fullName: true,
+    twoFactorEnabled: true,
   });
 
   if (!user) {
@@ -535,9 +567,11 @@ export const setup2FA = async (userId) => {
  * Konfirmasi dan Aktifkan Google Authenticator untuk Admin
  */
 export const enable2FA = async (userId, token) => {
-  const user = await prisma.user.findUnique({
-    where: { id: BigInt(userId) },
-    select: { id: true, email: true, twoFactorSecret: true, twoFactorEnabled: true },
+  const user = await findAdminUserByIdentifier(userId, {
+    id: true,
+    email: true,
+    twoFactorSecret: true,
+    twoFactorEnabled: true,
   });
 
   if (!user || !user.twoFactorSecret) {
@@ -573,9 +607,13 @@ export const enable2FA = async (userId, token) => {
  * Nonaktifkan Google Authenticator
  */
 export const disable2FA = async (userId, token, password) => {
-  const user = await prisma.user.findUnique({
-    where: { id: BigInt(userId) },
-    select: { id: true, email: true, password: true, twoFactorSecret: true, twoFactorEnabled: true, twoFactorBackupCodes: true },
+  const user = await findAdminUserByIdentifier(userId, {
+    id: true,
+    email: true,
+    password: true,
+    twoFactorSecret: true,
+    twoFactorEnabled: true,
+    twoFactorBackupCodes: true,
   });
 
   if (!user) {
@@ -628,9 +666,9 @@ export const disable2FA = async (userId, token, password) => {
  * Ambil Status Google Authenticator Akun Admin
  */
 export const get2FAStatus = async (userId) => {
-  const user = await prisma.user.findUnique({
-    where: { id: BigInt(userId) },
-    select: { twoFactorEnabled: true, email: true },
+  const user = await findAdminUserByIdentifier(userId, {
+    twoFactorEnabled: true,
+    email: true,
   });
 
   if (!user) {

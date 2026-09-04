@@ -101,3 +101,4 @@ describe("Unit: Google Authenticator (RFC 6238 TOTP)", () => {
     assert.strictEqual(secondTry.remainingHashedCodes.length, 7);
   });
 });
+

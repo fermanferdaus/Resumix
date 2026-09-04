@@ -225,3 +225,4 @@ export const verifyAndConsumeBackupCode = (inputCode, hashedCodesArray = []) => 
 
   return { valid: true, remainingHashedCodes };
 };
+
