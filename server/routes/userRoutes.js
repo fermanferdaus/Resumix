@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import * as userController from "../controllers/userController.js";
 import { requireAuth } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
@@ -15,7 +15,13 @@ router.use(requireAuth);
 
 router.get("/profile", userController.getProfile);
 router.put("/profile", validate(updateProfileSchema), userController.updateProfile);
-router.post("/avatar", avatarUploadLimiter, validate(uploadAvatarSchema), userController.uploadAvatar);
+router.post(
+  "/avatar",
+  avatarUploadLimiter,
+  express.json({ limit: "4mb" }),
+  validate(uploadAvatarSchema),
+  userController.uploadAvatar
+);
 router.delete("/avatar", userController.deleteAvatar);
 
 export default router;

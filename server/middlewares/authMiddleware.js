@@ -27,6 +27,10 @@ export const requireAuth = async (req, res, next) => {
       return errorResponse(res, "User tidak ditemukan", null, 401);
     }
 
+    if (!user.isVerified) {
+      return errorResponse(res, "Akun belum diverifikasi. Silakan verifikasi email Anda terlebih dahulu.", null, 403);
+    }
+
     req.user = {
       id: user.publicId,
       email: user.email,

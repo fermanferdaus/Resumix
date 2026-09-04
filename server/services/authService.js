@@ -371,8 +371,9 @@ export const requestPasswordReset = async (email) => {
     };
   }
 
-  // Generate secure token 32-byte hex
+  // Generate secure token 32-byte hex & hash SHA-256 for DB storage
   const resetToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   const expiresMinutes = 15;
   const expiresAt = new Date(Date.now() + expiresMinutes * 60 * 1000);
 
@@ -382,12 +383,12 @@ export const requestPasswordReset = async (email) => {
     data: { isUsed: true },
   });
 
-  // Save new reset token to DB
+  // Save new hashed reset token to DB
   await prisma.passwordReset.create({
     data: {
       publicId: generatePublicId(),
       email: normalizedEmail,
-      token: resetToken,
+      token: hashedToken,
       expiresAt,
       isUsed: false,
     },
@@ -419,9 +420,14 @@ export const resetPassword = async ({ token, password }) => {
     );
   }
 
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
   const resetRecord = await prisma.passwordReset.findFirst({
     where: {
-      token,
+      OR: [
+        { token: hashedToken },
+        { token },
+      ],
       isUsed: false,
       expiresAt: {
         gt: new Date(),

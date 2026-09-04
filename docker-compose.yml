@@ -38,7 +38,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
       PORT: ${SERVER_PORT}
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - resumix_uploads:/app/public/uploads
     networks:

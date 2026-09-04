@@ -18,9 +18,16 @@ const app = express();
 app.disable("x-powered-by");
 
 // Helmet Security Headers
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        frameAncestors: ["'none'"],
+      },
+    },
+  })
+);
 
 // Trust reverse proxy in production (Nginx container / VPS)
 if (appConfig.isProduction) {
@@ -33,8 +40,8 @@ app.use(globalLimiter);
 // Security & Parsing Middlewares
 app.use(cors(appConfig.cors));
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "100kb" }));
+app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 
 // Static Media Serving (/uploads) with nosniff header
 app.use(
