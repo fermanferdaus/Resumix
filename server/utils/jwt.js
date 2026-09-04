@@ -7,6 +7,7 @@ import { appConfig } from "../config/app.js";
 export const generateAccessToken = (payload) => {
   return jwt.sign(payload, appConfig.jwt.accessSecret, {
     expiresIn: appConfig.jwt.accessExpiresIn,
+    algorithm: "HS256",
   });
 };
 
@@ -16,6 +17,7 @@ export const generateAccessToken = (payload) => {
 export const generateRefreshToken = (payload) => {
   return jwt.sign(payload, appConfig.jwt.refreshSecret, {
     expiresIn: appConfig.jwt.refreshExpiresIn,
+    algorithm: "HS256",
   });
 };
 
@@ -24,7 +26,9 @@ export const generateRefreshToken = (payload) => {
  */
 export const verifyAccessToken = (token) => {
   try {
-    return jwt.verify(token, appConfig.jwt.accessSecret);
+    return jwt.verify(token, appConfig.jwt.accessSecret, {
+      algorithms: ["HS256"],
+    });
   } catch {
     return null;
   }
@@ -35,7 +39,9 @@ export const verifyAccessToken = (token) => {
  */
 export const verifyRefreshToken = (token) => {
   try {
-    return jwt.verify(token, appConfig.jwt.refreshSecret);
+    return jwt.verify(token, appConfig.jwt.refreshSecret, {
+      algorithms: ["HS256"],
+    });
   } catch {
     return null;
   }

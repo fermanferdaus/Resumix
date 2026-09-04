@@ -103,22 +103,20 @@ export const uploadUserAvatar = async (publicId, base64Image) => {
     throw new Error("Format data gambar base64 tidak valid");
   }
 
-  const mimeType = matches[1].toLowerCase();
   const rawBuffer = Buffer.from(matches[2], "base64");
 
-  let finalBuffer = rawBuffer;
-  let fileExt = mimeType.includes("png") ? "png" : mimeType.includes("jpeg") || mimeType.includes("jpg") ? "jpg" : "webp";
+  // Kompresi ketat menggunakan sharp
+  let finalBuffer;
+  let fileExt = "webp";
 
-  // Kompresi ketat menggunakan sharp jika tersedia, dengan graceful fallback ke buffer hasil crop
   try {
     const sharp = await getSharp();
     finalBuffer = await sharp(rawBuffer)
       .resize(400, 400, { fit: "cover", position: "center" })
       .webp({ quality: 80, effort: 4 })
       .toBuffer();
-    fileExt = "webp";
   } catch (sharpError) {
-    console.warn("[AVATAR SHARP FALLBACK] Sharp gagal atau tidak tersedia di platform, menyimpan buffer asli:", sharpError.message);
+    throw new Error(`Gagal memproses berkas gambar: ${sharpError.message}`, { cause: sharpError });
   }
 
   // Hapus foto lama pengguna jika sebelumnya sudah pernah upload
