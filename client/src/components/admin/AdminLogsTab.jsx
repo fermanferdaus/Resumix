@@ -10,6 +10,7 @@ import { Card } from "../ui/card.jsx";
 import { Input } from "../ui/input.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Button } from "../ui/button.jsx";
+import { Skeleton } from "../ui/skeleton.jsx";
 import {
   Table,
   TableBody,
@@ -27,6 +28,7 @@ export const AdminLogsTab = ({
   setLogStatusFilter,
   logsPage,
   setLogsPage,
+  isLoading = false,
 }) => {
   return (
     <Card className="overflow-hidden">
@@ -76,7 +78,31 @@ export const AdminLogsTab = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {logsData.items.length === 0 ? (
+          {isLoading ? (
+            [1, 2, 3, 4, 5, 6].map((n) => (
+              <TableRow key={n} className="animate-pulse">
+                <TableCell className="py-3.5 px-4 sm:px-6">
+                  <Skeleton className="h-3.5 w-24 bg-[#f1f5f9]" />
+                </TableCell>
+                <TableCell className="py-3.5 px-4">
+                  <Skeleton className="h-3.5 w-28 bg-[#f1f5f9] mb-1" />
+                  <Skeleton className="h-2.5 w-36 bg-[#f8fafc]" />
+                </TableCell>
+                <TableCell className="py-3.5 px-4">
+                  <Skeleton className="h-3.5 w-24 bg-[#f8fafc]" />
+                </TableCell>
+                <TableCell className="py-3.5 px-4">
+                  <Skeleton className="h-3.5 w-28 bg-[#f1f5f9]" />
+                </TableCell>
+                <TableCell className="py-3.5 px-4">
+                  <Skeleton className="h-3.5 w-32 bg-[#f8fafc]" />
+                </TableCell>
+                <TableCell className="py-3.5 px-4 sm:px-6 text-right">
+                  <Skeleton className="h-5 w-20 bg-[#f8fafc] ml-auto" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : logsData.items.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="py-10 text-center text-[#5d5e61]">
                 Tidak ada catatan log aktivitas yang tersedia.

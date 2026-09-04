@@ -7,6 +7,7 @@ import { AdminOverviewTab } from "../../components/admin/AdminOverviewTab.jsx";
 import { AdminUsersTab } from "../../components/admin/AdminUsersTab.jsx";
 import { AdminAnomaliesTab } from "../../components/admin/AdminAnomaliesTab.jsx";
 import { AdminLogsTab } from "../../components/admin/AdminLogsTab.jsx";
+import { AdminSkeleton } from "../../components/admin/AdminSkeleton.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
 import { cn } from "../../lib/utils.js";
@@ -29,9 +30,12 @@ export const AdminDashboardPage = () => {
   const [anomalies, setAnomalies] = useState([]);
   const [logsData, setLogsData] = useState({ items: [], meta: { page: 1, totalPages: 1, total: 0 } });
 
-  // State Filters & Pagination
+  // State Filters, Pagination & Loading
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isUsersLoading, setIsUsersLoading] = useState(false);
+  const [isLogsLoading, setIsLogsLoading] = useState(false);
+
   const [userSearch, setUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
   const [usersPage, setUsersPage] = useState(1);
@@ -56,6 +60,7 @@ export const AdminDashboardPage = () => {
 
   // Load Users List
   const fetchUsers = useCallback(async () => {
+    setIsUsersLoading(true);
     try {
       const res = await adminApi.getUsers({
         page: usersPage,
@@ -71,11 +76,14 @@ export const AdminDashboardPage = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal memuat data pengguna");
+    } finally {
+      setIsUsersLoading(false);
     }
   }, [usersPage, userSearch, userRoleFilter]);
 
   // Load Login Logs
   const fetchLogs = useCallback(async () => {
+    setIsLogsLoading(true);
     try {
       const res = await adminApi.getLogs({
         page: logsPage,
@@ -91,6 +99,8 @@ export const AdminDashboardPage = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal memuat log aktivitas");
+    } finally {
+      setIsLogsLoading(false);
     }
   }, [logsPage, logStatusFilter, logSearch]);
 
@@ -161,7 +171,7 @@ export const AdminDashboardPage = () => {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={isRefreshing || isLoading}
               className="gap-2 bg-white text-xs font-semibold text-[#1a1b22] border-[#e2e8f0] hover:border-[#af101a] rounded-none"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#af101a]" : "text-[#5d5e61]"}`} />
@@ -170,103 +180,112 @@ export const AdminDashboardPage = () => {
           </div>
         </div>
 
-        {/* 4 Kartu Metrik Utama */}
-        <AdminStatCards stats={stats} isLoading={isLoading} />
+        {/* Loading Skeleton Utama atau Tampilan Dashboard */}
+        {isLoading ? (
+          <AdminSkeleton />
+        ) : (
+          <>
+            {/* 4 Kartu Metrik Utama */}
+            <AdminStatCards stats={stats} isLoading={isLoading} />
 
-        {/* Tab Navigation Menggunakan shadcn/ui Button */}
-        <div className="flex items-center gap-2 border-b border-[#e2e8f0] pb-2 mb-6 overflow-x-auto">
-          <Button
-            variant={activeTab === "overview" ? "primary" : "subtle"}
-            size="sm"
-            onClick={() => setActiveTab("overview")}
-            className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
-          >
-            <BarChart3 className="w-4 h-4" />
-            Ringkasan & Visual Grafik
-          </Button>
+            {/* Tab Navigation Menggunakan shadcn/ui Button */}
+            <div className="flex items-center gap-2 border-b border-[#e2e8f0] pb-2 mb-6 overflow-x-auto">
+              <Button
+                variant={activeTab === "overview" ? "primary" : "subtle"}
+                size="sm"
+                onClick={() => setActiveTab("overview")}
+                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Ringkasan & Visual Grafik
+              </Button>
 
-          <Button
-            variant={activeTab === "users" ? "primary" : "subtle"}
-            size="sm"
-            onClick={() => setActiveTab("users")}
-            className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
-          >
-            <Users className="w-4 h-4" />
-            Pengguna & Kuota CV
-            <span
-              className={cn(
-                "text-[10px] px-1.5 py-0.2 rounded-none border font-mono-code font-bold",
-                activeTab === "users"
-                  ? "bg-white/20 text-white border-white/30"
-                  : "bg-white text-[#5d5e61] border-[#e2e8f0]"
-              )}
-            >
-              {stats?.overview?.totalUsers || 0}
-            </span>
-          </Button>
+              <Button
+                variant={activeTab === "users" ? "primary" : "subtle"}
+                size="sm"
+                onClick={() => setActiveTab("users")}
+                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+              >
+                <Users className="w-4 h-4" />
+                Pengguna & Kuota CV
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.2 rounded-none border font-mono-code font-bold",
+                    activeTab === "users"
+                      ? "bg-white/20 text-white border-white/30"
+                      : "bg-white text-[#5d5e61] border-[#e2e8f0]"
+                  )}
+                >
+                  {stats?.overview?.totalUsers || 0}
+                </span>
+              </Button>
 
-          <Button
-            variant={activeTab === "anomalies" ? "primary" : "subtle"}
-            size="sm"
-            onClick={() => setActiveTab("anomalies")}
-            className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
-          >
-            <ShieldAlert className="w-4 h-4" />
-            Monitoring Anomali
-            {anomalies.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-none bg-[#ba1a1a] text-white font-mono-code font-bold animate-pulse">
-                {anomalies.length}
-              </span>
+              <Button
+                variant={activeTab === "anomalies" ? "primary" : "subtle"}
+                size="sm"
+                onClick={() => setActiveTab("anomalies")}
+                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+              >
+                <ShieldAlert className="w-4 h-4" />
+                Monitoring Anomali
+                {anomalies.length > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-none bg-[#ba1a1a] text-white font-mono-code font-bold animate-pulse">
+                    {anomalies.length}
+                  </span>
+                )}
+              </Button>
+
+              <Button
+                variant={activeTab === "logs" ? "primary" : "subtle"}
+                size="sm"
+                onClick={() => setActiveTab("logs")}
+                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+              >
+                <Globe className="w-4 h-4" />
+                Log Aktivitas & Geolokasi
+              </Button>
+            </div>
+
+            {/* Tab Contents */}
+            {activeTab === "overview" && (
+              <AdminOverviewTab stats={stats} maxTrendVal={maxTrendVal} />
             )}
-          </Button>
 
-          <Button
-            variant={activeTab === "logs" ? "primary" : "subtle"}
-            size="sm"
-            onClick={() => setActiveTab("logs")}
-            className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
-          >
-            <Globe className="w-4 h-4" />
-            Log Aktivitas & Geolokasi
-          </Button>
-        </div>
+            {activeTab === "users" && (
+              <AdminUsersTab
+                usersData={usersData}
+                userSearch={userSearch}
+                setUserSearch={setUserSearch}
+                userRoleFilter={userRoleFilter}
+                setUserRoleFilter={setUserRoleFilter}
+                usersPage={usersPage}
+                setUsersPage={setUsersPage}
+                onRevokeSession={handleRevokeSession}
+                isLoading={isUsersLoading}
+              />
+            )}
 
-        {/* Tab Contents */}
-        {activeTab === "overview" && (
-          <AdminOverviewTab stats={stats} maxTrendVal={maxTrendVal} />
-        )}
+            {activeTab === "anomalies" && (
+              <AdminAnomaliesTab
+                anomalies={anomalies}
+                users={usersData.items}
+                onRevokeSession={handleRevokeSession}
+              />
+            )}
 
-        {activeTab === "users" && (
-          <AdminUsersTab
-            usersData={usersData}
-            userSearch={userSearch}
-            setUserSearch={setUserSearch}
-            userRoleFilter={userRoleFilter}
-            setUserRoleFilter={setUserRoleFilter}
-            usersPage={usersPage}
-            setUsersPage={setUsersPage}
-            onRevokeSession={handleRevokeSession}
-          />
-        )}
-
-        {activeTab === "anomalies" && (
-          <AdminAnomaliesTab
-            anomalies={anomalies}
-            users={usersData.items}
-            onRevokeSession={handleRevokeSession}
-          />
-        )}
-
-        {activeTab === "logs" && (
-          <AdminLogsTab
-            logsData={logsData}
-            logSearch={logSearch}
-            setLogSearch={setLogSearch}
-            logStatusFilter={logStatusFilter}
-            setLogStatusFilter={setLogStatusFilter}
-            logsPage={logsPage}
-            setLogsPage={setLogsPage}
-          />
+            {activeTab === "logs" && (
+              <AdminLogsTab
+                logsData={logsData}
+                logSearch={logSearch}
+                setLogSearch={setLogSearch}
+                logStatusFilter={logStatusFilter}
+                setLogStatusFilter={setLogStatusFilter}
+                logsPage={logsPage}
+                setLogsPage={setLogsPage}
+                isLoading={isLogsLoading}
+              />
+            )}
+          </>
         )}
       </main>
 

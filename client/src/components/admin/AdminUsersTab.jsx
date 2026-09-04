@@ -12,6 +12,7 @@ import { Card } from "../ui/card.jsx";
 import { Input } from "../ui/input.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Button } from "../ui/button.jsx";
+import { Skeleton } from "../ui/skeleton.jsx";
 import {
   Table,
   TableBody,
@@ -30,6 +31,7 @@ export const AdminUsersTab = ({
   usersPage,
   setUsersPage,
   onRevokeSession,
+  isLoading = false,
 }) => {
   return (
     <Card className="overflow-hidden">
@@ -82,7 +84,42 @@ export const AdminUsersTab = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {usersData.items.length === 0 ? (
+          {isLoading ? (
+            [1, 2, 3, 4, 5].map((n) => (
+              <TableRow key={n} className="animate-pulse">
+                <TableCell className="py-4 px-4 sm:px-6">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-9 h-9 bg-[#f1f5f9] rounded-none" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-4 w-32 bg-[#f1f5f9]" />
+                      <Skeleton className="h-3 w-44 bg-[#f8fafc]" />
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="py-4 px-4">
+                  <Skeleton className="h-5 w-16 bg-[#f1f5f9]" />
+                </TableCell>
+                <TableCell className="py-4 px-4">
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-16 bg-[#f1f5f9]" />
+                    <Skeleton className="h-2 w-20 bg-[#f8fafc]" />
+                  </div>
+                </TableCell>
+                <TableCell className="py-4 px-4">
+                  <Skeleton className="h-5 w-20 bg-[#f8fafc]" />
+                </TableCell>
+                <TableCell className="py-4 px-4">
+                  <div className="space-y-1">
+                    <Skeleton className="h-3.5 w-24 bg-[#f1f5f9]" />
+                    <Skeleton className="h-2.5 w-16 bg-[#f8fafc]" />
+                  </div>
+                </TableCell>
+                <TableCell className="py-4 px-4 sm:px-6 text-right">
+                  <Skeleton className="h-7 w-24 bg-[#f8fafc] ml-auto" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : usersData.items.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="py-10 text-center text-[#5d5e61]">
                 Tidak ada pengguna yang cocok dengan kriteria pencarian.
