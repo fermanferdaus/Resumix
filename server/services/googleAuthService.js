@@ -8,7 +8,7 @@ const client = new OAuth2Client(appConfig.google.clientId);
  */
 export const verifyGoogleIdToken = async (idToken) => {
   // Mock mode — strictly gated: development only + explicit opt-in
-  if (appConfig.nodeEnv === "development" && process.env.ENABLE_AUTH_MOCK === "true") {
+  if (appConfig.nodeEnv === "development" && appConfig.enableAuthMock) {
     if (idToken.startsWith("mock_google_token_")) {
       const email = idToken.replace("mock_google_token_", "") || "google.user@example.com";
       return {

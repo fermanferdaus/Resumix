@@ -42,6 +42,6 @@ export const requireAuth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return errorResponse(res, "Autentikasi gagal", error.message, 401);
+    next(error);
   }
 };

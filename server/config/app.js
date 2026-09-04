@@ -14,6 +14,7 @@ export const appConfig = {
   isProduction: (process.env.NODE_ENV || "development") === "production",
   appUrl: process.env.APP_URL || "http://localhost:3000",
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+  enableAuthMock: process.env.ENABLE_AUTH_MOCK === "true",
 
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET, // Sensitif: Tanpa fallback
