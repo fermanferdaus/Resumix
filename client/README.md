@@ -9,23 +9,26 @@ client/
 ├── public/                  # Static assets
 ├── src/
 │   ├── api/                 # Axios configuration and API service modules
+│   │   ├── adminApi.js      # Admin telemetry, users, audit logs, and 2FA API
 │   │   ├── authApi.js       # Auth request services
 │   │   ├── axios.js         # Axios instance with token interceptors and mutex
 │   │   ├── resumeApi.js     # Resume CRUD and duplicate services
 │   │   └── userApi.js       # Profile and avatar upload services
 │   ├── components/          # Reusable UI component modules
-│   │   ├── common/          # Error boundary, route guard, OAuth buttons
+│   │   ├── admin/           # Admin dashboard views (Overview, Users, Anomalies, Logs, Security)
+│   │   ├── common/          # Error boundary, route guards (ProtectedRoute, AdminProtectedRoute)
 │   │   ├── dashboard/       # Dashboard cards, modals, and banners
 │   │   ├── editor/          # ATS resume editor sections and preview
 │   │   ├── landing/         # Landing page presentation components
 │   │   ├── layout/          # Page layouts and navigation bar
 │   │   ├── profile/         # Profile form, avatar upload, and skeleton
-│   │   └── ui/              # Base UI primitives
+│   │   └── ui/              # Shadcn-styled primitives (badge, card, table, skeleton)
 │   ├── config/              # Centralized client configuration
 │   │   └── appConfig.js     # Environment variable abstraction
 │   ├── hooks/               # Custom TanStack Query hooks
-│   ├── lib/                 # Utility helpers (cn class merger)
+│   ├── lib/                 # Utility helpers (cn class merger, WIB date formatting)
 │   ├── pages/               # Application view routes
+│   │   ├── admin/           # Admin monitoring dashboard
 │   │   ├── auth/            # Auth pages (login, register, OTP, reset)
 │   │   ├── dashboard/       # Dashboard overview
 │   │   ├── editor/          # ATS resume builder and live preview
@@ -60,11 +63,14 @@ Configure `client/.env` based on `client/.env.example`:
 | `VITE_CONTACT_GITHUB` | Developer GitHub profile URL | `https://github.com/fermanferdaus` |
 | `VITE_CONTACT_INSTAGRAM`| Developer Instagram profile URL | `https://instagram.com/fermanferdaus_` |
 
-## Design System & State Management
+## Design System & Security
 
 - **Styling**: Tailwind CSS v4 using CSS theme variables and minimal component primitives.
 - **State**: Zustand for in-memory session tokens and client state; TanStack Query for server state caching and request deduplication.
-- **Route Guarding**: `ProtectedRoute` protects authenticated application routes (`/dashboard`, `/profile`, `/editor/:id`) and redirects unauthenticated users to `/`.
+- **Route Guarding**:
+  - `ProtectedRoute` protects standard authenticated user routes (`/dashboard`, `/profile`, `/editor/:id`).
+  - `AdminProtectedRoute` restricts `/admin` access strictly to authenticated accounts holding the `ADMIN` role, redirecting regular users to `/dashboard`.
+- **Two-Factor Authentication**: Step-up verification challenge dialog during login if 2FA is active, with fallback support for single-use emergency backup codes.
 
 ## Scripts
 
