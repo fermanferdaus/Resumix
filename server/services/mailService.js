@@ -1,11 +1,5 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import { appConfig } from "../config/app.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const logoPath = path.resolve(__dirname, "../assets/logo.png");
 
 /**
  * Buat Nodemailer Transporter
@@ -48,8 +42,9 @@ const renderOtpTemplate = (code, expiresMinutes) => {
   </head>
   <body>
     <div class="card">
-      <div style="margin-bottom: 24px;">
-        <img src="cid:resumix-logo" alt="Resumix" style="height: 38px; width: auto; display: inline-block; vertical-align: middle;" />
+      <div style="margin-bottom: 24px; text-align: center;">
+        <span style="font-size: 26px; font-weight: 800; color: #af101a; letter-spacing: -0.5px;">Resumix</span>
+        <span style="font-size: 13px; font-weight: 600; color: #5d5e61; margin-left: 6px; text-transform: uppercase; letter-spacing: 1px;">ATS Builder</span>
       </div>
       <div class="title">Verifikasi Akun Anda</div>
       <div class="desc">Gunakan kode One-Time Password (OTP) berikut untuk masuk atau menyelesaikan registrasi akun Anda di Resumix:</div>
@@ -79,15 +74,8 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
       from: `"${appConfig.mail.fromName}" <${appConfig.mail.fromAddress}>`,
       to,
       subject: `${code} adalah kode verifikasi Resumix Anda`,
-      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.`,
+      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.\n\nJika Anda tidak meminta kode ini, abaikan email ini.`,
       html: renderOtpTemplate(code, expiresMinutes),
-      attachments: [
-        {
-          filename: "logo.png",
-          path: logoPath,
-          cid: "resumix-logo",
-        },
-      ],
     });
 
     console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId}) - Kode OTP: [${code}]`);
@@ -121,8 +109,9 @@ const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
   </head>
   <body>
     <div class="card">
-      <div style="margin-bottom: 24px;">
-        <img src="cid:resumix-logo" alt="Resumix" style="height: 38px; width: auto; display: inline-block; vertical-align: middle;" />
+      <div style="margin-bottom: 24px; text-align: center;">
+        <span style="font-size: 26px; font-weight: 800; color: #af101a; letter-spacing: -0.5px;">Resumix</span>
+        <span style="font-size: 13px; font-weight: 600; color: #5d5e61; margin-left: 6px; text-transform: uppercase; letter-spacing: 1px;">ATS Builder</span>
       </div>
       <div class="title">Atur Ulang Kata Sandi</div>
       <div class="desc">Kami menerima permintaan untuk mereset kata sandi akun Resumix Anda. Klik tombol di bawah ini untuk membuat kata sandi baru:</div>
@@ -158,13 +147,6 @@ export const sendResetPasswordEmail = async ({ to, resetUrl, expiresMinutes = 15
       subject: "Atur Ulang Kata Sandi Akun Resumix Anda",
       text: `Permintaan reset kata sandi akun Resumix Anda. Silakan buka tautan berikut: ${resetUrl}`,
       html: renderResetPasswordTemplate(resetUrl, expiresMinutes),
-      attachments: [
-        {
-          filename: "logo.png",
-          path: logoPath,
-          cid: "resumix-logo",
-        },
-      ],
     });
 
     console.log(`[MAIL SENT] Email Reset Password terkirim ke ${to} (MessageID: ${info.messageId})`);
