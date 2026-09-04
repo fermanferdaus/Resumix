@@ -56,7 +56,8 @@ export const appConfig = {
     secure: process.env.SMTP_SECURE === "true",
     user: process.env.SMTP_USER, // Sensitif: Tanpa fallback
     pass: process.env.SMTP_PASS, // Sensitif: Tanpa fallback
-    fromAddress: process.env.MAIL_FROM_ADDRESS || "noreply@resumix.app",
+    fromAddress: process.env.MAIL_FROM_ADDRESS || process.env.SMTP_USER || "noreply@resumix.app",
     fromName: process.env.MAIL_FROM_NAME || "Resumix ATS CV Builder",
+    logoUrl: process.env.MAIL_LOGO_URL || `${(process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "")}/logo.png`,
   },
 };

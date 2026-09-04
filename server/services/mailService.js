@@ -1,11 +1,5 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import { appConfig } from "../config/app.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const logoPath = path.resolve(__dirname, "../assets/logo.png");
 
 /**
  * Buat Nodemailer Transporter
@@ -27,37 +21,51 @@ const createTransporter = () => {
 };
 
 /**
- * Template Email HTML Resumix Flat Theme
+ * URL Logo Publik dari Konfigurasi (.env Abstraction)
+ */
+const getLogoUrl = () => appConfig.mail.logoUrl;
+
+/**
+ * Template Email HTML OTP Resumix (Professional Card Theme)
  */
 const renderOtpTemplate = (code, expiresMinutes) => {
   return `
   <!DOCTYPE html>
-  <html>
+  <html lang="id">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumix - Kode Verifikasi</title>
-    <style>
-      body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fbf8ff; margin: 0; padding: 24px; color: #1a1b22; }
-      .card { max-width: 480px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; padding: 32px; text-align: center; }
-      .title { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #0f172a; }
-      .desc { font-size: 14px; color: #5d5e61; line-height: 1.5; margin-bottom: 24px; }
-      .otp-box { background: #f8fafc; border: 1px solid #1a1c1e; padding: 16px; font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #af101a; display: inline-block; margin: 16px 0 24px 0; font-family: monospace; }
-      .warning { font-size: 12px; color: #8f6f6c; margin-top: 20px; line-height: 1.4; border-top: 1px solid #eeedf7; padding-top: 16px; }
-      .footer { margin-top: 24px; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-    </style>
   </head>
-  <body>
-    <div class="card">
-      <div style="margin-bottom: 24px;">
-        <img src="cid:resumix-logo" alt="Resumix" style="height: 38px; width: auto; display: inline-block; vertical-align: middle;" />
-      </div>
-      <div class="title">Verifikasi Akun Anda</div>
-      <div class="desc">Gunakan kode One-Time Password (OTP) berikut untuk masuk atau menyelesaikan registrasi akun Anda di Resumix:</div>
-      <div class="otp-box">${code}</div>
-      <div class="desc">Kode ini berlaku selama <strong>${expiresMinutes} menit</strong>. Jangan bagikan kode ini kepada siapapun.</div>
-      <div class="warning">Jika Anda tidak meminta kode ini, Anda dapat mengabaikan email ini dengan aman.</div>
-      <div class="footer">© ${new Date().getFullYear()} Resumix ATS CV Builder</div>
-    </div>
+  <body style="margin: 0; padding: 36px 16px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+      <tr>
+        <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
+          <img src="${getLogoUrl()}" alt="Resumix" height="40" style="height: 40px; width: auto; max-width: 160px; display: inline-block; border: 0;" />
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 32px 32px 28px; text-align: center;">
+          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.2px;">Verifikasi Keamanan Akun</h1>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 28px 0;">Gunakan kode One-Time Password (OTP) berikut untuk menyelesaikan verifikasi akun Resumix Anda:</p>
+          
+          <div style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 18px 24px; display: inline-block; margin: 0 auto 24px auto;">
+            <span style="font-family: 'SF Pro Display', Consolas, 'Courier New', monospace; font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #dc2626; margin-left: 8px;">${code}</span>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <span style="background-color: #fef2f2; color: #991b1b; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; display: inline-block;">⏱ Berlaku selama ${expiresMinutes} menit</span>
+          </div>
+
+          <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0; padding-top: 16px; border-top: 1px solid #f1f5f9;">Demi keamanan, jangan pernah membagikan kode ini kepada siapapun. Jika Anda tidak merasa meminta kode ini, abaikan pesan ini dengan aman.</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background-color: #f8fafc; padding: 16px 32px; text-align: center; border-top: 1px solid #f1f5f9;">
+          <p style="font-size: 11px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">© ${new Date().getFullYear()} Resumix ATS CV Builder. All rights reserved.</p>
+        </td>
+      </tr>
+    </table>
   </body>
   </html>
   `;
@@ -79,18 +87,11 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
       from: `"${appConfig.mail.fromName}" <${appConfig.mail.fromAddress}>`,
       to,
       subject: `${code} adalah kode verifikasi Resumix Anda`,
-      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.`,
+      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.\n\nJika Anda tidak meminta kode ini, abaikan email ini.`,
       html: renderOtpTemplate(code, expiresMinutes),
-      attachments: [
-        {
-          filename: "logo.png",
-          path: logoPath,
-          cid: "resumix-logo",
-        },
-      ],
     });
 
-    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId})`);
+    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId}) - Kode OTP: [${code}]`);
     return { sent: true, messageId: info.messageId };
   } catch (error) {
     console.error(`[MAIL ERROR] Gagal mengirim email ke ${to}:`, error.message);
@@ -99,42 +100,46 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
 };
 
 /**
- * Template Email HTML Reset Sandi Resumix Flat Theme
+ * Template Email HTML Reset Sandi Resumix (Professional Card Theme - Action Button Only)
  */
 const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
   return `
   <!DOCTYPE html>
-  <html>
+  <html lang="id">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumix - Reset Kata Sandi</title>
-    <style>
-      body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fbf8ff; margin: 0; padding: 24px; color: #1a1b22; }
-      .card { max-width: 480px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; padding: 32px; text-align: center; }
-      .title { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #0f172a; }
-      .desc { font-size: 14px; color: #5d5e61; line-height: 1.5; margin-bottom: 24px; }
-      .btn { display: inline-block; background-color: #d32f2f; color: #ffffff !important; text-decoration: none; padding: 14px 28px; font-weight: bold; font-size: 14px; border: 1px solid #1a1c1e; margin: 12px 0 24px 0; }
-      .link-box { word-break: break-all; font-size: 12px; color: #5d5e61; background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; margin-top: 16px; }
-      .warning { font-size: 12px; color: #8f6f6c; margin-top: 24px; line-height: 1.4; border-top: 1px solid #eeedf7; padding-top: 16px; }
-      .footer { margin-top: 24px; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-    </style>
   </head>
-  <body>
-    <div class="card">
-      <div style="margin-bottom: 24px;">
-        <img src="cid:resumix-logo" alt="Resumix" style="height: 38px; width: auto; display: inline-block; vertical-align: middle;" />
-      </div>
-      <div class="title">Atur Ulang Kata Sandi</div>
-      <div class="desc">Kami menerima permintaan untuk mereset kata sandi akun Resumix Anda. Klik tombol di bawah ini untuk membuat kata sandi baru:</div>
-      <div>
-        <a href="${resetUrl}" class="btn" target="_blank">Reset Kata Sandi</a>
-      </div>
-      <div class="desc">Tautan ini hanya berlaku selama <strong>${expiresMinutes} menit</strong>.</div>
-      <div class="desc" style="font-size: 12px; margin-bottom: 4px;">Jika tombol di atas tidak berfungsi, salin dan buka tautan berikut di browser:</div>
-      <div class="link-box">${resetUrl}</div>
-      <div class="warning">Jika Anda tidak meminta pengaturan ulang kata sandi, abaikan email ini. Akun Anda tetap aman.</div>
-      <div class="footer">© 2026 Resumix. All rights reserved.</div>
-    </div>
+  <body style="margin: 0; padding: 36px 16px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+      <tr>
+        <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
+          <img src="${getLogoUrl()}" alt="Resumix" height="40" style="height: 40px; width: auto; max-width: 160px; display: inline-block; border: 0;" />
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 32px 32px 28px; text-align: center;">
+          <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.2px;">Atur Ulang Kata Sandi</h1>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 28px 0;">Kami menerima permintaan untuk mengatur ulang kata sandi akun Resumix Anda. Silakan klik tombol di bawah ini untuk membuat kata sandi baru:</p>
+          
+          <div style="margin: 0 auto 24px auto;">
+            <a href="${resetUrl}" target="_blank" style="display: inline-block; background-color: #dc2626; color: #ffffff !important; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 36px; border-radius: 8px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);">Atur Ulang Kata Sandi</a>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <span style="background-color: #fef2f2; color: #991b1b; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; display: inline-block;">⏱ Tautan berlaku selama ${expiresMinutes} menit</span>
+          </div>
+
+          <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0; padding-top: 16px; border-top: 1px solid #f1f5f9;">Jika Anda tidak meminta pengaturan ulang kata sandi ini, abaikan email ini dengan aman. Akun Anda tetap terlindungi.</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background-color: #f8fafc; padding: 16px 32px; text-align: center; border-top: 1px solid #f1f5f9;">
+          <p style="font-size: 11px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">© ${new Date().getFullYear()} Resumix ATS CV Builder. All rights reserved.</p>
+        </td>
+      </tr>
+    </table>
   </body>
   </html>
   `;
@@ -158,13 +163,6 @@ export const sendResetPasswordEmail = async ({ to, resetUrl, expiresMinutes = 15
       subject: "Atur Ulang Kata Sandi Akun Resumix Anda",
       text: `Permintaan reset kata sandi akun Resumix Anda. Silakan buka tautan berikut: ${resetUrl}`,
       html: renderResetPasswordTemplate(resetUrl, expiresMinutes),
-      attachments: [
-        {
-          filename: "logo.png",
-          path: logoPath,
-          cid: "resumix-logo",
-        },
-      ],
     });
 
     console.log(`[MAIL SENT] Email Reset Password terkirim ke ${to} (MessageID: ${info.messageId})`);
