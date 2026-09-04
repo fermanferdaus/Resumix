@@ -24,9 +24,20 @@ export const appConfig = {
   },
 
   cors: {
-    origin: process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(",").map((url) => url.trim())
-      : ["http://localhost:5173"],
+    origin: (() => {
+      const origins = [];
+      if (process.env.CORS_ORIGIN) {
+        origins.push(...process.env.CORS_ORIGIN.split(",").map((url) => url.trim()).filter(Boolean));
+      }
+      if (process.env.CLIENT_URL) {
+        const clientUrl = process.env.CLIENT_URL.trim();
+        if (clientUrl && !origins.includes(clientUrl)) origins.push(clientUrl);
+      }
+      if (origins.length === 0) {
+        origins.push("http://localhost:5173", "http://127.0.0.1:5173");
+      }
+      return origins;
+    })(),
     credentials: true,
   },
 

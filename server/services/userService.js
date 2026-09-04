@@ -1,7 +1,18 @@
 import fs from "fs/promises";
 import path from "path";
-import sharp from "sharp";
 import prisma from "../config/prisma.js";
+
+/**
+ * Lazy-load sharp untuk memastikan native binary tidak menghambat boot server
+ */
+let sharpModule = null;
+const getSharp = async () => {
+  if (!sharpModule) {
+    const mod = await import("sharp");
+    sharpModule = mod.default || mod;
+  }
+  return sharpModule;
+};
 
 /**
  * Format user response publik
@@ -95,6 +106,7 @@ export const uploadUserAvatar = async (publicId, base64Image) => {
   const rawBuffer = Buffer.from(matches[2], "base64");
 
   // Kompresi ketat menggunakan sharp: Resize cover 400x400 dan konversi ke .webp kualitas 80
+  const sharp = await getSharp();
   const compressedBuffer = await sharp(rawBuffer)
     .resize(400, 400, { fit: "cover", position: "center" })
     .webp({ quality: 80, effort: 4 })
