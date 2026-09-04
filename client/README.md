@@ -1,6 +1,6 @@
 # Resumix Frontend Client
 
-Frontend Single Page Application (SPA) for Resumix ATS CV Builder, built with React 19, Vite 8, Tailwind CSS v4, and Shadcn/UI patterns.
+Frontend Single Page Application (SPA) for Resumix ATS CV Builder, built with React 19, Vite 8, Tailwind CSS v4, Zustand, TanStack Query, and Shadcn/UI patterns.
 
 ---
 
@@ -11,30 +11,43 @@ client/
 ├── public/                  # Static assets (logo.png, favicon)
 ├── src/
 │   ├── api/                 # Axios configuration & API client services
-│   │   ├── authApi.js       # Auth endpoint methods
-│   │   └── axios.js         # Base Axios instance with automatic token interceptors
+│   │   ├── authApi.js       # Auth endpoint methods (login, OTP, logout, Google, password)
+│   │   ├── axios.js         # Base Axios instance with automatic token interceptors
+│   │   ├── resumeApi.js     # Resume CRUD & duplicate endpoints
+│   │   └── userApi.js       # Profile & avatar upload endpoints
 │   ├── components/          # Reusable UI component library
-│   │   ├── common/          # Shared components (GoogleAuthButton, ProtectedRoute)
+│   │   ├── common/          # Shared components (GoogleAuthButton, ProtectedRoute, ErrorBoundary)
+│   │   ├── dashboard/       # Dashboard widgets (ResumeCard, CreateResumeModal, QuotaBanner)
+│   │   ├── editor/          # ATS CV Editor sections (PersonalInfo, Experience, Education, Skills, Preview)
+│   │   ├── landing/         # Landing page hero, features, and footer sections
 │   │   ├── layout/          # Layout wrappers (AuthLayout, Navbar)
-│   │   └── ui/              # Shadcn/UI primitives (Button, Input, Label, Alert, OtpInput)
-│   ├── hooks/               # Custom React Query mutations & hooks
-│   │   └── useAuthMutations.js
+│   │   ├── profile/         # Profile form, AvatarUpload, and ProfileSkeleton
+│   │   └── ui/              # Shadcn/UI primitives (Button, Input, Label, Alert, OtpInput, Skeleton)
+│   ├── config/              # Centralized client configuration
+│   │   └── appConfig.js     # App URLs, Google OAuth Client ID, and social links
+│   ├── hooks/               # Custom TanStack Query mutations & hooks
+│   │   ├── useAuthMutations.js
+│   │   ├── useResumeMutations.js
+│   │   └── useProfileMutations.js
 │   ├── lib/                 # Shared utilities
-│   │   └── utils.js         # `cn` clsx & tailwind-merge helper
+│   │   └── utils.js         # clsx & tailwind-merge helper (`cn`)
 │   ├── pages/               # Application view routes
 │   │   ├── auth/            # LoginPage, RegisterPage, OtpVerifyPage, ForgotPasswordPage, ResetPasswordPage
-│   │   └── dashboard/       # DashboardPage
+│   │   ├── dashboard/       # DashboardPage
+│   │   ├── editor/          # EditorPage (ATS Resume Editor & Live Preview)
+│   │   ├── error/           # NotFoundPage (404), ServerErrorPage (500)
+│   │   ├── landing/         # LandingPage
+│   │   └── profile/         # ProfilePage
 │   ├── store/               # Zustand state stores
-│   │   └── authStore.js     # User session & temp auth state
+│   │   └── authStore.js     # User session, tokens, & temp auth state
 │   ├── tests/               # Frontend unit tests
-│   │   ├── authSchemas.test.js
-│   │   └── utils.test.js
 │   ├── validators/          # Zod validation schemas
-│   │   └── authSchemas.js   # Client form schemas
-│   ├── App.jsx              # Application router & QueryClientProvider
+│   ├── App.jsx              # Router tree & QueryClientProvider setup
 │   ├── index.css            # Tailwind CSS v4 directives & custom theme
 │   └── main.jsx             # React DOM root entrypoint
 ├── .env.example             # Frontend environment blueprint
+├── Dockerfile               # Multi-stage production Nginx container build
+├── nginx.conf               # Nginx reverse proxy (/api/v1/ & /uploads/) and SPA routing
 ├── eslint.config.js         # ESLint configuration
 └── vite.config.js           # Vite 8 build & plugin configuration
 ```
@@ -51,17 +64,24 @@ cp .env.example .env
 
 | Variabel | Deskripsi | Nilai Default |
 | :--- | :--- | :--- |
+| `CLIENT_PORT` | Port host Nginx dalam Docker | `80` |
 | `VITE_API_URL` | Base URL Endpoint Backend API | `http://localhost:3000/api/v1` |
-| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID untuk tombol SSO | `your_google_client_id.apps.googleusercontent.com` |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID untuk SSO | `your_google_client_id.apps.googleusercontent.com` |
+| `VITE_SAWERIA_URL` | Tautan dukungan/donasi Saweria | `https://saweria.co/fermanferdaus` |
+| `VITE_FEEDBACK_EMAIL` | Alamat email feedback pengguna | `feedback@resumix.app` |
+| `VITE_CONTACT_EMAIL` | Alamat email kontak developer | `contact@resumix.app` |
+| `VITE_CONTACT_GITHUB` | URL profil GitHub | `https://github.com/fermanferdaus` |
+| `VITE_CONTACT_INSTAGRAM`| URL profil Instagram | `https://instagram.com/fermanferdaus_` |
 
 ---
 
 ## 3. UI Design System & Styling
 
-* **Theme**: Resumix Modern Flat Theme (Primary Red `#af101a` / `#d32f2f`, solid borders, sharp modern layout).
-* **Typography**: IBM Plex Sans / Clean System Sans.
-* **Component Kit**: Shadcn/UI component patterns with zero external unneeded libraries.
-* **Feedback System**: Inline `<Alert>` status banners (error, success, warning, info) with dismissible controls.
+* **Theme**: Resumix Modern Soft Flat Theme with dark backgrounds and emerald accents.
+* **Typography**: IBM Plex Sans / Inter Clean Sans.
+* **Component Kit**: Shadcn/UI component patterns with minimal footprint and zero bloat.
+* **Route Protection**: `ProtectedRoute` protects `/dashboard`, `/profile`, `/editor/:id`, and redirects unauthenticated users directly to `/`.
+* **State Management**: Zustand for immediate client session sync, TanStack Query for server data caching and mutations.
 
 ---
 
