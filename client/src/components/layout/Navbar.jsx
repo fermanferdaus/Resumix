@@ -3,16 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { authApi } from "../../api/authApi.js";
 import { Button } from "../ui/button.jsx";
-import {
-  LogOut,
-  User,
-  Coffee,
-  Menu,
-  X,
-  LayoutDashboard,
-  FileText,
-  ShieldAlert,
-} from "lucide-react";
+import { LogOut, User, Coffee, Menu, X } from "lucide-react";
 import { appConfig } from "../../config/appConfig.js";
 
 export const Navbar = () => {
@@ -155,7 +146,7 @@ export const Navbar = () => {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="flex items-center justify-center gap-1.5 text-xs rounded-none h-8 px-2 sm:px-3"
+            className="hidden md:flex items-center justify-center gap-1.5 text-xs rounded-none h-8 px-2 sm:px-3"
             title="Keluar dari akun"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -174,113 +165,83 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown Navigation (Khusus Mobile) */}
+      {/* Mobile Dropdown Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-[#e2e8f0] shadow-md animate-in slide-in-from-top-2 duration-150">
-          <div className="p-3 border-b border-[#f1f5f9] bg-[#fbf8ff] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-none bg-[#fef2f2] border border-[#fecaca] overflow-hidden flex items-center justify-center text-[#af101a] font-bold shrink-0">
-              {avatarSrc ? (
-                <img
-                  src={avatarSrc}
-                  alt={user?.fullName || "Avatar"}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-[#0f172a] truncate">
-                {user?.fullName || "Pengguna Resumix"}
-              </p>
-              <p className="text-[11px] text-[#5d5e61] truncate font-mono-code">
-                {user?.email}
-              </p>
-            </div>
-            {user?.role === "ADMIN" && (
-              <span className="text-[10px] font-mono-code font-bold px-1.5 py-0.5 bg-[#fef2f2] text-[#af101a] border border-[#fecaca] rounded-none">
-                ADMIN
-              </span>
-            )}
-          </div>
-
-          <nav className="p-2 space-y-1">
+        <div className="md:hidden bg-white border-b border-[#e2e8f0] px-4 py-3 animate-in fade-in duration-150">
+          <nav className="flex flex-col divide-y divide-[#f1f5f9]">
             <Link
               to="/dashboard"
               onClick={closeMobileMenu}
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-none transition-colors ${
+              className={`py-2 px-1 text-sm font-medium transition-colors ${
                 isDashboard
-                  ? "bg-[#fef2f2] text-[#af101a] border-l-2 border-[#af101a]"
-                  : "text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+                  ? "text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 shrink-0" />
-              <span>Dashboard</span>
+              Dashboard
             </Link>
 
             <Link
               to="/dashboard"
               onClick={closeMobileMenu}
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-none transition-colors ${
+              className={`py-2 px-1 text-sm font-medium transition-colors ${
                 isTemplateOrEditor
-                  ? "bg-[#fef2f2] text-[#af101a] border-l-2 border-[#af101a]"
-                  : "text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+                  ? "text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
               }`}
             >
-              <FileText className="w-4 h-4 shrink-0" />
-              <span>Editor CV</span>
+              Editor
             </Link>
 
             <Link
               to="/profile"
               onClick={closeMobileMenu}
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-none transition-colors ${
+              className={`py-2 px-1 text-sm font-medium transition-colors ${
                 isProfile
-                  ? "bg-[#fef2f2] text-[#af101a] border-l-2 border-[#af101a]"
-                  : "text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+                  ? "text-[#af101a] font-semibold"
+                  : "text-[#5d5e61] hover:text-[#1a1b22]"
               }`}
             >
-              <User className="w-4 h-4 shrink-0" />
-              <span>Pengaturan Profil</span>
+              Profil
             </Link>
 
             {user?.role === "ADMIN" && (
               <Link
                 to="/admin"
                 onClick={closeMobileMenu}
-                className={`flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-none transition-colors ${
+                className={`py-2 px-1 text-sm font-medium transition-colors ${
                   isAdminPath
-                    ? "bg-[#fef2f2] text-[#af101a] border-l-2 border-[#af101a]"
-                    : "text-[#5d5e61] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+                    ? "text-[#af101a] font-semibold"
+                    : "text-[#5d5e61] hover:text-[#1a1b22]"
                 }`}
               >
-                <ShieldAlert className="w-4 h-4 text-[#af101a] shrink-0" />
-                <span>Panel Admin</span>
+                Admin Panel
               </Link>
             )}
 
-            <div className="pt-2 mt-1 border-t border-[#f1f5f9] space-y-1">
-              <a
-                href={appConfig.saweriaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={closeMobileMenu}
-                className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#1a1b22] hover:bg-[#fffbe6] rounded-none transition-colors"
-              >
-                <Coffee className="w-4 h-4 text-[#d48806] shrink-0" />
-                <span>Traktir Kopi (Saweria)</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#ba1a1a] hover:bg-[#fef2f2] rounded-none transition-colors text-left cursor-pointer"
-              >
-                <LogOut className="w-4 h-4 shrink-0" />
-                <span>Keluar dari Akun</span>
-              </button>
-            </div>
+            <a
+              href={appConfig.saweriaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMobileMenu}
+              className="py-2 px-1 text-sm font-medium text-[#1a1b22] hover:text-[#af101a] transition-colors flex items-center justify-between"
+            >
+              <span>Traktir Kopi</span>
+              <Coffee className="w-3.5 h-3.5 text-[#faad14]" />
+            </a>
           </nav>
+
+          <div className="pt-3 mt-2 border-t border-[#e2e8f0]">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 text-xs font-semibold rounded-none h-9 border-[#cbd5e1] hover:border-[#af101a] text-[#af101a] hover:bg-[#fef2f2] cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Keluar</span>
+            </Button>
+          </div>
         </div>
       )}
     </header>
