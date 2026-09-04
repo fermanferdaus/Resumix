@@ -67,7 +67,7 @@ export const checkEmailAvailability = async (email) => {
     where: { email: normalizedEmail },
   });
 
-  if (existingUser && existingUser.password) {
+  if (existingUser && (existingUser.password || existingUser.isVerified)) {
     return {
       isAvailable: false,
       message: "Email ini sudah terdaftar. Silakan masuk menggunakan kata sandi atau OTP.",
@@ -143,7 +143,7 @@ export const registerUser = async ({ email, fullName, password }) => {
     where: { email: normalizedEmail },
   });
 
-  if (existingUser && existingUser.password) {
+  if (existingUser && (existingUser.password || existingUser.isVerified)) {
     throw new Error("Email ini sudah terdaftar. Silakan masuk.");
   }
 
@@ -192,6 +192,12 @@ export const loginWithPassword = async (email, password) => {
 
   if (!user || !user.password) {
     throw new Error("Email atau kata sandi yang Anda masukkan salah.");
+  }
+
+  if (!user.isVerified) {
+    const error = new Error("Email belum diverifikasi. Silakan verifikasi kode OTP Anda terlebih dahulu.");
+    error.statusCode = 403;
+    throw error;
   }
 
   const isMatch = await comparePassword(password, user.password);

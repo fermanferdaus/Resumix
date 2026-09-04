@@ -39,6 +39,8 @@ export const appConfig = {
       return origins;
     })(),
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   },
 
   google: {

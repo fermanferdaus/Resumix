@@ -11,7 +11,6 @@ import { sendOtpEmail } from "./mailService.js";
 export const createAndSendOtp = async (email) => {
   // Generate 6 digit numeric code cryptographically secure
   const code = crypto.randomInt(100000, 1000000).toString();
-  const hashedCode = crypto.createHash("sha256").update(code).digest("hex");
   const expiresAt = new Date(Date.now() + appConfig.otp.expiresMinutes * 60 * 1000);
 
   // Invalidate previous active OTPs for this email
@@ -25,12 +24,12 @@ export const createAndSendOtp = async (email) => {
     },
   });
 
-  // Create new OTP record (store SHA-256 hash)
+  // Create new OTP record with attempts tracker
   await prisma.otp.create({
     data: {
       publicId: generatePublicId(),
       email,
-      code: hashedCode,
+      code,
       expiresAt,
       isUsed: false,
       attempts: 0,
@@ -91,7 +90,7 @@ export const verifyOtpCode = async (email, code) => {
     data: { attempts: { increment: 1 } },
   });
 
-  if (otp.code !== hashedCode) {
+  if (otp.code !== code && otp.code !== hashedCode) {
     const remaining = 4 - otp.attempts;
     return {
       valid: false,
