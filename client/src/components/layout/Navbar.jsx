@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
+import { authApi } from "../../api/authApi.js";
 import { Button } from "../ui/button.jsx";
 import { LogOut, User, Coffee } from "lucide-react";
 import { appConfig } from "../../config/appConfig.js";
@@ -14,9 +15,15 @@ export const Navbar = () => {
   const isTemplateOrEditor =
     location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // Abaikan jika network error saat logout
+    } finally {
+      logout();
+      navigate("/", { replace: true });
+    }
   };
 
   const getAvatarFullUrl = (avatarUrl) => {
