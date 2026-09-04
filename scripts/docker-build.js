@@ -67,6 +67,7 @@ const composeArgs = [
   "--env-file",
   path.relative(rootDir, clientEnvFile),
   "build",
+  "--no-cache",
 ];
 
 // Execute docker compose build
@@ -107,6 +108,7 @@ if (shouldUp) {
     path.relative(rootDir, clientEnvFile),
     "up",
     "-d",
+    "--force-recreate",
     "--remove-orphans",
   ];
   console.log(`\nRunning: docker ${upArgs.join(" ")}`);

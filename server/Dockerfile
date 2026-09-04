@@ -23,7 +23,7 @@ RUN apk add --no-cache openssl libc6-compat wget
 
 # Install production dependencies and explicitly install Sharp's native musl binary for Alpine Linux
 COPY package*.json ./
-RUN npm ci --omit=dev && npm install --no-save @img/sharp-linuxmusl-x64 && npm cache clean --force
+RUN npm ci --omit=dev && npm install --no-save --libc=musl sharp && npm cache clean --force
 
 ENV NODE_ENV=production
 ENV PORT=3000
