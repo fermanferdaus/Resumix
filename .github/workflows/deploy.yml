@@ -108,8 +108,10 @@ jobs:
             fi
 
             echo "Fetching and resetting to latest origin/main..."
+            git reset --hard HEAD || true
+            rm -f .version
             git fetch origin main
-            git checkout -B main origin/main
+            git checkout -f -B main origin/main
             git reset --hard origin/main
 
             echo "[3/5] Generating environment configuration from single secrets..."
