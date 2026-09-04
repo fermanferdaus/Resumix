@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 
@@ -11,7 +11,6 @@ const createLimiter = (windowMs, max, message) =>
     max,
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.ip,
     handler: (_req, res) => {
       res.status(429).json({
         success: false,
@@ -38,7 +37,7 @@ const createComboLimiter = (windowMs, max, message) =>
       } else if (typeof req.body?.token === "string" && req.body.token.trim()) {
         identifier = req.body.token.trim().slice(0, 16);
       }
-      return `${req.ip}:${identifier}`;
+      return `${ipKeyGenerator(req.ip)}:${identifier}`;
     },
     handler: (_req, res) => {
       res.status(429).json({

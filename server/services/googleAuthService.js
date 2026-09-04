@@ -7,8 +7,11 @@ const client = new OAuth2Client(appConfig.google.clientId);
  * Verifikasi Google ID Token dan ekstrak payload pengguna
  */
 export const verifyGoogleIdToken = async (idToken) => {
-  // Mock mode — strictly gated: development only + explicit opt-in
-  if (appConfig.nodeEnv === "development" && appConfig.enableAuthMock) {
+  // Mock mode — strictly gated: non-production (test/development) only + explicit opt-in or test env
+  if (
+    appConfig.nodeEnv !== "production" &&
+    (appConfig.enableAuthMock || appConfig.nodeEnv === "test")
+  ) {
     if (idToken.startsWith("mock_google_token_")) {
       const email = idToken.replace("mock_google_token_", "") || "google.user@example.com";
       return {
