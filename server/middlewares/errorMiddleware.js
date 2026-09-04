@@ -15,7 +15,10 @@ export const errorHandler = (err, req, res, _next) => {
   console.error("Unhandled Error:", err);
 
   const statusCode = err.statusCode || 500;
-  const message = err.message || "Terjadi kesalahan internal pada server";
+  const message =
+    statusCode >= 500 && appConfig.isProduction
+      ? "Terjadi kesalahan internal pada server"
+      : err.message || "Terjadi kesalahan internal pada server";
   const errors = appConfig.nodeEnv === "development" ? err.stack : null;
 
   return errorResponse(res, message, errors, statusCode);

@@ -98,7 +98,10 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
   const transporter = createTransporter();
 
   if (!transporter) {
-    console.log(`[MAIL NOT CONFIGURED] SMTP belum dikonfigurasi. Kode OTP untuk ${to}: ${code}`);
+    console.log(`[MAIL NOT CONFIGURED] SMTP belum dikonfigurasi. Kode verifikasi dikirim ke ${to}`);
+    if (appConfig.nodeEnv === "development") {
+      console.log(`[DEV ONLY] Kode OTP untuk ${to}: ${code}`);
+    }
     return { sent: false, provider: "console_fallback" };
   }
 
@@ -112,7 +115,7 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
       html: renderOtpTemplate(code, expiresMinutes),
     });
 
-    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId}) - Kode OTP: [${code}]`);
+    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId})`);
     return { sent: true, messageId: info.messageId };
   } catch (error) {
     console.error(`[MAIL ERROR] Gagal mengirim email ke ${to}:`, error.message);
@@ -191,7 +194,10 @@ export const sendResetPasswordEmail = async ({ to, resetUrl, expiresMinutes = 15
   const transporter = createTransporter();
 
   if (!transporter) {
-    console.log(`[MAIL NOT CONFIGURED] Reset URL untuk ${to}: ${resetUrl}`);
+    console.log(`[MAIL NOT CONFIGURED] SMTP belum dikonfigurasi. Reset email untuk ${to}`);
+    if (appConfig.nodeEnv === "development") {
+      console.log(`[DEV ONLY] Reset URL untuk ${to}: ${resetUrl}`);
+    }
     return { sent: false, provider: "console_fallback" };
   }
 

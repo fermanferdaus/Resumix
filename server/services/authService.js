@@ -38,13 +38,14 @@ const createAuthSession = async (user) => {
     tokenId: generatePublicId(),
   });
 
-  // Simpan refresh token ke database
+  // Simpan refresh token (hash SHA-256) ke database
+  const hashedRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
   const expiresAt = new Date(Date.now() + appConfig.jwt.refreshCookieMaxAge);
   await prisma.refreshToken.create({
     data: {
       publicId: generatePublicId(),
       userId: user.id,
-      token: refreshToken,
+      token: hashedRefreshToken,
       expiresAt,
       isRevoked: false,
     },
@@ -89,7 +90,7 @@ export const requestOtp = async (email) => {
   });
 
   if (!user || (!user.password && !user.isVerified)) {
-    throw new Error("Email ini belum terdaftar. Silakan daftar terlebih dahulu.");
+    throw new Error("Email tidak ditemukan atau belum terdaftar.");
   }
 
   return await createAndSendOtp(normalizedEmail);
@@ -189,17 +190,13 @@ export const loginWithPassword = async (email, password) => {
     where: { email: normalizedEmail },
   });
 
-  if (!user) {
-    throw new Error("Email ini belum terdaftar. Silakan daftar terlebih dahulu.");
-  }
-
-  if (!user.password) {
-    throw new Error("Akun ini terdaftar tanpa kata sandi. Silakan masuk menggunakan Google atau OTP.");
+  if (!user || !user.password) {
+    throw new Error("Email atau kata sandi yang Anda masukkan salah.");
   }
 
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
-    throw new Error("Kata sandi yang Anda masukkan salah.");
+    throw new Error("Email atau kata sandi yang Anda masukkan salah.");
   }
 
   return await createAuthSession(user);
@@ -258,12 +255,12 @@ export const refreshSessionToken = async (refreshToken) => {
     throw new Error("Refresh token tidak valid atau telah kadaluarsa");
   }
 
+  const hashedRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
+
   // Cek token di database
   const tokenRecord = await prisma.refreshToken.findFirst({
     where: {
-      token: refreshToken,
-      isRevoked: false,
-      expiresAt: { gt: new Date() },
+      token: hashedRefreshToken,
     },
     include: {
       user: true,
@@ -271,17 +268,55 @@ export const refreshSessionToken = async (refreshToken) => {
   });
 
   if (!tokenRecord || !tokenRecord.user) {
-    throw new Error("Refresh token telah dibatalkan atau tidak terdaftar");
+    throw new Error("Refresh token tidak valid atau tidak terdaftar");
   }
 
-  // Issue new access token
-  const newAccessToken = generateAccessToken({
+  // Reuse detection: jika token sudah pernah direvoke, batalkan SEMUA token user (breach response)
+  if (tokenRecord.isRevoked) {
+    await prisma.refreshToken.updateMany({
+      where: { userId: tokenRecord.userId },
+      data: { isRevoked: true },
+    });
+    throw new Error("Sesi tidak valid terdeteksi. Silakan masuk kembali.");
+  }
+
+  if (tokenRecord.expiresAt <= new Date()) {
+    throw new Error("Refresh token telah kadaluarsa");
+  }
+
+  // Invalidate current refresh token (RTR)
+  await prisma.refreshToken.update({
+    where: { id: tokenRecord.id },
+    data: { isRevoked: true },
+  });
+
+  // Issue new access token & new refresh token
+  const tokenPayload = {
     id: tokenRecord.user.publicId,
     email: tokenRecord.user.email,
+  };
+  const newAccessToken = generateAccessToken(tokenPayload);
+  const newRefreshToken = generateRefreshToken({
+    ...tokenPayload,
+    tokenId: generatePublicId(),
+  });
+
+  const newHashedToken = crypto.createHash("sha256").update(newRefreshToken).digest("hex");
+  const expiresAt = new Date(Date.now() + appConfig.jwt.refreshCookieMaxAge);
+
+  await prisma.refreshToken.create({
+    data: {
+      publicId: generatePublicId(),
+      userId: tokenRecord.userId,
+      token: newHashedToken,
+      expiresAt,
+      isRevoked: false,
+    },
   });
 
   return {
     accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
     user: formatUserResponse(tokenRecord.user),
   };
 };
@@ -292,8 +327,9 @@ export const refreshSessionToken = async (refreshToken) => {
 export const revokeRefreshToken = async (refreshToken) => {
   if (!refreshToken) return;
 
+  const hashedToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
   await prisma.refreshToken.updateMany({
-    where: { token: refreshToken },
+    where: { token: hashedToken },
     data: { isRevoked: true },
   });
 };
@@ -323,7 +359,10 @@ export const requestPasswordReset = async (email) => {
   });
 
   if (!user) {
-    throw new Error("Email ini belum terdaftar. Silakan daftar terlebih dahulu.");
+    return {
+      email: normalizedEmail,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    };
   }
 
   // Generate secure token 32-byte hex
@@ -411,6 +450,12 @@ export const resetPassword = async ({ token, password }) => {
   await prisma.passwordReset.update({
     where: { id: resetRecord.id },
     data: { isUsed: true },
+  });
+
+  // Revoke semua sesi refresh token aktif pengguna (P0-2)
+  await prisma.refreshToken.updateMany({
+    where: { userId: user.id, isRevoked: false },
+    data: { isRevoked: true },
   });
 
   return { success: true };

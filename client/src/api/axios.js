@@ -1,17 +1,15 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore.js";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+import { appConfig } from "../config/appConfig.js";
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: appConfig.apiUrl,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request Interceptor: Attach Bearer Access Token
 apiClient.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
@@ -23,7 +21,20 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Auto Refresh Token on 401
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -35,10 +46,21 @@ apiClient.interceptors.response.use(
       !originalRequest.url.includes("/auth/login") &&
       !originalRequest.url.includes("/auth/refresh-token")
     ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return apiClient(originalRequest);
+        });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
+
       try {
         const res = await axios.post(
-          `${API_BASE_URL}/auth/refresh-token`,
+          `${appConfig.apiUrl}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
@@ -47,11 +69,15 @@ apiClient.interceptors.response.use(
           const newAccessToken = res.data.data.accessToken;
           useAuthStore.getState().setAccessToken(newAccessToken);
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          processQueue(null, newAccessToken);
           return apiClient(originalRequest);
         }
       } catch (refreshErr) {
+        processQueue(refreshErr, null);
         useAuthStore.getState().logout();
         return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
       }
     }
 

@@ -5,13 +5,16 @@ import { appConfig } from "../config/app.js";
 /**
  * Set HTTP-Only Refresh Token Cookie
  */
+const getRefreshTokenCookieOptions = () => ({
+  httpOnly: true,
+  secure: appConfig.isProduction,
+  sameSite: appConfig.isProduction ? "strict" : "lax",
+  maxAge: appConfig.jwt.refreshCookieMaxAge,
+  path: "/api/v1/auth",
+});
+
 const setRefreshTokenCookie = (res, refreshToken) => {
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: appConfig.isProduction,
-    sameSite: appConfig.isProduction ? "strict" : "lax",
-    maxAge: appConfig.jwt.refreshCookieMaxAge,
-  });
+  res.cookie("resumix_refresh_token", refreshToken, getRefreshTokenCookieOptions());
 };
 
 /**
@@ -124,10 +127,18 @@ export const googleAuth = async (req, res, _next) => {
  */
 export const refreshToken = async (req, res, _next) => {
   try {
-    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+    const token = req.cookies?.resumix_refresh_token;
     const result = await authService.refreshSessionToken(token);
 
-    return successResponse(res, "Token berhasil diperbarui", result);
+    // Set rotated refresh token cookie (RTR)
+    if (result.refreshToken) {
+      setRefreshTokenCookie(res, result.refreshToken);
+    }
+
+    return successResponse(res, "Token berhasil diperbarui", {
+      accessToken: result.accessToken,
+      user: result.user,
+    });
   } catch (error) {
     return errorResponse(res, error.message, null, 401);
   }
@@ -138,10 +149,15 @@ export const refreshToken = async (req, res, _next) => {
  */
 export const logout = async (req, res, _next) => {
   try {
-    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+    const token = req.cookies?.resumix_refresh_token;
     await authService.revokeRefreshToken(token);
 
-    res.clearCookie("refreshToken");
+    res.clearCookie("resumix_refresh_token", {
+      httpOnly: true,
+      secure: appConfig.isProduction,
+      sameSite: appConfig.isProduction ? "strict" : "lax",
+      path: "/api/v1/auth",
+    });
     return successResponse(res, "Logout berhasil", null);
   } catch (error) {
     _next(error);

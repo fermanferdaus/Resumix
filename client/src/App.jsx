@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import axios from "axios";
 import { useAuthStore } from "./store/authStore.js";
+import { appConfig } from "./config/appConfig.js";
 import { LoginPage } from "./pages/auth/LoginPage.jsx";
 import { RegisterPage } from "./pages/auth/RegisterPage.jsx";
 import { OtpVerifyPage } from "./pages/auth/OtpVerifyPage.jsx";
@@ -25,14 +28,41 @@ const queryClient = new QueryClient({
   },
 });
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-
 export function App() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  useEffect(() => {
+    const silentRefresh = async () => {
+      try {
+        const res = await axios.post(
+          `${appConfig.apiUrl}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
+        if (res.data?.success && res.data?.data?.accessToken) {
+          const { accessToken, user } = res.data.data;
+          useAuthStore.getState().setAuth(user, accessToken);
+        } else {
+          useAuthStore.getState().setLoading(false);
+        }
+      } catch {
+        useAuthStore.getState().setLoading(false);
+      }
+    };
+    silentRefresh();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={appConfig.googleClientId}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>

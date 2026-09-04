@@ -13,18 +13,25 @@ import {
   resetPasswordSchema,
 } from "../validators/authValidator.js";
 
+import {
+  authStrictLimiter,
+  authSendLimiter,
+  authGeneralLimiter,
+  refreshLimiter,
+} from "../middlewares/rateLimitMiddleware.js";
+
 const router = Router();
 
 // Public Routes
-router.post("/check-email", validate(checkEmailSchema), authController.checkEmail);
-router.post("/send-otp", validate(sendOtpSchema), authController.sendOtp);
-router.post("/verify-otp", validate(verifyOtpSchema), authController.verifyOtp);
-router.post("/register", validate(registerSchema), authController.register);
-router.post("/login", validate(loginSchema), authController.login);
-router.post("/google", validate(googleAuthSchema), authController.googleAuth);
-router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
-router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
-router.post("/refresh-token", authController.refreshToken);
+router.post("/check-email", authGeneralLimiter, validate(checkEmailSchema), authController.checkEmail);
+router.post("/send-otp", authSendLimiter, validate(sendOtpSchema), authController.sendOtp);
+router.post("/verify-otp", authStrictLimiter, validate(verifyOtpSchema), authController.verifyOtp);
+router.post("/register", authGeneralLimiter, validate(registerSchema), authController.register);
+router.post("/login", authStrictLimiter, validate(loginSchema), authController.login);
+router.post("/google", authGeneralLimiter, validate(googleAuthSchema), authController.googleAuth);
+router.post("/forgot-password", authSendLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
+router.post("/reset-password", authStrictLimiter, validate(resetPasswordSchema), authController.resetPassword);
+router.post("/refresh-token", refreshLimiter, authController.refreshToken);
 router.post("/logout", authController.logout);
 
 // Protected Routes
