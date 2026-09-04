@@ -19,11 +19,11 @@ FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl libc6-compat wget su-exec dos2unix
+RUN apk add --no-cache openssl libc6-compat libstdc++ wget su-exec dos2unix
 
-# Install production dependencies and explicitly install Sharp's native musl binary for Alpine Linux
+# Install production dependencies and explicitly install Sharp's native musl and wasm binaries for Alpine Linux
 COPY package*.json ./
-RUN npm ci --omit=dev --include=optional && npm install --no-save @img/sharp-linuxmusl-x64 && npm cache clean --force
+RUN npm ci --omit=dev --include=optional && npm install --no-save @img/sharp-linuxmusl-x64 @img/sharp-wasm32 && npm cache clean --force
 
 ENV NODE_ENV=production
 ENV PORT=3000

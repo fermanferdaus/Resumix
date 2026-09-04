@@ -41,6 +41,7 @@
     "nodemon": "^3.1.14"
   },
   "optionalDependencies": {
-    "@img/sharp-linuxmusl-x64": "^0.35.4"
+    "@img/sharp-linuxmusl-x64": "^0.35.4",
+    "@img/sharp-wasm32": "^0.35.4"
   }
 }

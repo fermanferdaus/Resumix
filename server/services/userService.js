@@ -8,8 +8,13 @@ import prisma from "../config/prisma.js";
 let sharpModule = null;
 const getSharp = async () => {
   if (!sharpModule) {
-    const mod = await import("sharp");
-    sharpModule = mod.default || mod;
+    try {
+      const mod = await import("sharp");
+      sharpModule = mod.default || mod;
+    } catch (err) {
+      console.warn("[SHARP LOAD WARNING] Modul Sharp tidak tersedia:", err?.message);
+      return null;
+    }
   }
   return sharpModule;
 };
@@ -104,20 +109,26 @@ export const uploadUserAvatar = async (publicId, base64Image) => {
     throw new Error("Format data gambar base64 tidak valid");
   }
 
+  const mimeType = (matches[1] || "").toLowerCase();
   const rawBuffer = Buffer.from(matches[2], "base64");
 
-  // Kompresi ketat menggunakan sharp
-  let finalBuffer;
+  // Kompresi ketat menggunakan sharp jika tersedia, fallback aman ke rawBuffer jika sharp gagal
+  let finalBuffer = rawBuffer;
   let fileExt = "webp";
+  if (mimeType.includes("png")) fileExt = "png";
+  else if (mimeType.includes("jpeg") || mimeType.includes("jpg")) fileExt = "jpg";
 
   try {
     const sharp = await getSharp();
-    finalBuffer = await sharp(rawBuffer)
-      .resize(400, 400, { fit: "cover", position: "center" })
-      .webp({ quality: 80, effort: 4 })
-      .toBuffer();
+    if (sharp && typeof sharp === "function") {
+      finalBuffer = await sharp(rawBuffer)
+        .resize(400, 400, { fit: "cover", position: "center" })
+        .webp({ quality: 80, effort: 4 })
+        .toBuffer();
+      fileExt = "webp";
+    }
   } catch (sharpError) {
-    throw new Error(`Gagal memproses berkas gambar: ${sharpError.message}`, { cause: sharpError });
+    console.warn("[AVATAR UPLOAD WARNING] Sharp processing error, fallback ke buffer asli:", sharpError?.message);
   }
 
   // Hapus foto lama pengguna jika sebelumnya sudah pernah upload
