@@ -1,7 +1,6 @@
 import prisma from "../config/prisma.js";
 import {
   generateBase32Secret,
-  generateTotp,
   verifyTotp,
   generateOtpauthUrl,
   generateQrCode,

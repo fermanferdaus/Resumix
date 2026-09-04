@@ -10,10 +10,8 @@ import { AdminLogsTab } from "../../components/admin/AdminLogsTab.jsx";
 import { AdminSecurityTab } from "../../components/admin/AdminSecurityTab.jsx";
 import { AdminSkeleton } from "../../components/admin/AdminSkeleton.jsx";
 import { Button } from "../../components/ui/button.jsx";
-import { Badge } from "../../components/ui/badge.jsx";
 import { cn } from "../../lib/utils.js";
 import {
-  ShieldCheck,
   RefreshCw,
   BarChart3,
   Users,
