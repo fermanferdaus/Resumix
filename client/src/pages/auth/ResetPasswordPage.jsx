@@ -115,9 +115,6 @@ export const ResetPasswordPage = () => {
             error={errors.password?.message}
             {...register("password")}
           />
-          <p className="text-[11px] text-[#5d5e61] mt-1">
-            Wajib: Min. 8 karakter, 1 huruf besar (A-Z), 1 angka (0-9), & 1 simbol spesial (@, #, $, dll).
-          </p>
         </div>
 
         {/* Ulangi Kata Sandi */}

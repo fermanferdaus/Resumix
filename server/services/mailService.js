@@ -41,10 +41,6 @@ const renderOtpTemplate = (code, expiresMinutes) => {
   </head>
   <body style="margin: 0; padding: 40px 16px; background-color: #fbf8ff; font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1a1b22;">
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0; border-collapse: separate;">
-      <!-- Accent Top Crimson Bar -->
-      <tr>
-        <td style="height: 3px; background-color: #af101a; line-height: 3px; font-size: 3px; padding: 0;">&nbsp;</td>
-      </tr>
       <!-- Brand Logo Header -->
       <tr>
         <td style="padding: 32px 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
@@ -138,10 +134,6 @@ const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
   </head>
   <body style="margin: 0; padding: 40px 16px; background-color: #fbf8ff; font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1a1b22;">
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0; border-collapse: separate;">
-      <!-- Accent Top Crimson Bar -->
-      <tr>
-        <td style="height: 3px; background-color: #af101a; line-height: 3px; font-size: 3px; padding: 0;">&nbsp;</td>
-      </tr>
       <!-- Brand Logo Header -->
       <tr>
         <td style="padding: 32px 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
