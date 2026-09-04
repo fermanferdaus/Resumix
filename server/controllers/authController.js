@@ -127,7 +127,11 @@ export const googleAuth = async (req, res, _next) => {
  */
 export const refreshToken = async (req, res, _next) => {
   try {
-    const token = req.cookies?.resumix_refresh_token;
+    const token =
+      req.cookies?.resumix_refresh_token ||
+      req.cookies?.refreshToken ||
+      req.body?.refreshToken ||
+      req.body?.token;
     const result = await authService.refreshSessionToken(token);
 
     // Set rotated refresh token cookie (RTR)
@@ -137,6 +141,7 @@ export const refreshToken = async (req, res, _next) => {
 
     return successResponse(res, "Token berhasil diperbarui", {
       accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: result.user,
     });
   } catch (error) {
@@ -149,7 +154,11 @@ export const refreshToken = async (req, res, _next) => {
  */
 export const logout = async (req, res, _next) => {
   try {
-    const token = req.cookies?.resumix_refresh_token;
+    const token =
+      req.cookies?.resumix_refresh_token ||
+      req.cookies?.refreshToken ||
+      req.body?.refreshToken ||
+      req.body?.token;
     await authService.revokeRefreshToken(token);
   } catch (error) {
     console.warn("[LOGOUT] Gagal membatalkan token di database:", error.message);

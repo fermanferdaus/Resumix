@@ -257,16 +257,15 @@ export const refreshSessionToken = async (refreshToken) => {
   }
 
   const decoded = verifyRefreshToken(refreshToken);
-  if (!decoded || !decoded.id) {
-    throw new Error("Refresh token tidak valid atau telah kadaluarsa");
-  }
-
   const hashedRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
-  // Cek token di database
+  // Cek token di database (mendukung token JWT terenkripsi SHA-256 maupun direct token)
   const tokenRecord = await prisma.refreshToken.findFirst({
     where: {
-      token: hashedRefreshToken,
+      OR: [
+        { token: hashedRefreshToken },
+        { token: refreshToken },
+      ],
     },
     include: {
       user: true,
@@ -275,6 +274,10 @@ export const refreshSessionToken = async (refreshToken) => {
 
   if (!tokenRecord || !tokenRecord.user) {
     throw new Error("Refresh token tidak valid atau tidak terdaftar");
+  }
+
+  if (!decoded && tokenRecord.token !== refreshToken) {
+    throw new Error("Refresh token tidak valid atau telah kadaluarsa");
   }
 
   // Reuse detection: jika token sudah pernah direvoke, batalkan SEMUA token user (breach response)
@@ -335,7 +338,12 @@ export const revokeRefreshToken = async (refreshToken) => {
 
   const hashedToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
   await prisma.refreshToken.updateMany({
-    where: { token: hashedToken },
+    where: {
+      OR: [
+        { token: hashedToken },
+        { token: refreshToken },
+      ],
+    },
     data: { isRevoked: true },
   });
 };
