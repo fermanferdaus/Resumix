@@ -33,6 +33,7 @@ export const uploadAvatar = async (req, res, _next) => {
     const result = await userService.uploadUserAvatar(req.user.id, req.body.image);
     return successResponse(res, "Foto profil berhasil diperbarui", result);
   } catch (error) {
+    console.error("[AVATAR UPLOAD ERROR]", error);
     return errorResponse(res, error.message, null, 400);
   }
 };

@@ -65,6 +65,7 @@ export const ProfilePage = () => {
   const [cropperOpen, setCropperOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [cropperError, setCropperError] = useState(null);
 
   // Delete Avatar Confirm
   const [isDeleteAvatarOpen, setIsDeleteAvatarOpen] = useState(false);
@@ -129,6 +130,7 @@ export const ProfilePage = () => {
   // Handler Simpan Foto yang Telah Dipotong
   const handleCropComplete = async (croppedWebpDataUrl) => {
     setIsUploadingAvatar(true);
+    setCropperError(null);
     try {
       const res = await userApi.uploadAvatar(croppedWebpDataUrl);
       if (res.data?.user) {
@@ -138,7 +140,9 @@ export const ProfilePage = () => {
       setTimeout(() => setNotice(null), 4000);
       setCropperOpen(false);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || "Gagal mengunggah foto profil.");
+      const msg = err.response?.data?.message || "Gagal mengunggah foto profil.";
+      setCropperError(msg);
+      setErrorMsg(msg);
       setTimeout(() => setErrorMsg(null), 4000);
     } finally {
       setIsUploadingAvatar(false);
@@ -406,9 +410,13 @@ export const ProfilePage = () => {
       <ImageCropperModal
         isOpen={cropperOpen}
         imageSrc={selectedImageSrc}
-        onClose={() => setCropperOpen(false)}
+        onClose={() => {
+          setCropperOpen(false);
+          setCropperError(null);
+        }}
         onCropComplete={handleCropComplete}
         isUploading={isUploadingAvatar}
+        errorMessage={cropperError}
       />
 
       {/* Modal Edit Informasi Biodata */}

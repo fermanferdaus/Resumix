@@ -98,32 +98,41 @@ export const uploadUserAvatar = async (publicId, base64Image) => {
   }
 
   // Parse Base64 buffer
-  const matches = base64Image.match(/^data:([^;]+);base64,(.+)$/);
+  const matches = base64Image.match(/^data:([^;]+);base64,(.+)$/s);
   if (!matches || matches.length !== 3) {
     throw new Error("Format data gambar base64 tidak valid");
   }
 
+  const mimeType = matches[1].toLowerCase();
   const rawBuffer = Buffer.from(matches[2], "base64");
 
-  // Kompresi ketat menggunakan sharp: Resize cover 400x400 dan konversi ke .webp kualitas 80
-  const sharp = await getSharp();
-  const compressedBuffer = await sharp(rawBuffer)
-    .resize(400, 400, { fit: "cover", position: "center" })
-    .webp({ quality: 80, effort: 4 })
-    .toBuffer();
+  let finalBuffer = rawBuffer;
+  let fileExt = mimeType.includes("png") ? "png" : mimeType.includes("jpeg") || mimeType.includes("jpg") ? "jpg" : "webp";
+
+  // Kompresi ketat menggunakan sharp jika tersedia, dengan graceful fallback ke buffer hasil crop
+  try {
+    const sharp = await getSharp();
+    finalBuffer = await sharp(rawBuffer)
+      .resize(400, 400, { fit: "cover", position: "center" })
+      .webp({ quality: 80, effort: 4 })
+      .toBuffer();
+    fileExt = "webp";
+  } catch (sharpError) {
+    console.warn("[AVATAR SHARP FALLBACK] Sharp gagal atau tidak tersedia di platform, menyimpan buffer asli:", sharpError.message);
+  }
 
   // Hapus foto lama pengguna jika sebelumnya sudah pernah upload
   if (user.avatarUrl) {
     await removeOldAvatarFile(user.avatarUrl);
   }
 
-  // Simpan berkas webp terkompresi
-  const filename = `avatar-${user.publicId}-${Date.now()}.webp`;
+  // Simpan berkas gambar
+  const filename = `avatar-${user.publicId}-${Date.now()}.${fileExt}`;
   const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
   await fs.mkdir(uploadDir, { recursive: true });
 
   const filePath = path.join(uploadDir, filename);
-  await fs.writeFile(filePath, compressedBuffer);
+  await fs.writeFile(filePath, finalBuffer);
 
   const avatarUrl = `/uploads/avatars/${filename}`;
 
