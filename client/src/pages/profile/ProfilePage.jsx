@@ -6,6 +6,7 @@ import { userApi } from "../../api/userApi.js";
 import { appConfig } from "../../config/appConfig.js";
 import { EditProfileModal } from "../../components/profile/EditProfileModal.jsx";
 import { ImageCropperModal } from "../../components/profile/ImageCropperModal.jsx";
+import { ProfileSkeleton } from "../../components/profile/ProfileSkeleton.jsx";
 import { DeleteConfirmModal } from "../../components/common/DeleteConfirmModal.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import {
@@ -65,6 +66,7 @@ export const ProfilePage = () => {
   const [cropperOpen, setCropperOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [cropperError, setCropperError] = useState(null);
 
   // Delete Avatar Confirm
   const [isDeleteAvatarOpen, setIsDeleteAvatarOpen] = useState(false);
@@ -129,6 +131,7 @@ export const ProfilePage = () => {
   // Handler Simpan Foto yang Telah Dipotong
   const handleCropComplete = async (croppedWebpDataUrl) => {
     setIsUploadingAvatar(true);
+    setCropperError(null);
     try {
       const res = await userApi.uploadAvatar(croppedWebpDataUrl);
       if (res.data?.user) {
@@ -138,7 +141,9 @@ export const ProfilePage = () => {
       setTimeout(() => setNotice(null), 4000);
       setCropperOpen(false);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || "Gagal mengunggah foto profil.");
+      const msg = err.response?.data?.message || "Gagal mengunggah foto profil.";
+      setCropperError(msg);
+      setErrorMsg(msg);
       setTimeout(() => setErrorMsg(null), 4000);
     } finally {
       setIsUploadingAvatar(false);
@@ -227,12 +232,7 @@ export const ProfilePage = () => {
         )}
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#e2e8f0]">
-            <Loader2 className="w-8 h-8 text-[#af101a] animate-spin mb-3" />
-            <span className="text-xs font-mono-code text-[#5d5e61]">
-              Memuat data profil pengguna...
-            </span>
-          </div>
+          <ProfileSkeleton />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Left Card: Avatar & Account Badge */}
@@ -240,7 +240,14 @@ export const ProfilePage = () => {
               {/* Avatar Frame */}
               <div className="relative group">
                 <div className="w-32 h-32 bg-[#f8fafc] overflow-hidden flex items-center justify-center shadow-sm">
-                  {avatarSrc ? (
+                  {isUploadingAvatar ? (
+                    <div className="w-full h-full bg-[#f1f5f9] animate-pulse flex flex-col items-center justify-center gap-1.5">
+                      <Loader2 className="w-7 h-7 text-[#af101a] animate-spin" />
+                      <span className="text-[10px] font-mono-code text-[#5d5e61] font-semibold">
+                        Menyimpan...
+                      </span>
+                    </div>
+                  ) : avatarSrc ? (
                     <img
                       src={avatarSrc}
                       alt={user?.fullName || "Avatar"}
@@ -406,9 +413,13 @@ export const ProfilePage = () => {
       <ImageCropperModal
         isOpen={cropperOpen}
         imageSrc={selectedImageSrc}
-        onClose={() => setCropperOpen(false)}
+        onClose={() => {
+          setCropperOpen(false);
+          setCropperError(null);
+        }}
         onCropComplete={handleCropComplete}
         isUploading={isUploadingAvatar}
+        errorMessage={cropperError}
       />
 
       {/* Modal Edit Informasi Biodata */}

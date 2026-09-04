@@ -16,7 +16,7 @@ export const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const getAvatarFullUrl = (avatarUrl) => {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { X, ZoomIn, ZoomOut, RotateCw, Loader2 } from "lucide-react";
+import { X, ZoomIn, ZoomOut, RotateCw, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button.jsx";
 
 export const ImageCropperModal = ({
@@ -8,6 +8,7 @@ export const ImageCropperModal = ({
   onClose,
   onCropComplete,
   isUploading = false,
+  errorMessage = null,
 }) => {
   const canvasRef = useRef(null);
   const [imageObj, setImageObj] = useState(null);
@@ -291,6 +292,14 @@ export const ImageCropperModal = ({
             </Button>
           </div>
         </div>
+
+        {/* Error Alert inside Modal */}
+        {errorMessage && (
+          <div className="px-4 py-2.5 bg-[#fef2f2] border-t border-[#fecaca] text-xs text-[#991b1b] flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-[#dc2626] flex-shrink-0" />
+            <span className="leading-snug">{errorMessage}</span>
+          </div>
+        )}
 
         {/* Footer Actions */}
         <div className="px-4 py-3 bg-[#f8fafc] border-t border-[#e2e8f0] flex justify-end gap-2">

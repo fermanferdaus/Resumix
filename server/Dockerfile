@@ -19,11 +19,11 @@ FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl libc6-compat wget
+RUN apk add --no-cache openssl libc6-compat wget su-exec
 
 # Install production dependencies and explicitly install Sharp's native musl binary for Alpine Linux
 COPY package*.json ./
-RUN npm ci --omit=dev && npm install --no-save --libc=musl sharp && npm cache clean --force
+RUN npm ci --omit=dev --include=optional && npm install --no-save @img/sharp-linuxmusl-x64 && npm cache clean --force
 
 ENV NODE_ENV=production
 ENV PORT=3000
@@ -36,15 +36,14 @@ COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/clie
 COPY prisma ./prisma/
 COPY . .
 
-# Ensure storage directory for user uploads exists with correct permissions
-RUN mkdir -p public/uploads && chown -R node:node /app
-
-# Run as non-root user
-USER node
+# Entrypoint script to guarantee volume permissions for node user (UID 1000)
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && mkdir -p public/uploads/avatars && chown -R node:node /app
 
 # Healthcheck monitoring (dynamic port from server/.env)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:${PORT}/api/v1/health || exit 1
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["npm", "start"]
 
