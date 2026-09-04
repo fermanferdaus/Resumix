@@ -22,7 +22,6 @@ WORKDIR /app
 RUN apk add --no-cache openssl libc6-compat wget
 
 ENV NODE_ENV=production
-ENV PORT=3000
 
 # Install production dependencies only
 COPY package*.json ./
@@ -42,11 +41,9 @@ RUN mkdir -p public/uploads && chown -R node:node /app
 # Run as non-root user
 USER node
 
-EXPOSE 3000
-
-# Healthcheck monitoring
+# Healthcheck monitoring (dynamic port from server/.env)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/v1/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:${PORT}/api/v1/health || exit 1
 
 CMD ["node", "index.js"]
 

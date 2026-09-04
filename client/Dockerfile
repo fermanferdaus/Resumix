@@ -9,14 +9,14 @@ RUN npm ci
 
 COPY . .
 
-# Build Arguments for Vite Environment Variables
-ARG VITE_API_URL=/api/v1
-ARG VITE_GOOGLE_CLIENT_ID=""
-ARG VITE_SAWERIA_URL="https://saweria.co/fermanferdaus"
-ARG VITE_FEEDBACK_EMAIL="fermanf91@gmail.com"
-ARG VITE_CONTACT_EMAIL="fermanf91@gmail.com"
-ARG VITE_CONTACT_GITHUB="https://github.com/fermanferdaus"
-ARG VITE_CONTACT_INSTAGRAM="https://instagram.com/fermanferdaus_"
+# Build Arguments for Vite Environment Variables (Strictly from client/.env)
+ARG VITE_API_URL
+ARG VITE_GOOGLE_CLIENT_ID
+ARG VITE_SAWERIA_URL
+ARG VITE_FEEDBACK_EMAIL
+ARG VITE_CONTACT_EMAIL
+ARG VITE_CONTACT_GITHUB
+ARG VITE_CONTACT_INSTAGRAM
 
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
