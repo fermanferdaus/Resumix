@@ -18,6 +18,8 @@ import { NotFoundPage } from "./pages/error/NotFoundPage.jsx";
 import { ServerErrorPage } from "./pages/error/ServerErrorPage.jsx";
 import { ErrorBoundary } from "./components/common/ErrorBoundary.jsx";
 import { ProtectedRoute } from "./components/common/ProtectedRoute.jsx";
+import { AdminProtectedRoute } from "./components/common/AdminProtectedRoute.jsx";
+import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +92,11 @@ export function App() {
                 <Route path="/editor/:id" element={<EditorPage />} />
                 <Route path="/templates" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/editor" element={<Navigate to="/dashboard" replace />} />
+              </Route>
+
+              {/* Admin Protected Routes */}
+              <Route element={<AdminProtectedRoute />}>
+                <Route path="/admin" element={<AdminDashboardPage />} />
               </Route>
 
               {/* Explicit Server Error Route */}

@@ -64,4 +64,10 @@ export const appConfig = {
     replyTo: process.env.MAIL_REPLY_TO || "noreply@resumix.os-tech.online",
     logoUrl: process.env.MAIL_LOGO_URL || `${(process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "")}/logo.png`,
   },
+
+  adminSeed: {
+    name: process.env.ADMIN_SEED_NAME || "Administrator Resumix",
+    email: process.env.ADMIN_SEED_EMAIL || "resumi.official@gmail.com",
+    password: process.env.ADMIN_SEED_PASSWORD || "Namaku123_",
+  },
 };

@@ -155,3 +155,32 @@ export const parseMonthYearString = (val) => {
 
   return { month: detectedMonth, year: detectedYear };
 };
+
+/**
+ * Format tanggal dan waktu ke standar WIB: "12 Sep 26, 04.08.17 WIB"
+ * @param {string|Date|number} dateInput
+ * @returns {string}
+ */
+export const formatDateTimeWIB = (dateInput) => {
+  if (!dateInput) return "-";
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return "-";
+
+  const dateStr = new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "2-digit",
+    timeZone: "Asia/Jakarta",
+  }).format(date).replace(/\./g, "");
+
+  const timeStr = new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Jakarta",
+  }).format(date).replace(/:/g, ".");
+
+  return `${dateStr}, ${timeStr} WIB`;
+};
+

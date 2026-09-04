@@ -53,3 +53,12 @@ export const resetPasswordSchema = z
     message: "Kata sandi dan konfirmasi kata sandi tidak cocok",
     path: ["retypePassword"],
   });
+
+export const twoFactorVerifySchema = z.object({
+  token: z
+    .string()
+    .trim()
+    .min(6, "Kode verifikasi minimal 6 karakter")
+    .max(9, "Kode verifikasi maksimal 9 karakter"),
+});
+

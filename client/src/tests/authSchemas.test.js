@@ -5,6 +5,7 @@ import {
   completeProfileSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  twoFactorVerifySchema,
 } from "../validators/authSchemas.js";
 
 describe("Frontend Unit: Zod Client Validation Schemas", () => {
@@ -67,6 +68,23 @@ describe("Frontend Unit: Zod Client Validation Schemas", () => {
         password: "NewPassword123#",
         retypePassword: "Different123#",
       });
+      assert.strictEqual(invalid.success, false);
+    });
+  });
+
+  describe("twoFactorVerifySchema", () => {
+    it("harus memvalidasi kode TOTP 6 digit", () => {
+      const valid = twoFactorVerifySchema.safeParse({ token: "123456" });
+      assert.strictEqual(valid.success, true);
+    });
+
+    it("harus memvalidasi kode pemulihan format backup code", () => {
+      const valid = twoFactorVerifySchema.safeParse({ token: "A1B2-C3D4" });
+      assert.strictEqual(valid.success, true);
+    });
+
+    it("harus menolak input yang kurang dari 6 karakter", () => {
+      const invalid = twoFactorVerifySchema.safeParse({ token: "12345" });
       assert.strictEqual(invalid.success, false);
     });
   });
