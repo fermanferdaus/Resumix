@@ -3,12 +3,10 @@ import {
   ShieldCheck,
   ShieldAlert,
   QrCode,
-  KeyRound,
   CheckCircle2,
   Copy,
   Download,
   AlertTriangle,
-  Lock,
   RefreshCw,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card.jsx";
@@ -41,24 +39,32 @@ export const AdminSecurityTab = () => {
   const [disablePassword, setDisablePassword] = useState("");
   const [isDisableSubmitting, setIsDisableSubmitting] = useState(false);
 
-  // Fetch 2FA Status
-  const fetchStatus = async () => {
-    setStatusLoading(true);
-    try {
-      const res = await adminApi.get2FAStatus();
-      if (res?.data) {
-        setIs2FAEnabled(Boolean(res.data.enabled));
-        if (res.data.email) setAdminEmail(res.data.email);
-      }
-    } catch {
-      toast.error("Gagal memeriksa status 2FA");
-    } finally {
-      setStatusLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchStatus();
+    let ignore = false;
+
+    const loadStatus = async () => {
+      try {
+        const res = await adminApi.get2FAStatus();
+        if (!ignore && res?.data) {
+          setIs2FAEnabled(Boolean(res.data.enabled));
+          if (res.data.email) setAdminEmail(res.data.email);
+        }
+      } catch {
+        if (!ignore) {
+          toast.error("Gagal memeriksa status 2FA");
+        }
+      } finally {
+        if (!ignore) {
+          setStatusLoading(false);
+        }
+      }
+    };
+
+    loadStatus();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   // Mulai Inisialisasi Setup 2FA
