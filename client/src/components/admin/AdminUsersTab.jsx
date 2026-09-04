@@ -8,6 +8,18 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { Card } from "../ui/card.jsx";
+import { Input } from "../ui/input.jsx";
+import { Badge } from "../ui/badge.jsx";
+import { Button } from "../ui/button.jsx";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table.jsx";
 
 export const AdminUsersTab = ({
   usersData,
@@ -20,12 +32,12 @@ export const AdminUsersTab = ({
   onRevokeSession,
 }) => {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <Card className="overflow-hidden">
       {/* Filter & Search Toolbar */}
-      <div className="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 border-b border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafc]">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5d5e61] pointer-events-none" />
+          <Input
             type="text"
             placeholder="Cari nama pengguna, email, atau domisili..."
             value={userSearch}
@@ -33,13 +45,13 @@ export const AdminUsersTab = ({
               setUserSearch(e.target.value);
               setUsersPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border-[#e2e8f0] rounded-none focus:border-[#1a1c1e] focus:ring-[#af101a]"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-            <ListFilter className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-xs text-[#5d5e61] font-semibold">
+            <ListFilter className="w-3.5 h-3.5 text-[#af101a]" />
             <span>Peran:</span>
           </div>
           <select
@@ -48,7 +60,7 @@ export const AdminUsersTab = ({
               setUserRoleFilter(e.target.value);
               setUsersPage(1);
             }}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="text-xs bg-white border border-[#e2e8f0] rounded-none px-3 py-2 font-semibold text-[#1a1b22] focus:outline-none focus:border-[#1a1c1e] focus:ring-1 focus:ring-[#af101a] cursor-pointer"
           >
             <option value="">Semua Peran</option>
             <option value="ADMIN">Hanya Admin</option>
@@ -57,182 +69,179 @@ export const AdminUsersTab = ({
         </div>
       </div>
 
-      {/* Tabel Pengguna */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-              <th className="py-3 px-4 sm:px-6">Nama Pengguna & Email</th>
-              <th className="py-3 px-4">Peran</th>
-              <th className="py-3 px-4">Jumlah CV (Kuota)</th>
-              <th className="py-3 px-4">Sesi Online</th>
-              <th className="py-3 px-4">Login Terakhir</th>
-              <th className="py-3 px-4 sm:px-6 text-right">Aksi Kelola</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
-            {usersData.items.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
-                  Tidak ada pengguna yang cocok dengan kriteria pencarian.
-                </td>
-              </tr>
-            ) : (
-              usersData.items.map((u) => {
-                const cvCount = u.resumesCount || 0;
-                const isFullQuota = cvCount >= 5;
+      {/* Tabel Pengguna via shadcn/ui Table */}
+      <Table>
+        <TableHeader className="bg-[#f8fafc]">
+          <TableRow>
+            <TableHead className="py-3 px-4 sm:px-6">Nama Pengguna & Email</TableHead>
+            <TableHead className="py-3 px-4">Peran</TableHead>
+            <TableHead className="py-3 px-4">Jumlah CV (Kuota)</TableHead>
+            <TableHead className="py-3 px-4">Sesi Online</TableHead>
+            <TableHead className="py-3 px-4">Login Terakhir</TableHead>
+            <TableHead className="py-3 px-4 sm:px-6 text-right">Aksi Kelola</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {usersData.items.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="py-10 text-center text-[#5d5e61]">
+                Tidak ada pengguna yang cocok dengan kriteria pencarian.
+              </TableCell>
+            </TableRow>
+          ) : (
+            usersData.items.map((u) => {
+              const cvCount = u.resumesCount || 0;
+              const isFullQuota = cvCount >= 5;
 
-                return (
-                  <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                    {/* Nama Pengguna & Email */}
-                    <td className="py-3.5 px-4 sm:px-6">
-                      <div className="flex items-center gap-3">
-                        {u.avatarUrl ? (
-                          <img
-                            src={u.avatarUrl}
-                            alt={u.fullName}
-                            className="w-9 h-9 rounded-full object-cover border border-slate-200"
-                          />
-                        ) : (
-                          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center border border-blue-200">
-                            {u.fullName?.charAt(0)?.toUpperCase() || "U"}
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5">
-                            {u.fullName}
-                            {u.isVerified ? (
-                              <span title="Email Terverifikasi">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                              </span>
-                            ) : (
-                              <span title="Belum Verifikasi">
-                                <XCircle className="w-3.5 h-3.5 text-amber-500" />
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-slate-500 text-[11px]">{u.email}</div>
+              return (
+                <TableRow key={u.id}>
+                  {/* Nama Pengguna & Email */}
+                  <TableCell className="py-3.5 px-4 sm:px-6">
+                    <div className="flex items-center gap-3">
+                      {u.avatarUrl ? (
+                        <img
+                          src={u.avatarUrl}
+                          alt={u.fullName}
+                          className="w-9 h-9 object-cover border border-[#e2e8f0] rounded-none"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 bg-[#fef2f2] text-[#af101a] font-bold text-xs flex items-center justify-center border border-[#fecaca] font-mono-code rounded-none">
+                          {u.fullName?.charAt(0)?.toUpperCase() || "U"}
                         </div>
+                      )}
+                      <div>
+                        <div className="font-bold text-[#0f172a] text-sm flex items-center gap-1.5">
+                          {u.fullName}
+                          {u.isVerified ? (
+                            <span title="Email Terverifikasi">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#16a34a]" />
+                            </span>
+                          ) : (
+                            <span title="Belum Verifikasi">
+                              <XCircle className="w-3.5 h-3.5 text-[#d97706]" />
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[#5d5e61] text-[11px] font-mono-code">{u.email}</div>
                       </div>
-                    </td>
+                    </div>
+                  </TableCell>
 
-                    {/* Peran (Role) */}
-                    <td className="py-3.5 px-4">
+                  {/* Peran (Role) */}
+                  <TableCell className="py-3.5 px-4">
+                    <Badge variant={u.role === "ADMIN" ? "admin" : "secondary"} className="font-mono-code text-[11px]">
+                      {u.role}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Jumlah CV yang sudah dibuat */}
+                  <TableCell className="py-3.5 px-4">
+                    <div className="flex items-center gap-2">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold text-[10px] ${
-                          u.role === "ADMIN"
-                            ? "bg-blue-100 text-blue-800 border border-blue-200"
-                            : "bg-slate-100 text-slate-700"
+                        className={`font-mono-code font-bold text-xs ${
+                          isFullQuota ? "text-[#af101a]" : "text-[#0f172a]"
                         }`}
                       >
-                        {u.role}
+                        {cvCount} / 5 CV
                       </span>
-                    </td>
-
-                    {/* Jumlah CV yang sudah dibuat */}
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`font-bold text-xs ${
-                            isFullQuota ? "text-amber-600" : "text-slate-900"
+                      <div className="w-16 h-2 bg-[#f1f5f9] border border-[#e2e8f0] rounded-none overflow-hidden">
+                        <div
+                          style={{ width: `${(cvCount / 5) * 100}%` }}
+                          className={`h-full rounded-none ${
+                            isFullQuota ? "bg-[#af101a]" : "bg-[#0f172a]"
                           }`}
-                        >
-                          {cvCount} / 5 CV
-                        </span>
-                        <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            style={{ width: `${(cvCount / 5) * 100}%` }}
-                            className={`h-full rounded-full ${
-                              isFullQuota ? "bg-amber-500" : "bg-blue-500"
-                            }`}
-                          />
+                        />
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* Sesi Online */}
+                  <TableCell className="py-3.5 px-4">
+                    {u.activeSessionsCount > 0 ? (
+                      <Badge variant="success" className="gap-1 font-mono-code text-[10px]">
+                        <span className="w-1.5 h-1.5 bg-[#16a34a] animate-pulse" />
+                        {u.activeSessionsCount} sesi aktif
+                      </Badge>
+                    ) : (
+                      <span className="text-[#5d5e61] text-xs font-mono-code">Offline</span>
+                    )}
+                  </TableCell>
+
+                  {/* Login Terakhir & Lokasi */}
+                  <TableCell className="py-3.5 px-4">
+                    {u.lastLogin ? (
+                      <div>
+                        <div className="text-xs text-[#1a1b22] font-medium flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#af101a]" />
+                          <span>{u.lastLogin.location}</span>
+                        </div>
+                        <div className="text-[11px] text-[#5d5e61] font-mono-code mt-0.5">
+                          {new Date(u.lastLogin.timestamp).toLocaleString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </div>
                       </div>
-                    </td>
+                    ) : (
+                      <span className="text-[#5d5e61] text-xs">-</span>
+                    )}
+                  </TableCell>
 
-                    {/* Sesi Online */}
-                    <td className="py-3.5 px-4">
-                      {u.activeSessionsCount > 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200/60">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {u.activeSessionsCount} sesi aktif
-                        </span>
-                      ) : (
-                        <span className="text-slate-400 text-[11px]">Offline</span>
-                      )}
-                    </td>
+                  {/* Aksi Kelola */}
+                  <TableCell className="py-3.5 px-4 sm:px-6 text-right">
+                    {u.activeSessionsCount > 0 ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onRevokeSession(u.id, u.email)}
+                        title="Paksa logout seluruh sesi akun ini"
+                        className="gap-1.5 h-8 px-3 text-xs font-semibold text-[#af101a] border-[#fecaca] hover:bg-[#fef2f2] hover:border-[#af101a] rounded-none cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Putuskan Sesi
+                      </Button>
+                    ) : (
+                      <span className="text-[#5d5e61] text-xs font-mono-code">Sesi Bersih</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
+        </TableBody>
+      </Table>
 
-                    {/* Login Terakhir & Lokasi */}
-                    <td className="py-3.5 px-4">
-                      {u.lastLogin ? (
-                        <div>
-                          <div className="text-[11px] text-slate-700 flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-slate-400" />
-                            <span>{u.lastLogin.location}</span>
-                          </div>
-                          <div className="text-[10px] text-slate-400">
-                            {new Date(u.lastLogin.timestamp).toLocaleString("id-ID", {
-                              day: "numeric",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 text-[11px]">-</span>
-                      )}
-                    </td>
-
-                    {/* Aksi Kelola */}
-                    <td className="py-3.5 px-4 sm:px-6 text-right">
-                      {u.activeSessionsCount > 0 ? (
-                        <button
-                          onClick={() => onRevokeSession(u.id, u.email)}
-                          title="Paksa logout seluruh sesi akun ini"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors"
-                        >
-                          <LogOut className="w-3 h-3" />
-                          Putuskan Sesi
-                        </button>
-                      ) : (
-                        <span className="text-slate-400 text-[11px]">Sesi Bersih</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Controls */}
+      {/* Pagination Controls via shadcn/ui Button */}
       {usersData.meta.totalPages > 1 && (
-        <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+        <div className="p-4 border-t border-[#e2e8f0] flex items-center justify-between text-xs text-[#5d5e61] bg-[#f8fafc]">
           <span>
-            Menampilkan halaman <strong>{usersData.meta.page}</strong> dari{" "}
-            <strong>{usersData.meta.totalPages}</strong> (Total {usersData.meta.total} pengguna)
+            Menampilkan halaman <strong className="text-[#0f172a]">{usersData.meta.page}</strong> dari{" "}
+            <strong className="text-[#0f172a]">{usersData.meta.totalPages}</strong> (Total {usersData.meta.total} pengguna)
           </span>
-          <div className="flex items-center gap-1">
-            <button
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
               disabled={usersPage <= 1}
               onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40"
+              className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
             >
               <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               disabled={usersPage >= usersData.meta.totalPages}
               onClick={() => setUsersPage((p) => p + 1)}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40"
+              className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
             >
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
-

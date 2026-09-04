@@ -92,10 +92,10 @@ export const Navbar = () => {
                 className={`h-full flex items-center gap-1.5 pt-[2px] transition-colors ${
                   isAdminPath
                     ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
-                    : "text-blue-600 hover:text-blue-700 font-semibold"
+                    : "text-[#5d5e61] hover:text-[#1a1b22]"
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 text-blue-600" />
+                <ShieldCheck className={`w-4 h-4 ${isAdminPath ? "text-[#af101a]" : "text-[#5d5e61]"}`} />
                 Admin Panel
               </Link>
             )}
