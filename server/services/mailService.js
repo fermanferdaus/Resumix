@@ -21,6 +21,17 @@ const createTransporter = () => {
 };
 
 /**
+ * URL Logo Publik Terverifikasi (HTTPS)
+ * Menggunakan URL HTTPS publik agar tidak memicu deteksi spam lampiran binary CID
+ */
+const getLogoUrl = () => {
+  if (appConfig.isProduction && appConfig.clientUrl) {
+    return `${appConfig.clientUrl.replace(/\/$/, "")}/logo.png`;
+  }
+  return "https://resumix.os-tech.online/logo.png";
+};
+
+/**
  * Template Email HTML Resumix Flat Theme
  */
 const renderOtpTemplate = (code, expiresMinutes) => {
@@ -43,8 +54,7 @@ const renderOtpTemplate = (code, expiresMinutes) => {
   <body>
     <div class="card">
       <div style="margin-bottom: 24px; text-align: center;">
-        <span style="font-size: 26px; font-weight: 800; color: #af101a; letter-spacing: -0.5px;">Resumix</span>
-        <span style="font-size: 13px; font-weight: 600; color: #5d5e61; margin-left: 6px; text-transform: uppercase; letter-spacing: 1px;">ATS Builder</span>
+        <img src="${getLogoUrl()}" alt="Resumix" height="38" style="height: 38px; width: auto; max-width: 160px; display: inline-block; vertical-align: middle; border: 0;" />
       </div>
       <div class="title">Verifikasi Akun Anda</div>
       <div class="desc">Gunakan kode One-Time Password (OTP) berikut untuk masuk atau menyelesaikan registrasi akun Anda di Resumix:</div>
@@ -110,8 +120,7 @@ const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
   <body>
     <div class="card">
       <div style="margin-bottom: 24px; text-align: center;">
-        <span style="font-size: 26px; font-weight: 800; color: #af101a; letter-spacing: -0.5px;">Resumix</span>
-        <span style="font-size: 13px; font-weight: 600; color: #5d5e61; margin-left: 6px; text-transform: uppercase; letter-spacing: 1px;">ATS Builder</span>
+        <img src="${getLogoUrl()}" alt="Resumix" height="38" style="height: 38px; width: auto; max-width: 160px; display: inline-block; vertical-align: middle; border: 0;" />
       </div>
       <div class="title">Atur Ulang Kata Sandi</div>
       <div class="desc">Kami menerima permintaan untuk mereset kata sandi akun Resumix Anda. Klik tombol di bawah ini untuk membuat kata sandi baru:</div>
