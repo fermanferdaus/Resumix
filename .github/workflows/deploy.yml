@@ -1,0 +1,104 @@
+name: CI/CD Pipeline - Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production_deploy
+  cancel-in-progress: false
+
+jobs:
+  # Quality Assurance: Linting & Unit Testing
+  test:
+    name: Run Unit Tests & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      # Backend Verification
+      - name: Install Server Dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run Server Linter
+        working-directory: ./server
+        run: npm run lint
+
+      - name: Run Server Unit Tests
+        working-directory: ./server
+        run: npm test
+
+      # Frontend Verification
+      - name: Install Client Dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Run Client Linter
+        working-directory: ./client
+        run: npm run lint
+
+      - name: Run Client Unit Tests
+        working-directory: ./client
+        run: npm test
+
+  # Production Deployment to VPS via SSH
+  deploy:
+    name: Deploy to VPS
+    needs: test
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          SERVER_CONFIG: ${{ secrets.SERVER_CONFIG }}
+          CLIENT_CONFIG: ${{ secrets.CLIENT_CONFIG }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          envs: SERVER_CONFIG,CLIENT_CONFIG
+          script: |
+            set -e
+
+            echo "[1/5] Navigating to project directory..."
+            cd ${{ secrets.VPS_TARGET_DIR }}
+
+            echo "[2/5] Pulling latest changes from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "[3/5] Generating environment configuration from single secrets..."
+            printf "%s\n" "$SERVER_CONFIG" > server/.env
+            printf "%s\n" "$CLIENT_CONFIG" > client/.env
+
+            echo "[4/5] Building & deploying Docker containers with auto-incremented image tags..."
+            node scripts/docker-build.js --up
+
+            echo "[5/5] Cleaning dangling/unused Docker images..."
+            docker image prune -f
+
+            echo "[SUCCESS] Resumix ATS CV Builder deployed successfully!"
+

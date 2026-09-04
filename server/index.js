@@ -11,6 +11,11 @@ import { swaggerDocument } from "./config/swagger.js";
 
 const app = express();
 
+// Trust reverse proxy in production (Nginx container / VPS)
+if (appConfig.isProduction) {
+  app.set("trust proxy", 1);
+}
+
 // Security & Parsing Middlewares
 app.use(cors(appConfig.cors));
 app.use(cookieParser());
