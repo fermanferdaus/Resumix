@@ -179,3 +179,4 @@ export const AdminOverviewTab = ({ stats, maxTrendVal }) => {
     </div>
   );
 };
+

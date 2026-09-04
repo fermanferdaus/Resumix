@@ -94,3 +94,4 @@ export const AdminAnomaliesTab = ({ anomalies, users = [], onRevokeSession }) =>
     </div>
   );
 };
+
