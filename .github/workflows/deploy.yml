@@ -86,11 +86,29 @@ jobs:
           script: |
             set -e
 
-            echo "[1/5] Navigating to project directory..."
-            cd ${{ secrets.VPS_TARGET_DIR }}
+            # Load user environment in non-interactive SSH
+            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
+            [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
+            export PATH="$PATH:/usr/local/bin:/usr/bin"
 
-            echo "[2/5] Pulling latest changes from main branch..."
+            TARGET_DIR="${{ secrets.VPS_TARGET_DIR }}"
+
+            echo "[1/5] Ensuring project directory exists: $TARGET_DIR"
+            mkdir -p "$TARGET_DIR"
+            cd "$TARGET_DIR"
+
+            echo "[2/5] Synchronizing repository code..."
+            git config --global --add safe.directory "$TARGET_DIR" || true
+
+            if [ ! -d ".git" ]; then
+              echo "Repository not initialized in $TARGET_DIR. Initializing and linking origin..."
+              git init
+              git remote add origin "https://github.com/${{ github.repository }}.git" || git remote set-url origin "https://github.com/${{ github.repository }}.git"
+            fi
+
+            echo "Fetching and resetting to latest origin/main..."
             git fetch origin main
+            git checkout -B main origin/main
             git reset --hard origin/main
 
             echo "[3/5] Generating environment configuration from single secrets..."
