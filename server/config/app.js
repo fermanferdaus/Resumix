@@ -6,7 +6,10 @@ dotenv.config();
  * Aturan: Semua environment variables harus diakses melalui config ini.
  */
 export const appConfig = {
-  port: parseInt(process.env.PORT, 10) || 3000,
+  port:
+    parseInt(process.env.PORT, 10) ||
+    parseInt(process.env.SERVER_PORT, 10) ||
+    3000,
   nodeEnv: process.env.NODE_ENV || "development",
   isProduction: (process.env.NODE_ENV || "development") === "production",
   appUrl: process.env.APP_URL || "http://localhost:3000",
