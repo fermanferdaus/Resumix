@@ -1,6 +1,7 @@
 import * as authService from "../services/authService.js";
 import { successResponse, errorResponse } from "../utils/response.js";
 import { appConfig } from "../config/app.js";
+import { recordLoginLog } from "../services/geoService.js";
 
 /**
  * Set HTTP-Only Refresh Token Cookie
@@ -56,12 +57,26 @@ export const verifyOtp = async (req, res, _next) => {
     const { email, code } = req.body;
     const result = await authService.verifyOtp(email, code);
 
+    recordLoginLog({
+      req,
+      email,
+      status: "SUCCESS",
+      loginMethod: "OTP",
+    });
+
     setRefreshTokenCookie(res, result.session.refreshToken);
     return successResponse(res, "Verifikasi OTP & Login berhasil", {
       accessToken: result.session.accessToken,
       user: result.session.user,
     });
   } catch (error) {
+    recordLoginLog({
+      req,
+      email: req.body?.email,
+      status: "FAILED",
+      loginMethod: "OTP",
+      reason: error.message,
+    });
     return errorResponse(res, error.message, null, 400);
   }
 };
@@ -93,6 +108,14 @@ export const login = async (req, res, _next) => {
   try {
     const { email, password } = req.body;
     const session = await authService.loginWithPassword(email, password);
+
+    recordLoginLog({
+      req,
+      email,
+      status: "SUCCESS",
+      loginMethod: "PASSWORD",
+    });
+
     setRefreshTokenCookie(res, session.refreshToken);
 
     return successResponse(res, "Login berhasil", {
@@ -100,6 +123,13 @@ export const login = async (req, res, _next) => {
       user: session.user,
     });
   } catch (error) {
+    recordLoginLog({
+      req,
+      email: req.body?.email,
+      status: "FAILED",
+      loginMethod: "PASSWORD",
+      reason: error.message,
+    });
     return errorResponse(res, error.message, null, 401);
   }
 };
@@ -111,6 +141,14 @@ export const googleAuth = async (req, res, _next) => {
   try {
     const { idToken } = req.body;
     const session = await authService.loginWithGoogle(idToken);
+
+    recordLoginLog({
+      req,
+      email: session.user.email,
+      status: "SUCCESS",
+      loginMethod: "GOOGLE",
+    });
+
     setRefreshTokenCookie(res, session.refreshToken);
 
     return successResponse(res, "Autentikasi Google berhasil", {
@@ -118,6 +156,13 @@ export const googleAuth = async (req, res, _next) => {
       user: session.user,
     });
   } catch (error) {
+    recordLoginLog({
+      req,
+      email: "unknown-google",
+      status: "FAILED",
+      loginMethod: "GOOGLE",
+      reason: error.message,
+    });
     return errorResponse(res, error.message, null, 400);
   }
 };

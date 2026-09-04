@@ -19,6 +19,7 @@ export const formatUserResponse = (user) => ({
   dob: user.dob ? user.dob.toISOString().split("T")[0] : null,
   domicile: user.domicile || "",
   isVerified: user.isVerified,
+  role: user.role || "USER",
   avatarUrl: user.avatarUrl || null,
   createdAt: user.createdAt,
 });

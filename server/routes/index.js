@@ -2,6 +2,7 @@ import { Router } from "express";
 import authRoutes from "./authRoutes.js";
 import resumeRoutes from "./resumeRoutes.js";
 import userRoutes from "./userRoutes.js";
+import adminRoutes from "./adminRoutes.js";
 import prisma from "../config/prisma.js";
 import { appConfig } from "../config/app.js";
 
@@ -33,5 +34,6 @@ router.get("/health", async (req, res) => {
 router.use("/auth", authRoutes);
 router.use("/resumes", resumeRoutes);
 router.use("/users", userRoutes);
+router.use("/admin", adminRoutes);
 
 export default router;

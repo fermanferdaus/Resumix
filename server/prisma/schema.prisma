@@ -20,11 +20,13 @@ model User {
   isVerified   Boolean        @default(false) @map("is_verified")
   googleId     String?        @unique @map("google_id")
   avatarUrl    String?        @map("avatar_url")
+  role         String         @default("USER") @map("role")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   
   refreshTokens RefreshToken[]
   resumes       Resume[]
+  loginLogs     LoginLog[]
 
   @@map("users")
 }
@@ -84,4 +86,30 @@ model PasswordReset {
 
   @@index([email, token])
   @@map("password_resets")
+}
+
+model LoginLog {
+  id          BigInt   @id @default(autoincrement())
+  publicId    String   @unique @map("public_id")
+  userId      BigInt?  @map("user_id")
+  email       String
+  ipAddress   String   @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  device      String?  @map("device")
+  browser     String?  @map("browser")
+  location    String?  @map("location")
+  country     String?  @map("country")
+  city        String?  @map("city")
+  status      String   @map("status") // SUCCESS, FAILED, SUSPICIOUS
+  loginMethod String   @map("login_method") // PASSWORD, OTP, GOOGLE
+  reason      String?  @map("reason")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([userId])
+  @@index([ipAddress])
+  @@index([createdAt])
+  @@map("login_logs")
 }

@@ -111,3 +111,12 @@ export const resumeMutationLimiter = createLimiter(
   30,
   "Terlalu banyak perubahan resume. Silakan tunggu beberapa saat."
 );
+
+/**
+ * Admin Panel Limiter: 60 permintaan / 5 menit
+ */
+export const adminLimiter = createLimiter(
+  FIVE_MINUTES,
+  60,
+  "Batas permintaan akses admin terlampaui. Silakan tunggu beberapa saat."
+);

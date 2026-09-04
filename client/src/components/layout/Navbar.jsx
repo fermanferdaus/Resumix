@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { authApi } from "../../api/authApi.js";
 import { Button } from "../ui/button.jsx";
-import { LogOut, User, Coffee } from "lucide-react";
+import { LogOut, User, Coffee, ShieldCheck } from "lucide-react";
 import { appConfig } from "../../config/appConfig.js";
 
 export const Navbar = () => {
@@ -12,6 +12,7 @@ export const Navbar = () => {
 
   const isDashboard = location.pathname.startsWith("/dashboard");
   const isProfile = location.pathname.startsWith("/profile");
+  const isAdminPath = location.pathname.startsWith("/admin");
   const isTemplateOrEditor =
     location.pathname.startsWith("/editor") || location.pathname.startsWith("/templates");
 
@@ -84,6 +85,20 @@ export const Navbar = () => {
             >
               Profil
             </Link>
+
+            {user?.role === "ADMIN" && (
+              <Link
+                to="/admin"
+                className={`h-full flex items-center gap-1.5 pt-[2px] transition-colors ${
+                  isAdminPath
+                    ? "border-b-2 border-[#af101a] text-[#af101a] font-semibold"
+                    : "text-blue-600 hover:text-blue-700 font-semibold"
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4 text-blue-600" />
+                Admin Panel
+              </Link>
+            )}
           </nav>
         </div>
 
