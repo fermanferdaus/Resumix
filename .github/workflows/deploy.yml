@@ -43,6 +43,9 @@ jobs:
 
       - name: Run Server Unit Tests
         working-directory: ./server
+        env:
+          JWT_ACCESS_SECRET: resumix_jwt_access_test_secret_32_chars
+          JWT_REFRESH_SECRET: resumix_jwt_refresh_test_secret_32_chars
         run: npm test
 
       # Frontend Verification
