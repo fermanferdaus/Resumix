@@ -1,4 +1,4 @@
-﻿import { describe, it } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert";
 import { renderOtpTemplate, renderResetPasswordTemplate } from "../../services/mailService.js";
 
@@ -16,6 +16,7 @@ describe("Unit: Mail Service Template Renderers", () => {
       assert(html.includes("border-radius: 0"), "Harus menggunakan flat border-radius 0");
       assert(!html.includes("⏱"), "Tidak boleh ada emoji stopwatch AI");
       assert(!html.includes("dashed"), "Tidak boleh ada style border dashed");
+      assert(html.toLowerCase().includes("no-reply"), "Harus menyertakan pesan no-reply sistem");
     });
   });
 
@@ -29,6 +30,7 @@ describe("Unit: Mail Service Template Renderers", () => {
       assert(html.includes("border-radius: 0"), "Harus menggunakan flat border-radius 0");
       assert(!html.includes("Salin tautan"), "Tidak boleh ada instruksi salin tautan mentah");
       assert(!html.includes("⏱"), "Tidak boleh ada emoji stopwatch AI");
+      assert(html.toLowerCase().includes("no-reply"), "Harus menyertakan pesan no-reply sistem");
     });
   });
 });

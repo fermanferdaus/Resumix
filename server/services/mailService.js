@@ -73,8 +73,11 @@ const renderOtpTemplate = (code, expiresMinutes) => {
           </p>
 
           <div style="height: 1px; background-color: #e2e8f0; width: 100%; margin: 0 0 16px 0;"></div>
-          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0; text-align: left;">
+          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0 0 8px 0; text-align: left;">
             Demi keamanan, jangan pernah membagikan kode ini kepada siapapun termasuk pihak Resumix. Jika Anda tidak meminta kode ini, abaikan pesan ini dengan aman.
+          </p>
+          <p style="font-size: 11px; color: #94a3b8; line-height: 1.4; margin: 0; text-align: left;">
+            Pesan ini dikirim secara otomatis oleh sistem, mohon untuk tidak membalas email ini (no-reply).
           </p>
         </td>
       </tr>
@@ -106,9 +109,10 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
   try {
     const info = await transporter.sendMail({
       from: `"${appConfig.mail.fromName}" <${appConfig.mail.fromAddress}>`,
+      replyTo: appConfig.mail.replyTo,
       to,
       subject: `${code} adalah kode verifikasi Resumix Anda`,
-      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.\n\nJika Anda tidak meminta kode ini, abaikan email ini.`,
+      text: `Kode verifikasi Resumix Anda adalah: ${code}. Berlaku selama ${expiresMinutes} menit.\n\nJika Anda tidak meminta kode ini, abaikan email ini.\n\nPesan ini dikirim secara otomatis oleh sistem. Mohon jangan membalas email ini (no-reply).`,
       html: renderOtpTemplate(code, expiresMinutes),
     });
 
@@ -166,8 +170,11 @@ const renderResetPasswordTemplate = (resetUrl, expiresMinutes) => {
           </p>
 
           <div style="height: 1px; background-color: #e2e8f0; width: 100%; margin: 0 0 16px 0;"></div>
-          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0; text-align: left;">
+          <p style="font-size: 12px; color: #5d5e61; line-height: 1.5; margin: 0 0 8px 0; text-align: left;">
             Jika Anda tidak meminta pengaturan ulang kata sandi ini, abaikan email ini dengan aman. Akun Anda tetap terlindungi.
+          </p>
+          <p style="font-size: 11px; color: #94a3b8; line-height: 1.4; margin: 0; text-align: left;">
+            Pesan ini dikirim secara otomatis oleh sistem, mohon untuk tidak membalas email ini (no-reply).
           </p>
         </td>
       </tr>
@@ -199,9 +206,10 @@ export const sendResetPasswordEmail = async ({ to, resetUrl, expiresMinutes = 15
   try {
     const info = await transporter.sendMail({
       from: `"${appConfig.mail.fromName}" <${appConfig.mail.fromAddress}>`,
+      replyTo: appConfig.mail.replyTo,
       to,
       subject: "Atur Ulang Kata Sandi Akun Resumix Anda",
-      text: `Permintaan reset kata sandi akun Resumix Anda. Silakan buka tautan berikut: ${resetUrl}`,
+      text: `Permintaan reset kata sandi akun Resumix Anda. Silakan buka tautan berikut: ${resetUrl}\n\nTautan ini berlaku selama ${expiresMinutes} menit.\n\nPesan ini dikirim secara otomatis oleh sistem. Mohon jangan membalas email ini (no-reply).`,
       html: renderResetPasswordTemplate(resetUrl, expiresMinutes),
     });
 
