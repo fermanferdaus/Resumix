@@ -1,0 +1,12 @@
+{
+  "name": "resumix-cv-ats-builder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docker:build": "node scripts/docker-build.js",
+    "docker:up": "node scripts/docker-build.js --up",
+    "docker:down": "docker compose down"
+  }
+}
+
