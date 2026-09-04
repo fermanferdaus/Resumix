@@ -1,4 +1,5 @@
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { appConfig } from "../config/app.js";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 
@@ -86,11 +87,11 @@ export const refreshLimiter = createLimiter(
 );
 
 /**
- * Global API Limiter: 100 permintaan / 5 menit
+ * Global API Limiter: 150 permintaan / 5 menit (Production) / 1000 (Development)
  */
 export const globalLimiter = createLimiter(
   FIVE_MINUTES,
-  100,
+  appConfig.isProduction ? 150 : 1000,
   "Batas akses permintaan API terlampaui. Silakan coba lagi nanti."
 );
 
@@ -113,10 +114,26 @@ export const resumeMutationLimiter = createLimiter(
 );
 
 /**
- * Admin Panel Limiter: 60 permintaan / 5 menit
+ * Admin Panel Limiter: 300 permintaan / 5 menit (Production) / 1000 (Development)
+ * Diterapkan setelah requireAuth & isAdmin, dikunci per Admin User ID
  */
-export const adminLimiter = createLimiter(
-  FIVE_MINUTES,
-  60,
-  "Batas permintaan akses admin terlampaui. Silakan tunggu beberapa saat."
-);
+export const adminLimiter = rateLimit({
+  windowMs: FIVE_MINUTES,
+  max: appConfig.isProduction ? 300 : 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    if (req.user?.id) {
+      return `admin:${req.user.id}`;
+    }
+    return ipKeyGenerator(req.ip);
+  },
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message: "Batas permintaan akses admin terlampaui. Silakan tunggu beberapa saat.",
+      data: null,
+      errors: null,
+    });
+  },
+});

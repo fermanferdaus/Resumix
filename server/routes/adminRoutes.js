@@ -10,9 +10,9 @@ const router = Router();
 // 1. adminLimiter (Rate limiting khusus rute admin)
 // 2. requireAuth (Wajib membawa valid Bearer JWT)
 // 3. isAdmin (Wajib memiliki peran ADMIN)
-router.use(adminLimiter);
 router.use(requireAuth);
 router.use(isAdmin);
+router.use(adminLimiter);
 
 router.get("/stats", adminController.getStats);
 router.get("/users", adminController.getUsers);

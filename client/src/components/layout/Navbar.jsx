@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore.js";
 import { authApi } from "../../api/authApi.js";
 import { Button } from "../ui/button.jsx";
-import { LogOut, User, Coffee, ShieldCheck } from "lucide-react";
+import { LogOut, User, Coffee } from "lucide-react";
 import { appConfig } from "../../config/appConfig.js";
 
 export const Navbar = () => {
@@ -95,7 +95,6 @@ export const Navbar = () => {
                     : "text-[#5d5e61] hover:text-[#1a1b22]"
                 }`}
               >
-                <ShieldCheck className={`w-4 h-4 ${isAdminPath ? "text-[#af101a]" : "text-[#5d5e61]"}`} />
                 Admin Panel
               </Link>
             )}

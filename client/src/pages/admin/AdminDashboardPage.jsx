@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Navbar } from "../../components/layout/Navbar.jsx";
 import { Footer } from "../../components/layout/Footer.jsx";
 import { adminApi } from "../../api/adminApi.js";
@@ -36,13 +36,31 @@ export const AdminDashboardPage = () => {
   const [isUsersLoading, setIsUsersLoading] = useState(false);
   const [isLogsLoading, setIsLogsLoading] = useState(false);
 
+  // Users Filters & Debounce
   const [userSearch, setUserSearch] = useState("");
+  const [debouncedUserSearch, setDebouncedUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
   const [usersPage, setUsersPage] = useState(1);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedUserSearch(userSearch.trim());
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [userSearch]);
+
+  // Logs Filters & Debounce
   const [logStatusFilter, setLogStatusFilter] = useState("");
   const [logSearch, setLogSearch] = useState("");
+  const [debouncedLogSearch, setDebouncedLogSearch] = useState("");
   const [logsPage, setLogsPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedLogSearch(logSearch.trim());
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [logSearch]);
 
   // Load Dashboard Overview Stats & Anomalies
   const fetchOverviewData = useCallback(async () => {
@@ -59,14 +77,14 @@ export const AdminDashboardPage = () => {
   }, []);
 
   // Load Users List
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(async (page, search, role) => {
     setIsUsersLoading(true);
     try {
       const res = await adminApi.getUsers({
-        page: usersPage,
+        page,
         limit: 10,
-        search: userSearch,
-        role: userRoleFilter,
+        search,
+        role,
       });
       if (res?.data) {
         setUsersData({
@@ -79,17 +97,17 @@ export const AdminDashboardPage = () => {
     } finally {
       setIsUsersLoading(false);
     }
-  }, [usersPage, userSearch, userRoleFilter]);
+  }, []);
 
   // Load Login Logs
-  const fetchLogs = useCallback(async () => {
+  const fetchLogs = useCallback(async (page, search, status) => {
     setIsLogsLoading(true);
     try {
       const res = await adminApi.getLogs({
-        page: logsPage,
+        page,
         limit: 15,
-        status: logStatusFilter,
-        search: logSearch,
+        status,
+        search,
       });
       if (res?.data) {
         setLogsData({
@@ -102,22 +120,50 @@ export const AdminDashboardPage = () => {
     } finally {
       setIsLogsLoading(false);
     }
-  }, [logsPage, logStatusFilter, logSearch]);
+  }, []);
 
-  // Initial Data Load
+  // Initial Data Load (Hanya dieksekusi 1 kali saat mount)
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      await Promise.all([fetchOverviewData(), fetchUsers(), fetchLogs()]);
+      await Promise.all([
+        fetchOverviewData(),
+        fetchUsers(1, "", ""),
+        fetchLogs(1, "", ""),
+      ]);
       setIsLoading(false);
     };
     init();
   }, [fetchOverviewData, fetchUsers, fetchLogs]);
 
+  // Efek Perubahan Filter / Paginasi Pengguna
+  const isUsersMounted = useRef(false);
+  useEffect(() => {
+    if (!isUsersMounted.current) {
+      isUsersMounted.current = true;
+      return;
+    }
+    fetchUsers(usersPage, debouncedUserSearch, userRoleFilter);
+  }, [usersPage, debouncedUserSearch, userRoleFilter, fetchUsers]);
+
+  // Efek Perubahan Filter / Paginasi Logs
+  const isLogsMounted = useRef(false);
+  useEffect(() => {
+    if (!isLogsMounted.current) {
+      isLogsMounted.current = true;
+      return;
+    }
+    fetchLogs(logsPage, debouncedLogSearch, logStatusFilter);
+  }, [logsPage, debouncedLogSearch, logStatusFilter, fetchLogs]);
+
   // Manual Refresh
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await Promise.all([fetchOverviewData(), fetchUsers(), fetchLogs()]);
+    await Promise.all([
+      fetchOverviewData(),
+      fetchUsers(usersPage, debouncedUserSearch, userRoleFilter),
+      fetchLogs(logsPage, debouncedLogSearch, logStatusFilter),
+    ]);
     setIsRefreshing(false);
     toast.success("Data monitoring berhasil diperbarui");
   };
@@ -130,7 +176,7 @@ export const AdminDashboardPage = () => {
     try {
       const res = await adminApi.revokeUserSessions(userPublicId);
       toast.success(res.message || "Sesi pengguna berhasil diputuskan");
-      fetchUsers();
+      fetchUsers(usersPage, debouncedUserSearch, userRoleFilter);
       fetchOverviewData();
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal memutuskan sesi");
@@ -147,7 +193,7 @@ export const AdminDashboardPage = () => {
     <div className="min-h-screen bg-[#fbf8ff] flex flex-col font-sans text-[#1a1b22] antialiased rounded-none pt-16">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-full w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Dashboard Admin */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-[#e2e8f0]">
           <div>
