@@ -90,7 +90,7 @@ export const sendOtpEmail = async ({ to, code, expiresMinutes = 5 }) => {
       ],
     });
 
-    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId})`);
+    console.log(`[MAIL SENT] Email OTP terkirim ke ${to} (MessageID: ${info.messageId}) - Kode OTP: [${code}]`);
     return { sent: true, messageId: info.messageId };
   } catch (error) {
     console.error(`[MAIL ERROR] Gagal mengirim email ke ${to}:`, error.message);
