@@ -46,3 +46,29 @@ export const verifyRefreshToken = (token) => {
     return null;
   }
 };
+
+/**
+ * Generate 2FA Challenge Token (Short-lived 5 minutes)
+ */
+export const generate2faToken = (payload) => {
+  return jwt.sign({ ...payload, purpose: "2fa_challenge" }, appConfig.jwt.accessSecret, {
+    expiresIn: "5m",
+    algorithm: "HS256",
+  });
+};
+
+/**
+ * Verify 2FA Challenge Token
+ */
+export const verify2faToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, appConfig.jwt.accessSecret, {
+      algorithms: ["HS256"],
+    });
+    if (decoded?.purpose !== "2fa_challenge") return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+};
+

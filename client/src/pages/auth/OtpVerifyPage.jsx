@@ -54,12 +54,27 @@ export const OtpVerifyPage = () => {
     }
 
     try {
-      await verifyOtpMutation.mutateAsync({
+      const res = await verifyOtpMutation.mutateAsync({
         email: tempEmail,
         code,
       });
 
-      navigate("/dashboard");
+      if (res?.data?.requires2FA) {
+        navigate("/login", {
+          state: {
+            requires2FA: true,
+            tempToken: res.data.tempToken,
+            email: res.data.email || tempEmail,
+          },
+        });
+        return;
+      }
+
+      if (res?.data?.user?.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "Kode OTP yang Anda masukkan salah atau telah kadaluarsa."

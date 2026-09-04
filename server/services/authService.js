@@ -2,7 +2,18 @@ import crypto from "crypto";
 import prisma from "../config/prisma.js";
 import { generatePublicId } from "../utils/id.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+  generate2faToken,
+  verify2faToken,
+} from "../utils/jwt.js";
+import {
+  decryptSecret,
+  verifyTotp,
+  verifyAndConsumeBackupCode,
+} from "./totpService.js";
 import { createAndSendOtp, verifyOtpCode } from "./otpService.js";
 import { sendResetPasswordEmail } from "./mailService.js";
 import { verifyGoogleIdToken } from "./googleAuthService.js";
@@ -128,6 +139,21 @@ export const verifyOtp = async (email, code) => {
     });
   }
 
+  // Cek apakah akun mengaktifkan 2FA
+  if (user.twoFactorEnabled) {
+    const tempToken = generate2faToken(user);
+    return {
+      isRegistered: true,
+      requires2FA: true,
+      tempToken,
+      user: {
+        id: user.publicId,
+        email: user.email,
+        name: user.fullName || user.email.split("@")[0],
+      },
+    };
+  }
+
   const session = await createAuthSession(user);
   return {
     isRegistered: true,
@@ -206,7 +232,71 @@ export const loginWithPassword = async (email, password) => {
     throw new Error("Email atau kata sandi yang Anda masukkan salah.");
   }
 
+  // Jika akun mengaktifkan 2FA (Google Authenticator)
+  if (user.twoFactorEnabled) {
+    const tempToken = generate2faToken({
+      userId: user.id.toString(),
+      publicId: user.publicId,
+      email: user.email,
+      role: user.role,
+    });
+    return {
+      requires2FA: true,
+      tempToken,
+      user: {
+        email: user.email,
+        fullName: user.fullName,
+      },
+    };
+  }
+
   return await createAuthSession(user);
+};
+
+/**
+ * Verifikasi Kode Google Authenticator / Backup Code saat Login
+ */
+export const verify2FALogin = async (tempToken, token) => {
+  const decoded = verify2faToken(tempToken);
+  if (!decoded || !decoded.userId) {
+    throw new Error("Sesi verifikasi 2FA telah kedaluwarsa. Silakan login kembali.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(decoded.userId) },
+  });
+
+  if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+    throw new Error("Autentikasi dua faktor belum dikonfigurasi untuk akun ini.");
+  }
+
+  const plainSecret = decryptSecret(user.twoFactorSecret);
+  let isValid = verifyTotp(token, plainSecret, 1);
+  let isBackupCode = false;
+
+  // Jika kode TOTP tidak cocok, periksa backup recovery codes
+  if (!isValid && Array.isArray(user.twoFactorBackupCodes)) {
+    const backupResult = verifyAndConsumeBackupCode(token, user.twoFactorBackupCodes);
+    if (backupResult.valid) {
+      isValid = true;
+      isBackupCode = true;
+      // Perbarui sisa backup codes di database
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { twoFactorBackupCodes: backupResult.remainingHashedCodes },
+      });
+    }
+  }
+
+  if (!isValid) {
+    throw new Error("Kode Google Authenticator atau kode pemulihan tidak valid.");
+  }
+
+  const session = await createAuthSession(user);
+  return {
+    ...session,
+    usedBackupCode: isBackupCode,
+  };
 };
 
 /**
@@ -244,6 +334,20 @@ export const loginWithGoogle = async (idToken) => {
         isVerified: true,
       },
     });
+  }
+
+  // Cek apakah akun mengaktifkan 2FA
+  if (user.twoFactorEnabled) {
+    const tempToken = generate2faToken(user);
+    return {
+      requires2FA: true,
+      tempToken,
+      user: {
+        id: user.publicId,
+        email: user.email,
+        name: user.fullName || user.email.split("@")[0],
+      },
+    };
   }
 
   return await createAuthSession(user);

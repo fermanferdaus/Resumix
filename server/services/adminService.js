@@ -1,4 +1,16 @@
 import prisma from "../config/prisma.js";
+import {
+  generateBase32Secret,
+  generateTotp,
+  verifyTotp,
+  generateOtpauthUrl,
+  generateQrCode,
+  encryptSecret,
+  decryptSecret,
+  generateBackupCodes,
+  verifyAndConsumeBackupCode,
+} from "./totpService.js";
+import { comparePassword } from "../utils/hash.js";
 
 /**
  * Service: Admin Dashboard & Monitoring Analytics
@@ -477,3 +489,157 @@ export const revokeUserSessions = async (userPublicId) => {
     email: user.email,
   };
 };
+
+/**
+ * Inisialisasi Setup Google Authenticator (TOTP) untuk Admin
+ */
+export const setup2FA = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { id: true, email: true, fullName: true, twoFactorEnabled: true },
+  });
+
+  if (!user) {
+    throw new Error("Pengguna admin tidak ditemukan.");
+  }
+
+  // Buat secret Base32 baru
+  const secret = generateBase32Secret(20);
+  const encryptedSecret = encryptSecret(secret);
+
+  // Simpan encrypted secret sementara (twoFactorEnabled tetap false sampai diverifikasi)
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      twoFactorSecret: encryptedSecret,
+    },
+  });
+
+  const otpauthUrl = generateOtpauthUrl({
+    secret,
+    email: user.email,
+    issuer: "Resumix",
+  });
+
+  const qrCodeDataUrl = await generateQrCode(otpauthUrl);
+
+  return {
+    secret,
+    otpauthUrl,
+    qrCode: qrCodeDataUrl,
+    email: user.email,
+  };
+};
+
+/**
+ * Konfirmasi dan Aktifkan Google Authenticator untuk Admin
+ */
+export const enable2FA = async (userId, token) => {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { id: true, email: true, twoFactorSecret: true, twoFactorEnabled: true },
+  });
+
+  if (!user || !user.twoFactorSecret) {
+    throw new Error("Silakan lakukan inisialisasi setup Google Authenticator terlebih dahulu.");
+  }
+
+  const plainSecret = decryptSecret(user.twoFactorSecret);
+  const isValid = verifyTotp(token, plainSecret, 1);
+
+  if (!isValid) {
+    throw new Error("Kode verifikasi 6-digit tidak valid atau telah kedaluwarsa. Silakan cek aplikasi Google Authenticator Anda.");
+  }
+
+  // Generate 8 kode cadangan (single-use)
+  const { plainCodes, hashedCodes } = generateBackupCodes(8);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      twoFactorEnabled: true,
+      twoFactorBackupCodes: hashedCodes,
+    },
+  });
+
+  return {
+    success: true,
+    message: "Google Authenticator berhasil diaktifkan untuk akun Administrator.",
+    backupCodes: plainCodes,
+  };
+};
+
+/**
+ * Nonaktifkan Google Authenticator
+ */
+export const disable2FA = async (userId, token, password) => {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { id: true, email: true, password: true, twoFactorSecret: true, twoFactorEnabled: true, twoFactorBackupCodes: true },
+  });
+
+  if (!user) {
+    throw new Error("Pengguna admin tidak ditemukan.");
+  }
+
+  if (!user.twoFactorEnabled) {
+    throw new Error("Google Authenticator belum diaktifkan pada akun ini.");
+  }
+
+  const isPasswordValid = await comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Kata sandi yang Anda masukkan salah.");
+  }
+
+  let isCodeValid = false;
+  if (user.twoFactorSecret) {
+    const plainSecret = decryptSecret(user.twoFactorSecret);
+    isCodeValid = verifyTotp(token, plainSecret, 1);
+  }
+
+  // Jika kode TOTP tidak cocok, periksa apakah merupakan salah satu kode cadangan
+  if (!isCodeValid && Array.isArray(user.twoFactorBackupCodes)) {
+    const backupCheck = verifyAndConsumeBackupCode(token, user.twoFactorBackupCodes);
+    if (backupCheck.valid) {
+      isCodeValid = true;
+    }
+  }
+
+  if (!isCodeValid) {
+    throw new Error("Kode Google Authenticator atau kode cadangan tidak valid.");
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: null,
+    },
+  });
+
+  return {
+    success: true,
+    message: "Google Authenticator berhasil dinonaktifkan.",
+  };
+};
+
+/**
+ * Ambil Status Google Authenticator Akun Admin
+ */
+export const get2FAStatus = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { twoFactorEnabled: true, email: true },
+  });
+
+  if (!user) {
+    throw new Error("Pengguna tidak ditemukan.");
+  }
+
+  return {
+    enabled: Boolean(user.twoFactorEnabled),
+    email: user.email,
+  };
+};
+

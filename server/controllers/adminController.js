@@ -106,3 +106,66 @@ export const revokeUserSessions = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * GET /api/v1/admin/2fa/setup
+ * Menghasilkan secret Base32 dan QR code data URL untuk discan di Google Authenticator
+ */
+export const get2FASetup = async (req, res, next) => {
+  try {
+    const setupData = await adminService.setup2FA(req.user.id);
+    return successResponse(res, "Setup Google Authenticator berhasil diinisialisasi", setupData);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/v1/admin/2fa/enable
+ * Memvalidasi kode 6-digit pertama dan mengaktifkan 2FA
+ */
+export const enable2FA = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return errorResponse(res, "Kode verifikasi 6 digit wajib diisi", null, 400);
+    }
+
+    const result = await adminService.enable2FA(req.user.id, token);
+    return successResponse(res, result.message, { backupCodes: result.backupCodes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/v1/admin/2fa/disable
+ * Menonaktifkan 2FA dengan verifikasi sandi dan kode verifikasi
+ */
+export const disable2FA = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return errorResponse(res, "Kode verifikasi dan kata sandi wajib diisi", null, 400);
+    }
+
+    const result = await adminService.disable2FA(req.user.id, token, password);
+    return successResponse(res, result.message);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/v1/admin/2fa/status
+ * Memeriksa status 2FA pada akun admin yang sedang login
+ */
+export const get2FAStatus = async (req, res, next) => {
+  try {
+    const status = await adminService.get2FAStatus(req.user.id);
+    return successResponse(res, "Status 2FA berhasil diambil", status);
+  } catch (error) {
+    next(error);
+  }
+};
+

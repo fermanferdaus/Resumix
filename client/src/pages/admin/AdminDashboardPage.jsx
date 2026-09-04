@@ -7,6 +7,7 @@ import { AdminOverviewTab } from "../../components/admin/AdminOverviewTab.jsx";
 import { AdminUsersTab } from "../../components/admin/AdminUsersTab.jsx";
 import { AdminAnomaliesTab } from "../../components/admin/AdminAnomaliesTab.jsx";
 import { AdminLogsTab } from "../../components/admin/AdminLogsTab.jsx";
+import { AdminSecurityTab } from "../../components/admin/AdminSecurityTab.jsx";
 import { AdminSkeleton } from "../../components/admin/AdminSkeleton.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
@@ -18,6 +19,7 @@ import {
   Users,
   ShieldAlert,
   Globe,
+  KeyRound,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -302,6 +304,16 @@ export const AdminDashboardPage = () => {
                 <Globe className="w-4 h-4" />
                 Log Aktivitas & Geolokasi
               </Button>
+
+              <Button
+                variant={activeTab === "security" ? "primary" : "subtle"}
+                size="sm"
+                onClick={() => setActiveTab("security")}
+                className="gap-2 text-xs font-semibold rounded-none cursor-pointer"
+              >
+                <KeyRound className="w-4 h-4" />
+                Keamanan & 2FA
+              </Button>
             </div>
 
             {/* Tab Contents */}
@@ -354,6 +366,10 @@ export const AdminDashboardPage = () => {
                 setLogsLimit={setLogsLimit}
                 isLoading={isLogsLoading}
               />
+            )}
+
+            {activeTab === "security" && (
+              <AdminSecurityTab />
             )}
           </>
         )}

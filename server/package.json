@@ -28,6 +28,7 @@
     "nodemailer": "^9.1.0",
     "pg": "^8.23.0",
     "prisma": "^6.4.1",
+    "qrcode": "^1.5.4",
     "sharp": "^0.35.4",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^14.0.2",

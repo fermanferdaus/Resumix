@@ -57,6 +57,19 @@ export const verifyOtp = async (req, res, _next) => {
     const { email, code } = req.body;
     const result = await authService.verifyOtp(email, code);
 
+    if (result.requires2FA) {
+      return successResponse(
+        res,
+        "Verifikasi dua faktor (Google Authenticator) diperlukan",
+        {
+          requires2FA: true,
+          tempToken: result.tempToken,
+          email: result.user.email,
+        },
+        200
+      );
+    }
+
     recordLoginLog({
       req,
       email,
@@ -109,6 +122,20 @@ export const login = async (req, res, _next) => {
     const { email, password } = req.body;
     const session = await authService.loginWithPassword(email, password);
 
+    // Jika akun mengaktifkan 2FA
+    if (session.requires2FA) {
+      return successResponse(
+        res,
+        "Verifikasi dua faktor (Google Authenticator) diperlukan",
+        {
+          requires2FA: true,
+          tempToken: session.tempToken,
+          email: session.user.email,
+        },
+        200
+      );
+    }
+
     recordLoginLog({
       req,
       email,
@@ -135,12 +162,63 @@ export const login = async (req, res, _next) => {
 };
 
 /**
+ * POST /api/v1/auth/2fa/verify
+ * Verifikasi kode Google Authenticator / kode pemulihan saat login
+ */
+export const verify2FA = async (req, res, _next) => {
+  try {
+    const { tempToken, token } = req.body;
+    if (!tempToken || !token) {
+      return errorResponse(res, "Token sesi dan kode verifikasi 6-digit wajib diisi", null, 400);
+    }
+
+    const session = await authService.verify2FALogin(tempToken, token);
+
+    recordLoginLog({
+      req,
+      email: session.user.email,
+      status: "SUCCESS",
+      loginMethod: session.usedBackupCode ? "BACKUP_CODE" : "GOOGLE_AUTHENTICATOR",
+    });
+
+    setRefreshTokenCookie(res, session.refreshToken);
+
+    return successResponse(res, "Verifikasi Google Authenticator & Login berhasil", {
+      accessToken: session.accessToken,
+      user: session.user,
+    });
+  } catch (error) {
+    recordLoginLog({
+      req,
+      email: req.body?.email || "2fa_challenge",
+      status: "FAILED",
+      loginMethod: "GOOGLE_AUTHENTICATOR",
+      reason: error.message,
+    });
+    return errorResponse(res, error.message, null, 401);
+  }
+};
+
+/**
  * POST /api/v1/auth/google
  */
 export const googleAuth = async (req, res, _next) => {
   try {
     const { idToken } = req.body;
     const session = await authService.loginWithGoogle(idToken);
+ 
+    if (session.requires2FA) {
+      return successResponse(
+        res,
+        "Verifikasi dua faktor (Google Authenticator) diperlukan",
+        {
+          requires2FA: true,
+          tempToken: session.tempToken,
+          email: session.user.email,
+        },
+        200
+      );
+    }
 
     recordLoginLog({
       req,

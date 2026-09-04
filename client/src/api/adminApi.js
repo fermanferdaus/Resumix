@@ -43,4 +43,36 @@ export const adminApi = {
     const response = await apiClient.post(`/admin/users/${userId}/revoke-sessions`);
     return response.data;
   },
+
+  /**
+   * Ambil status 2FA Google Authenticator
+   */
+  get2FAStatus: async () => {
+    const response = await apiClient.get("/admin/2fa/status");
+    return response.data;
+  },
+
+  /**
+   * Inisialisasi setup 2FA (dapatkan secret & QR Code)
+   */
+  get2FASetup: async () => {
+    const response = await apiClient.get("/admin/2fa/setup");
+    return response.data;
+  },
+
+  /**
+   * Konfirmasi & aktifkan 2FA dengan token 6 digit
+   */
+  enable2FA: async (token) => {
+    const response = await apiClient.post("/admin/2fa/enable", { token });
+    return response.data;
+  },
+
+  /**
+   * Nonaktifkan 2FA dengan password dan token/backup code
+   */
+  disable2FA: async ({ token, password }) => {
+    const response = await apiClient.post("/admin/2fa/disable", { token, password });
+    return response.data;
+  },
 };
