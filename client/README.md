@@ -1,105 +1,86 @@
 # Resumix Frontend Client
 
-Frontend Single Page Application (SPA) for Resumix ATS CV Builder, built with React 19, Vite 8, Tailwind CSS v4, Zustand, TanStack Query, and Shadcn/UI patterns.
+Single-page application (SPA) for the Resumix ATS resume builder, built with React 19, Vite 8, and Tailwind CSS v4.
 
----
-
-## 1. Architecture & Folder Structure
+## Architecture & Folder Structure
 
 ```text
 client/
-├── public/                  # Static assets (logo.png, favicon)
+├── public/                  # Static assets
 ├── src/
-│   ├── api/                 # Axios configuration & API client services
-│   │   ├── authApi.js       # Auth endpoint methods (login, OTP, logout, Google, password)
-│   │   ├── axios.js         # Base Axios instance with automatic token interceptors
-│   │   ├── resumeApi.js     # Resume CRUD & duplicate endpoints
-│   │   └── userApi.js       # Profile & avatar upload endpoints
-│   ├── components/          # Reusable UI component library
-│   │   ├── common/          # Shared components (GoogleAuthButton, ProtectedRoute, ErrorBoundary)
-│   │   ├── dashboard/       # Dashboard widgets (ResumeCard, CreateResumeModal, QuotaBanner)
-│   │   ├── editor/          # ATS CV Editor sections (PersonalInfo, Experience, Education, Skills, Preview)
-│   │   ├── landing/         # Landing page hero, features, and footer sections
-│   │   ├── layout/          # Layout wrappers (AuthLayout, Navbar)
-│   │   ├── profile/         # Profile form, AvatarUpload, and ProfileSkeleton
-│   │   └── ui/              # Shadcn/UI primitives (Button, Input, Label, Alert, OtpInput, Skeleton)
+│   ├── api/                 # Axios configuration and API service modules
+│   │   ├── authApi.js       # Auth request services
+│   │   ├── axios.js         # Axios instance with token interceptors and mutex
+│   │   ├── resumeApi.js     # Resume CRUD and duplicate services
+│   │   └── userApi.js       # Profile and avatar upload services
+│   ├── components/          # Reusable UI component modules
+│   │   ├── common/          # Error boundary, route guard, OAuth buttons
+│   │   ├── dashboard/       # Dashboard cards, modals, and banners
+│   │   ├── editor/          # ATS resume editor sections and preview
+│   │   ├── landing/         # Landing page presentation components
+│   │   ├── layout/          # Page layouts and navigation bar
+│   │   ├── profile/         # Profile form, avatar upload, and skeleton
+│   │   └── ui/              # Base UI primitives
 │   ├── config/              # Centralized client configuration
-│   │   └── appConfig.js     # App URLs, Google OAuth Client ID, and social links
-│   ├── hooks/               # Custom TanStack Query mutations & hooks
-│   │   ├── useAuthMutations.js
-│   │   ├── useResumeMutations.js
-│   │   └── useProfileMutations.js
-│   ├── lib/                 # Shared utilities
-│   │   └── utils.js         # clsx & tailwind-merge helper (`cn`)
+│   │   └── appConfig.js     # Environment variable abstraction
+│   ├── hooks/               # Custom TanStack Query hooks
+│   ├── lib/                 # Utility helpers (cn class merger)
 │   ├── pages/               # Application view routes
-│   │   ├── auth/            # LoginPage, RegisterPage, OtpVerifyPage, ForgotPasswordPage, ResetPasswordPage
-│   │   ├── dashboard/       # DashboardPage
-│   │   ├── editor/          # EditorPage (ATS Resume Editor & Live Preview)
-│   │   ├── error/           # NotFoundPage (404), ServerErrorPage (500)
-│   │   ├── landing/         # LandingPage
-│   │   └── profile/         # ProfilePage
-│   ├── store/               # Zustand state stores
-│   │   └── authStore.js     # User session, tokens, & temp auth state
+│   │   ├── auth/            # Auth pages (login, register, OTP, reset)
+│   │   ├── dashboard/       # Dashboard overview
+│   │   ├── editor/          # ATS resume builder and live preview
+│   │   ├── error/           # Error pages (404, 500)
+│   │   ├── landing/         # Marketing landing page
+│   │   └── profile/         # User profile settings
+│   ├── store/               # In-memory Zustand state stores
+│   │   └── authStore.js     # Session and authentication store
 │   ├── tests/               # Frontend unit tests
-│   ├── validators/          # Zod validation schemas
-│   ├── App.jsx              # Router tree & QueryClientProvider setup
-│   ├── index.css            # Tailwind CSS v4 directives & custom theme
-│   └── main.jsx             # React DOM root entrypoint
-├── .env.example             # Frontend environment blueprint
-├── Dockerfile               # Multi-stage production Nginx container build
-├── nginx.conf               # Nginx reverse proxy (/api/v1/ & /uploads/) and SPA routing
+│   ├── validators/          # Client-side Zod validation schemas
+│   ├── App.jsx              # Application router and boot refresh logic
+│   ├── index.css            # Tailwind directives and theme variables
+│   └── main.jsx             # React DOM entrypoint
+├── Dockerfile               # Production multi-stage Nginx container build
+├── nginx.conf               # Nginx reverse proxy and SPA routing config
 ├── eslint.config.js         # ESLint configuration
-└── vite.config.js           # Vite 8 build & plugin configuration
+└── vite.config.js           # Vite build configuration
 ```
 
----
+## Environment Variables
 
-## 2. Environment Variables
+Configure `client/.env` based on `client/.env.example`:
 
-Salin `.env.example` menjadi `.env`:
-
-```bash
-cp .env.example .env
-```
-
-| Variabel | Deskripsi | Nilai Default |
+| Variable | Description | Default |
 | :--- | :--- | :--- |
-| `CLIENT_PORT` | Port host Nginx dalam Docker | `80` |
-| `VITE_API_URL` | Base URL Endpoint Backend API | `http://localhost:3000/api/v1` |
-| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID untuk SSO | `your_google_client_id.apps.googleusercontent.com` |
-| `VITE_SAWERIA_URL` | Tautan dukungan/donasi Saweria | `https://saweria.co/fermanferdaus` |
-| `VITE_FEEDBACK_EMAIL` | Alamat email feedback pengguna | `feedback@resumix.app` |
-| `VITE_CONTACT_EMAIL` | Alamat email kontak developer | `contact@resumix.app` |
-| `VITE_CONTACT_GITHUB` | URL profil GitHub | `https://github.com/fermanferdaus` |
-| `VITE_CONTACT_INSTAGRAM`| URL profil Instagram | `https://instagram.com/fermanferdaus_` |
+| `CLIENT_PORT` | Host port mapped to Nginx in Docker | `80` |
+| `VITE_API_URL` | Backend API base URL | `http://localhost:3000/api/v1` |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth 2.0 Web Client ID | - |
+| `VITE_SAWERIA_URL` | Donation link | `https://saweria.co/fermanferdaus` |
+| `VITE_FEEDBACK_EMAIL` | User feedback email address | `feedback@resumix.app` |
+| `VITE_CONTACT_EMAIL` | Contact email address | `contact@resumix.app` |
+| `VITE_CONTACT_GITHUB` | Developer GitHub profile URL | `https://github.com/fermanferdaus` |
+| `VITE_CONTACT_INSTAGRAM`| Developer Instagram profile URL | `https://instagram.com/fermanferdaus_` |
 
----
+## Design System & State Management
 
-## 3. UI Design System & Styling
+- **Styling**: Tailwind CSS v4 using CSS theme variables and minimal component primitives.
+- **State**: Zustand for in-memory session tokens and client state; TanStack Query for server state caching and request deduplication.
+- **Route Guarding**: `ProtectedRoute` protects authenticated application routes (`/dashboard`, `/profile`, `/editor/:id`) and redirects unauthenticated users to `/`.
 
-* **Theme**: Resumix Modern Soft Flat Theme with dark backgrounds and emerald accents.
-* **Typography**: IBM Plex Sans / Inter Clean Sans.
-* **Component Kit**: Shadcn/UI component patterns with minimal footprint and zero bloat.
-* **Route Protection**: `ProtectedRoute` protects `/dashboard`, `/profile`, `/editor/:id`, and redirects unauthenticated users directly to `/`.
-* **State Management**: Zustand for immediate client session sync, TanStack Query for server data caching and mutations.
-
----
-
-## 4. Scripts
+## Scripts
 
 ```bash
-# Menjalankan Vite development server dengan HMR
+# Start Vite development server with HMR
 npm run dev
 
-# Menjalankan unit tests frontend (Zod validation & utils)
+# Run frontend unit tests
 npm test
 
-# Menjalankan pengecekan ESLint
+# Run ESLint check
 npm run lint
 
-# Menjalankan bundle build untuk production
+# Build production bundle
 npm run build
 
-# Menjalankan preview production build lokal
+# Preview production build locally
 npm run preview
 ```
