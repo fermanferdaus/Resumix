@@ -7,6 +7,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Calendar,
+  X,
 } from "lucide-react";
 import { Card } from "../ui/card.jsx";
 import { Input } from "../ui/input.jsx";
@@ -21,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table.jsx";
+import { formatDateTimeWIB } from "../../lib/date.js";
 
 export const AdminUsersTab = ({
   usersData,
@@ -28,46 +31,95 @@ export const AdminUsersTab = ({
   setUserSearch,
   userRoleFilter,
   setUserRoleFilter,
+  userStartDate,
+  setUserStartDate,
+  userEndDate,
+  setUserEndDate,
   usersPage,
   setUsersPage,
+  usersLimit = 10,
+  setUsersLimit,
   onRevokeSession,
   isLoading = false,
 }) => {
   return (
     <Card className="overflow-hidden">
       {/* Filter & Search Toolbar */}
-      <div className="p-4 sm:p-5 border-b border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafc]">
+      <div className="p-4 sm:p-5 border-b border-[#e2e8f0] flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-[#f8fafc]">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5d5e61] pointer-events-none" />
           <Input
             type="text"
             placeholder="Cari nama pengguna, email, atau domisili..."
             value={userSearch}
-            onChange={(e) => {
-              setUserSearch(e.target.value);
-              setUsersPage(1);
-            }}
+            onChange={(e) => setUserSearch(e.target.value)}
             className="pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border-[#e2e8f0] rounded-none focus:border-[#1a1c1e] focus:ring-[#af101a]"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-xs text-[#5d5e61] font-semibold">
-            <ListFilter className="w-3.5 h-3.5 text-[#af101a]" />
-            <span>Peran:</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 text-xs text-[#5d5e61] font-semibold">
+              <ListFilter className="w-3.5 h-3.5 text-[#af101a]" />
+              <span>Peran:</span>
+            </div>
+            <select
+              value={userRoleFilter}
+              onChange={(e) => {
+                setUserRoleFilter(e.target.value);
+                setUsersPage(1);
+              }}
+              className="text-xs bg-white border border-[#e2e8f0] rounded-none px-2.5 py-1.5 font-semibold text-[#1a1b22] focus:outline-none focus:border-[#1a1c1e] focus:ring-1 focus:ring-[#af101a] cursor-pointer"
+            >
+              <option value="">Semua Peran</option>
+              <option value="ADMIN">Hanya Admin</option>
+              <option value="USER">Pengguna Biasa</option>
+            </select>
           </div>
-          <select
-            value={userRoleFilter}
-            onChange={(e) => {
-              setUserRoleFilter(e.target.value);
-              setUsersPage(1);
-            }}
-            className="text-xs bg-white border border-[#e2e8f0] rounded-none px-3 py-2 font-semibold text-[#1a1b22] focus:outline-none focus:border-[#1a1c1e] focus:ring-1 focus:ring-[#af101a] cursor-pointer"
-          >
-            <option value="">Semua Peran</option>
-            <option value="ADMIN">Hanya Admin</option>
-            <option value="USER">Pengguna Biasa</option>
-          </select>
+
+          {/* Filter Rentang Tanggal Registrasi */}
+          <div className="flex items-center gap-1.5 text-xs text-[#5d5e61] font-semibold">
+            <Calendar className="w-3.5 h-3.5 text-[#af101a] shrink-0" />
+            <span>Terdaftar:</span>
+            <Input
+              type="date"
+              value={userStartDate}
+              onChange={(e) => {
+                setUserStartDate(e.target.value);
+                setUsersPage(1);
+              }}
+              title="Tanggal Awal Registrasi"
+              className="h-8 w-auto px-2 py-1 text-xs bg-white border-[#e2e8f0] rounded-none font-mono-code focus:border-[#1a1c1e] focus:ring-[#af101a]"
+            />
+            <span className="text-[#5d5e61]">-</span>
+            <Input
+              type="date"
+              value={userEndDate}
+              min={userStartDate || undefined}
+              onChange={(e) => {
+                setUserEndDate(e.target.value);
+                setUsersPage(1);
+              }}
+              title="Tanggal Akhir Registrasi"
+              className="h-8 w-auto px-2 py-1 text-xs bg-white border-[#e2e8f0] rounded-none font-mono-code focus:border-[#1a1c1e] focus:ring-[#af101a]"
+            />
+            {(userStartDate || userEndDate) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setUserStartDate("");
+                  setUserEndDate("");
+                  setUsersPage(1);
+                }}
+                title="Hapus filter rentang tanggal registrasi"
+                className="h-8 px-2 text-xs text-[#af101a] hover:bg-[#fef2f2] rounded-none cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5 mr-1" />
+                Reset
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -76,11 +128,11 @@ export const AdminUsersTab = ({
         <TableHeader className="bg-[#f8fafc]">
           <TableRow>
             <TableHead className="py-3 px-4 sm:px-6">Nama Pengguna & Email</TableHead>
-            <TableHead className="py-3 px-4">Peran</TableHead>
-            <TableHead className="py-3 px-4">Jumlah CV (Kuota)</TableHead>
+            <TableHead className="py-3 px-4">Role</TableHead>
+            <TableHead className="py-3 px-4">Jumlah CV</TableHead>
             <TableHead className="py-3 px-4">Sesi Online</TableHead>
             <TableHead className="py-3 px-4">Login Terakhir</TableHead>
-            <TableHead className="py-3 px-4 sm:px-6 text-right">Aksi Kelola</TableHead>
+            <TableHead className="py-3 px-4 sm:px-6 text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -213,12 +265,7 @@ export const AdminUsersTab = ({
                           <span>{u.lastLogin.location}</span>
                         </div>
                         <div className="text-[11px] text-[#5d5e61] font-mono-code mt-0.5">
-                          {new Date(u.lastLogin.timestamp).toLocaleString("id-ID", {
-                            day: "numeric",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {formatDateTimeWIB(u.lastLogin.timestamp)}
                         </div>
                       </div>
                     ) : (
@@ -250,35 +297,55 @@ export const AdminUsersTab = ({
         </TableBody>
       </Table>
 
-      {/* Pagination Controls via shadcn/ui Button */}
-      {usersData.meta.totalPages > 1 && (
-        <div className="p-4 border-t border-[#e2e8f0] flex items-center justify-between text-xs text-[#5d5e61] bg-[#f8fafc]">
+      {/* Pagination & Limit Controls via shadcn/ui */}
+      <div className="p-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#5d5e61] bg-[#f8fafc]">
+        <div className="flex flex-wrap items-center gap-4">
           <span>
-            Menampilkan halaman <strong className="text-[#0f172a]">{usersData.meta.page}</strong> dari{" "}
-            <strong className="text-[#0f172a]">{usersData.meta.totalPages}</strong> (Total {usersData.meta.total} pengguna)
+            Menampilkan halaman <strong className="text-[#0f172a]">{usersData?.meta?.page || 1}</strong> dari{" "}
+            <strong className="text-[#0f172a]">{usersData?.meta?.totalPages || 1}</strong> (Total {usersData?.meta?.total || 0} pengguna)
           </span>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={usersPage <= 1}
-              onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
-              className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
+          <div className="flex items-center gap-1.5 font-semibold text-[#5d5e61]">
+            <span>Tampilkan:</span>
+            <select
+              value={usersLimit}
+              onChange={(e) => {
+                setUsersLimit(Number(e.target.value));
+                setUsersPage(1);
+              }}
+              className="text-xs bg-white border border-[#e2e8f0] rounded-none px-2 py-1 font-semibold text-[#1a1b22] focus:outline-none focus:border-[#1a1c1e] focus:ring-1 focus:ring-[#af101a] cursor-pointer"
             >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={usersPage >= usersData.meta.totalPages}
-              onClick={() => setUsersPage((p) => p + 1)}
-              className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+              <option value={10}>10 baris</option>
+              <option value={25}>25 baris</option>
+              <option value={50}>50 baris</option>
+              <option value={100}>100 baris</option>
+              <option value={500}>500 baris</option>
+            </select>
           </div>
         </div>
-      )}
+        <div className="flex items-center gap-1.5 self-end sm:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={usersPage <= 1}
+            onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
+            className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <span className="px-2 font-mono-code font-bold text-xs text-[#0f172a]">
+            {usersData?.meta?.page || 1} / {usersData?.meta?.totalPages || 1}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={usersPage >= (usersData?.meta?.totalPages || 1)}
+            onClick={() => setUsersPage((p) => p + 1)}
+            className="h-8 w-8 p-0 rounded-none border-[#e2e8f0] bg-white text-[#1a1b22] hover:border-[#af101a]"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
     </Card>
   );
 };

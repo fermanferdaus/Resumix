@@ -28,6 +28,10 @@ model User {
   resumes       Resume[]
   loginLogs     LoginLog[]
 
+  @@index([fullName])
+  @@index([role])
+  @@index([createdAt])
+  @@index([domicile])
   @@map("users")
 }
 
@@ -111,5 +115,9 @@ model LoginLog {
   @@index([userId])
   @@index([ipAddress])
   @@index([createdAt])
+  @@index([status])
+  @@index([location])
+  @@index([city])
+  @@index([country])
   @@map("login_logs")
 }

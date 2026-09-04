@@ -127,11 +127,24 @@ export const getUsersWithCvStats = async ({
   limit = 10,
   search = "",
   role = "",
+  startDate = "",
+  endDate = "",
 }) => {
   const skip = (page - 1) * limit;
 
+  const dateFilter = {};
+  if (startDate) {
+    const start = new Date(`${startDate}T00:00:00+07:00`);
+    if (!isNaN(start.getTime())) dateFilter.gte = start;
+  }
+  if (endDate) {
+    const end = new Date(`${endDate}T23:59:59.999+07:00`);
+    if (!isNaN(end.getTime())) dateFilter.lte = end;
+  }
+
   const where = {
     ...(role ? { role } : {}),
+    ...(Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {}),
     ...(search
       ? {
           OR: [
@@ -236,11 +249,24 @@ export const getLoginLogs = async ({
   limit = 15,
   status = "",
   search = "",
+  startDate = "",
+  endDate = "",
 }) => {
   const skip = (page - 1) * limit;
 
+  const dateFilter = {};
+  if (startDate) {
+    const start = new Date(`${startDate}T00:00:00+07:00`);
+    if (!isNaN(start.getTime())) dateFilter.gte = start;
+  }
+  if (endDate) {
+    const end = new Date(`${endDate}T23:59:59.999+07:00`);
+    if (!isNaN(end.getTime())) dateFilter.lte = end;
+  }
+
   const where = {
     ...(status ? { status } : {}),
+    ...(Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {}),
     ...(search
       ? {
           OR: [

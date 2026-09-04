@@ -15,3 +15,22 @@ describe("Frontend Unit: Utils (cn Tailwind Merge)", () => {
     assert.strictEqual(result, "p-6 bg-blue-500");
   });
 });
+
+describe("Frontend Unit: Date Utilities (formatDateTimeWIB)", () => {
+  it("harus memformat ISO string ke standar WIB dengan format 'DD Mon YY, HH.MM.SS WIB'", async () => {
+    const { formatDateTimeWIB } = await import("../lib/date.js");
+    // Waktu UTC: 2026-09-12T04:08:17.000Z -> WIB (+7): 11.08.17
+    const result = formatDateTimeWIB("2026-09-12T04:08:17.000Z");
+    assert.ok(result.includes("12 Sep 26"));
+    assert.ok(result.includes("WIB"));
+    assert.ok(result.includes("11.08.17"));
+  });
+
+  it("harus mengembalikan '-' jika tanggal tidak valid atau kosong", async () => {
+    const { formatDateTimeWIB } = await import("../lib/date.js");
+    assert.strictEqual(formatDateTimeWIB(null), "-");
+    assert.strictEqual(formatDateTimeWIB(""), "-");
+    assert.strictEqual(formatDateTimeWIB("invalid-date"), "-");
+  });
+});
+

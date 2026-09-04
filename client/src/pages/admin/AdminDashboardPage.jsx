@@ -40,12 +40,16 @@ export const AdminDashboardPage = () => {
   const [userSearch, setUserSearch] = useState("");
   const [debouncedUserSearch, setDebouncedUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
+  const [userStartDate, setUserStartDate] = useState("");
+  const [userEndDate, setUserEndDate] = useState("");
   const [usersPage, setUsersPage] = useState(1);
+  const [usersLimit, setUsersLimit] = useState(10);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedUserSearch(userSearch.trim());
-    }, 350);
+      setUsersPage(1);
+    }, 450);
     return () => clearTimeout(timer);
   }, [userSearch]);
 
@@ -53,12 +57,16 @@ export const AdminDashboardPage = () => {
   const [logStatusFilter, setLogStatusFilter] = useState("");
   const [logSearch, setLogSearch] = useState("");
   const [debouncedLogSearch, setDebouncedLogSearch] = useState("");
+  const [logStartDate, setLogStartDate] = useState("");
+  const [logEndDate, setLogEndDate] = useState("");
   const [logsPage, setLogsPage] = useState(1);
+  const [logsLimit, setLogsLimit] = useState(10);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedLogSearch(logSearch.trim());
-    }, 350);
+      setLogsPage(1);
+    }, 450);
     return () => clearTimeout(timer);
   }, [logSearch]);
 
@@ -77,14 +85,16 @@ export const AdminDashboardPage = () => {
   }, []);
 
   // Load Users List
-  const fetchUsers = useCallback(async (page, search, role) => {
+  const fetchUsers = useCallback(async (page, limit, search, role, startDate, endDate) => {
     setIsUsersLoading(true);
     try {
       const res = await adminApi.getUsers({
         page,
-        limit: 10,
+        limit,
         search,
         role,
+        startDate,
+        endDate,
       });
       if (res?.data) {
         setUsersData({
@@ -100,14 +110,16 @@ export const AdminDashboardPage = () => {
   }, []);
 
   // Load Login Logs
-  const fetchLogs = useCallback(async (page, search, status) => {
+  const fetchLogs = useCallback(async (page, limit, search, status, startDate, endDate) => {
     setIsLogsLoading(true);
     try {
       const res = await adminApi.getLogs({
         page,
-        limit: 15,
+        limit,
         status,
         search,
+        startDate,
+        endDate,
       });
       if (res?.data) {
         setLogsData({
@@ -128,13 +140,13 @@ export const AdminDashboardPage = () => {
       setIsLoading(true);
       await Promise.all([
         fetchOverviewData(),
-        fetchUsers(1, "", ""),
-        fetchLogs(1, "", ""),
+        fetchUsers(1, usersLimit, "", "", "", ""),
+        fetchLogs(1, logsLimit, "", "", "", ""),
       ]);
       setIsLoading(false);
     };
     init();
-  }, [fetchOverviewData, fetchUsers, fetchLogs]);
+  }, [fetchOverviewData, fetchUsers, fetchLogs, usersLimit, logsLimit]);
 
   // Efek Perubahan Filter / Paginasi Pengguna
   const isUsersMounted = useRef(false);
@@ -143,8 +155,8 @@ export const AdminDashboardPage = () => {
       isUsersMounted.current = true;
       return;
     }
-    fetchUsers(usersPage, debouncedUserSearch, userRoleFilter);
-  }, [usersPage, debouncedUserSearch, userRoleFilter, fetchUsers]);
+    fetchUsers(usersPage, usersLimit, debouncedUserSearch, userRoleFilter, userStartDate, userEndDate);
+  }, [usersPage, usersLimit, debouncedUserSearch, userRoleFilter, userStartDate, userEndDate, fetchUsers]);
 
   // Efek Perubahan Filter / Paginasi Logs
   const isLogsMounted = useRef(false);
@@ -153,16 +165,16 @@ export const AdminDashboardPage = () => {
       isLogsMounted.current = true;
       return;
     }
-    fetchLogs(logsPage, debouncedLogSearch, logStatusFilter);
-  }, [logsPage, debouncedLogSearch, logStatusFilter, fetchLogs]);
+    fetchLogs(logsPage, logsLimit, debouncedLogSearch, logStatusFilter, logStartDate, logEndDate);
+  }, [logsPage, logsLimit, debouncedLogSearch, logStatusFilter, logStartDate, logEndDate, fetchLogs]);
 
   // Manual Refresh
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await Promise.all([
       fetchOverviewData(),
-      fetchUsers(usersPage, debouncedUserSearch, userRoleFilter),
-      fetchLogs(logsPage, debouncedLogSearch, logStatusFilter),
+      fetchUsers(usersPage, usersLimit, debouncedUserSearch, userRoleFilter, userStartDate, userEndDate),
+      fetchLogs(logsPage, logsLimit, debouncedLogSearch, logStatusFilter, logStartDate, logEndDate),
     ]);
     setIsRefreshing(false);
     toast.success("Data monitoring berhasil diperbarui");
@@ -176,7 +188,7 @@ export const AdminDashboardPage = () => {
     try {
       const res = await adminApi.revokeUserSessions(userPublicId);
       toast.success(res.message || "Sesi pengguna berhasil diputuskan");
-      fetchUsers(usersPage, debouncedUserSearch, userRoleFilter);
+      fetchUsers(usersPage, usersLimit, debouncedUserSearch, userRoleFilter, userStartDate, userEndDate);
       fetchOverviewData();
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal memutuskan sesi");
@@ -304,8 +316,14 @@ export const AdminDashboardPage = () => {
                 setUserSearch={setUserSearch}
                 userRoleFilter={userRoleFilter}
                 setUserRoleFilter={setUserRoleFilter}
+                userStartDate={userStartDate}
+                setUserStartDate={setUserStartDate}
+                userEndDate={userEndDate}
+                setUserEndDate={setUserEndDate}
                 usersPage={usersPage}
                 setUsersPage={setUsersPage}
+                usersLimit={usersLimit}
+                setUsersLimit={setUsersLimit}
                 onRevokeSession={handleRevokeSession}
                 isLoading={isUsersLoading}
               />
@@ -326,8 +344,14 @@ export const AdminDashboardPage = () => {
                 setLogSearch={setLogSearch}
                 logStatusFilter={logStatusFilter}
                 setLogStatusFilter={setLogStatusFilter}
+                logStartDate={logStartDate}
+                setLogStartDate={setLogStartDate}
+                logEndDate={logEndDate}
+                setLogEndDate={setLogEndDate}
                 logsPage={logsPage}
                 setLogsPage={setLogsPage}
+                logsLimit={logsLimit}
+                setLogsLimit={setLogsLimit}
                 isLoading={isLogsLoading}
               />
             )}

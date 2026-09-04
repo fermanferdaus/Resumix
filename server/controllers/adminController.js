@@ -25,11 +25,20 @@ export const getStats = async (req, res, next) => {
 export const getUsers = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
+    const limit = Math.min(500, Math.max(1, parseInt(req.query.limit, 10) || 10));
     const search = req.query.search || "";
     const role = req.query.role || "";
+    const startDate = req.query.startDate || "";
+    const endDate = req.query.endDate || "";
 
-    const result = await adminService.getUsersWithCvStats({ page, limit, search, role });
+    const result = await adminService.getUsersWithCvStats({
+      page,
+      limit,
+      search,
+      role,
+      startDate,
+      endDate,
+    });
     return successResponse(res, "Daftar pengguna berhasil diambil", result.items, 200, result.meta);
   } catch (error) {
     next(error);
@@ -56,11 +65,20 @@ export const getAnomalies = async (req, res, next) => {
 export const getLogs = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 15;
+    const limit = Math.min(500, Math.max(1, parseInt(req.query.limit, 10) || 10));
     const status = req.query.status || "";
     const search = req.query.search || "";
+    const startDate = req.query.startDate || "";
+    const endDate = req.query.endDate || "";
 
-    const result = await adminService.getLoginLogs({ page, limit, status, search });
+    const result = await adminService.getLoginLogs({
+      page,
+      limit,
+      status,
+      search,
+      startDate,
+      endDate,
+    });
     return successResponse(res, "Log aktivitas login berhasil diambil", result.items, 200, result.meta);
   } catch (error) {
     next(error);
