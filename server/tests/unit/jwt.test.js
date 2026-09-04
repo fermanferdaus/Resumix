@@ -1,11 +1,25 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import {
+// Setup dummy secrets for unit testing in environment without .env
+process.env.JWT_ACCESS_SECRET =
+  process.env.JWT_ACCESS_SECRET || "resumix_jwt_access_test_secret_32_chars";
+process.env.JWT_REFRESH_SECRET =
+  process.env.JWT_REFRESH_SECRET || "resumix_jwt_refresh_test_secret_32_chars";
+
+const { appConfig } = await import("../../config/app.js");
+if (!appConfig.jwt.accessSecret) {
+  appConfig.jwt.accessSecret = process.env.JWT_ACCESS_SECRET;
+}
+if (!appConfig.jwt.refreshSecret) {
+  appConfig.jwt.refreshSecret = process.env.JWT_REFRESH_SECRET;
+}
+
+const {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
-} from "../../utils/jwt.js";
+} = await import("../../utils/jwt.js");
 
 describe("Unit: JWT Token Generator & Verification", () => {
   const payload = {
